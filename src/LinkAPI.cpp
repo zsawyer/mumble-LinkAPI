@@ -215,6 +215,7 @@ bool updateVectorsByAvatar(
 
 bool updateData(LinkedMem* source) {
 	memcpy(lm, source, sizeof (LinkedMem));
+	return true;
 }
 
 

@@ -46,12 +46,17 @@
  * For more information about the different data that can be updated see
  * http://mumble.sourceforge.net/Link
  *
+ *
+ * To compile this as a static library define LINKAPI_NO_DLL
+ * If you are using this header file to define your imports define LINKAPI_DLL_IMPORTS
+ *
  * @author zsawyer, 2010-03-20
  */
 
 #ifndef LINKAPI_H
 #define	LINKAPI_H
 
+#include "apiHelper.h"
 
 #ifdef _WIN32
 #define WIN32
@@ -132,6 +137,7 @@ extern "C" {
 	 *		4: unix specific: mmap failed to return a structure<br>
 	 *		5: shared memory was not initialized<br>
 	 */
+	LINKAPI_API
 	int initialize(wchar_t name[MAX_NAME_LENGTH],
 			wchar_t description[MAX_DESCRIPTION_LENGTH],
 			NATIVE_UNIT32 uiVersion);
@@ -159,6 +165,7 @@ extern "C" {
 	 * @return true if success else false (this would usually mean that the
 	 * memory structure was not initialized properly)
 	 */
+	LINKAPI_API
 	bool updateIdentity(wchar_t identity[MAX_IDENTITY_LENGTH]);
 
 	/**
@@ -183,6 +190,7 @@ extern "C" {
 	 * @return true if success else false (this would usually mean that the
 	 * memory structure was not initialized properly)
 	 */
+	LINKAPI_API
 	bool updateContext(unsigned char context[MAX_CONTEXT_LENGTH],
 			NATIVE_UNIT32 context_len);
 
@@ -203,6 +211,7 @@ extern "C" {
 	 * @return true if success else false (this would usually mean that the
 	 * memory structure was not initialized properly)
 	 */
+	LINKAPI_API
 	bool updateIdentityAndContext(
 			wchar_t identity[MAX_IDENTITY_LENGTH],
 			unsigned char context[MAX_CONTEXT_LENGTH],
@@ -224,6 +233,7 @@ extern "C" {
 	 * @return true if success else false (this would usually mean that the
 	 * memory structure was not initialized properly)
 	 */
+	LINKAPI_API
 	bool updateName(wchar_t name[MAX_NAME_LENGTH]);
 
 	/**
@@ -239,6 +249,7 @@ extern "C" {
 	 * @return true if success else false (this would usually mean that the
 	 * memory structure was not initialized properly)
 	 */
+	LINKAPI_API
 	bool updateDescription(wchar_t description[MAX_DESCRIPTION_LENGTH]);
 
 
@@ -258,6 +269,7 @@ extern "C" {
 	 * @return true if success else false (this would usually mean that the
 	 * memory structure was not initialized properly)
 	 */
+	LINKAPI_API
 	bool updateVectors(
 			float fAvatarPosition[VECTOR_LENGTH],
 			float fAvatarFront[VECTOR_LENGTH],
@@ -284,6 +296,7 @@ extern "C" {
 	 * @return true if success else false (this would usually mean that the
 	 * memory structure was not initialized properly)
 	 */
+	LINKAPI_API
 	bool updateVectorsByAvatar(
 			float fAvatarPosition[VECTOR_LENGTH],
 			float fAvatarFront[VECTOR_LENGTH],
@@ -301,6 +314,7 @@ extern "C" {
 	 * @return true if success else false (this would usually mean that the
 	 * memory structure was not initialized properly)
 	 */
+	LINKAPI_API
 	bool updateData(LinkedMem *source);
 
 

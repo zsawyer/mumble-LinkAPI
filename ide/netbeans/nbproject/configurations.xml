@@ -15,6 +15,7 @@
       <logicalFolder name="src" displayName="src" projectFiles="true">
         <itemPath>../../src/LinkAPI.cpp</itemPath>
         <itemPath>../../src/LinkAPI.h</itemPath>
+        <itemPath>D:/mumble-LinkAPI/src/apiHelper.h</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -68,6 +69,8 @@
       </item>
       <item path="../../src/LinkAPI.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="D:/mumble-LinkAPI/src/apiHelper.h" ex="false" tool="3" flavor2="0">
+      </item>
     </conf>
     <conf name="Debug_x64" type="2">
       <toolsSet>
@@ -104,6 +107,8 @@
       </item>
       <item path="../../src/LinkAPI.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="D:/mumble-LinkAPI/src/apiHelper.h" ex="false" tool="3" flavor2="0">
+      </item>
     </conf>
     <conf name="Release" type="2">
       <toolsSet>
@@ -127,6 +132,8 @@
       <item path="../../src/LinkAPI.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../src/LinkAPI.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="D:/mumble-LinkAPI/src/apiHelper.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
     <conf name="Release_x64" type="2">
@@ -173,6 +180,8 @@
       <item path="../../src/LinkAPI.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../src/LinkAPI.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="D:/mumble-LinkAPI/src/apiHelper.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>
