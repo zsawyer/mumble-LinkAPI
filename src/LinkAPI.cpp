@@ -35,20 +35,32 @@
 
 #include "LinkAPI.h"
 
+#ifndef WIN32
+
+#    include <unistd.h> // getuid
+#    include <sys/stat.h> // S_IRUSR, S_IWUSR
+#    include <fcntl.h> // O_RDWR
+
+#    include <sys/mman.h> // shm_open, PROT_READ, PROT_WRITE, MAP_SHARED mmap
+
+#endif
+
+#define UI_VERSION_UNLINK 0
+
 #define VERIFY_LM if (!lm) { return false; }
 
-int initialize() {
+ErrorCode initialize() {
 
 #ifdef WIN32
 	HANDLE hMapObject = OpenFileMappingW(FILE_MAP_ALL_ACCESS, FALSE, L"MumbleLink");
 	if (hMapObject == NULL)
-		return 1;
+		return ERROR_CODE_WIN32_NO_HANDLE;
 
 	lm = (LinkedMem *) MapViewOfFile(hMapObject, FILE_MAP_ALL_ACCESS, 0, 0, sizeof (LinkedMem));
 	if (lm == NULL) {
 		CloseHandle(hMapObject);
 		hMapObject = NULL;
-		return 2;
+		return ERROR_CODE_WIN32_NO_STRUCTURE;
 	}
 #else
 	char memname[256];
@@ -57,37 +69,37 @@ int initialize() {
 	int shmfd = shm_open(memname, O_RDWR, S_IRUSR | S_IWUSR);
 
 	if (shmfd < 0) {
-		return 3;
+		return ERROR_CODE_UNIX_NO_HANDLE;
 	}
 
 	lm = (LinkedMem *) (mmap(NULL, sizeof (struct LinkedMem), PROT_READ | PROT_WRITE, MAP_SHARED, shmfd, 0));
 
 	if (lm == (void *) (-1)) {
 		lm = NULL;
-		return 4;
+		return ERROR_CODE_UNIX_NO_STRUCTURE;
 	}
 #endif
 
-	return 0;
+	return ERROR_CODE_NO_ERROR;
 }
 
 static wchar_t backupName[MAX_NAME_LENGTH];
 static wchar_t backupDescription[MAX_DESCRIPTION_LENGTH];
 static NATIVE_UNIT32 backupUiVersion;
 
-int initialize(wchar_t name[], wchar_t description[], NATIVE_UNIT32 uiVersion) {
+ErrorCode initialize(wchar_t name[], wchar_t description[], NATIVE_UNIT32 uiVersion) {
 	wcsncpy(backupName, name, MAX_NAME_LENGTH);
 	wcsncpy(backupDescription, description, MAX_DESCRIPTION_LENGTH);
 	backupUiVersion = uiVersion;
 
-	int err = initialize();
+	ErrorCode err = initialize();
 
-	if (err != 0) {
+	if (err != ERROR_CODE_NO_ERROR) {
 		return err;
 	}
 
 	if (!lm) {
-		return 5;
+		return ERROR_CODE_NO_MEMORY_WAS_INITIALIZED;
 	}
 
 	if (lm->uiVersion != uiVersion) {
@@ -98,11 +110,11 @@ int initialize(wchar_t name[], wchar_t description[], NATIVE_UNIT32 uiVersion) {
 	}
 	lm->uiTick = 0;
 
-	return 0;
+	return err;
 }
 
 /**
- * identifies that the link plugin was unlocked and tells it lock again
+ * identifies that the link plugin was unlocked and tells it to lock again
  *   this can happen when updates were too infrequent - then the plugin unlinks
  *
  * this will effectively relink the plugin
@@ -118,6 +130,10 @@ bool relock() {
 	}
 
 	return true;
+}
+
+void unlink() {
+	lm->uiVersion = UI_VERSION_UNLINK;
 }
 
 /**

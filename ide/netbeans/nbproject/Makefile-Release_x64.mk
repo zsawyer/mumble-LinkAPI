@@ -52,15 +52,11 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=/cygdrive/C/cygwin/lib/gcc/x86_64-w64-mingw32/4.5.3/libstdc++.a /cygdrive/C/cygwin/lib/gcc/x86_64-w64-mingw32/4.5.3/libgcc.a
+LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT}
-
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT}: /cygdrive/C/cygwin/lib/gcc/x86_64-w64-mingw32/4.5.3/libstdc++.a
-
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT}: /cygdrive/C/cygwin/lib/gcc/x86_64-w64-mingw32/4.5.3/libgcc.a
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT}: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
@@ -69,7 +65,7 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT}: ${OBJECTF
 ${OBJECTDIR}/_ext/1445274692/LinkAPI.o: ../../src/LinkAPI.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1445274692
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -mno-cygwin  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1445274692/LinkAPI.o ../../src/LinkAPI.cpp
+	$(COMPILE.cc) -O2 -Wall -mno-cygwin  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1445274692/LinkAPI.o ../../src/LinkAPI.cpp
 
 # Subprojects
 .build-subprojects:

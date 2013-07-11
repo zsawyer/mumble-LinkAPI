@@ -54,54 +54,39 @@
  */
 
 #ifndef LINKAPI_H
-#define	LINKAPI_H
+#    define	LINKAPI_H
 
-#include "apiHelper.h"
+#    include "apiExportHelper.h"
 
-#ifdef _WIN32
-#define WIN32
-#endif
+#    ifdef _WIN32
+#        define WIN32
+#    endif
 
-#include <stdio.h>
-#include <string.h>
-#include <wchar.h>
-
-#include <locale> // std::use_facet, std::ctype
-
-#ifndef WIN32
-
-#include <stdint.h> // uint32_t
-#include <sys/mman.h> // shm_open, PROT_READ, PROT_WRITE, MAP_SHARED mmap
-#include <unistd.h> // getuid
-#include <sys/stat.h> // S_IRUSR, S_IWUSR
-#include <fcntl.h> // O_RDWR
-
-#define NATIVE_UNIT32 uint32_t
-
-#else
-#include <windows.h>
-#define NATIVE_UNIT32 UINT32
-#endif
+#    ifndef WIN32
+#        include <stdint.h> // uint32_t
+#        define NATIVE_UNIT32 uint32_t
+#        define NATIVE_DWORD uint32_t
+#    else
+#        include <windows.h>
+#        define NATIVE_UNIT32 UINT32
+#        define NATIVE_DWORD DWORD
+#    endif
 
 
-#ifdef	__cplusplus
+#    ifdef	__cplusplus
 extern "C" {
-#endif
+#    endif
 
-#define VECTOR_LENGTH 3
+#    define VECTOR_LENGTH 3
 
-#define MAX_IDENTITY_LENGTH 256
-#define MAX_CONTEXT_LENGTH 256
-#define MAX_NAME_LENGTH 256
-#define MAX_DESCRIPTION_LENGTH 2048
+#    define MAX_IDENTITY_LENGTH 256
+#    define MAX_CONTEXT_LENGTH 256
+#    define MAX_NAME_LENGTH 256
+#    define MAX_DESCRIPTION_LENGTH 2048
 
 	struct LinkedMem {
 		NATIVE_UNIT32 uiVersion;
-#ifdef WIN32		
-		DWORD uiTick;
-#else
-		uint32_t uiTick;
-#endif
+		NATIVE_DWORD uiTick;
 		float fAvatarPosition[VECTOR_LENGTH];
 		float fAvatarFront[VECTOR_LENGTH];
 		float fAvatarTop[VECTOR_LENGTH];
@@ -114,8 +99,22 @@ extern "C" {
 		unsigned char context[MAX_CONTEXT_LENGTH];
 		wchar_t description[MAX_DESCRIPTION_LENGTH];
 	};
-
 	LinkedMem *lm = NULL;
+
+	typedef enum {
+		/** no error */
+		ERROR_CODE_NO_ERROR = 0,
+		/** win32 specific: OpenFileMappingW failed to return a handle */
+		ERROR_CODE_WIN32_NO_HANDLE = 1,
+		/** win32 specific: MapViewOfFile failed to return a structure */
+		ERROR_CODE_WIN32_NO_STRUCTURE = 2,
+		/** unix specific: shm_open returned a negative integer */
+		ERROR_CODE_UNIX_NO_HANDLE = 3,
+		/** unix specific: mmap failed to return a structure */
+		ERROR_CODE_UNIX_NO_STRUCTURE = 4,
+		/** shared memory was not initialized */
+		ERROR_CODE_NO_MEMORY_WAS_INITIALIZED = 5
+	} ErrorCode;
 
 	/**
 	 * initialize the linked memory
@@ -129,18 +128,22 @@ extern "C" {
 	 * @param description	a text stating the purpose of this link
 	 * @param uiVersion	no description available (this should usually be set to 2)
 	 *
-	 * @return	an error code <br>
-	 *		0: no error<br>
-	 *		1: win32 specific: OpenFileMappingW failed to return a handle<br>
-	 *		2: win32 specific: MapViewOfFile failed to return a structure<br>
-	 *		3: unix specific: shm_open returned a negative integer<br>
-	 *		4: unix specific: mmap failed to return a structure<br>
-	 *		5: shared memory was not initialized<br>
+	 * @return	an error code, see <code>enum ErrorCode</code>
 	 */
 	LINKAPI_API
-	int initialize(wchar_t name[MAX_NAME_LENGTH],
+	ErrorCode initialize(wchar_t name[MAX_NAME_LENGTH],
 			wchar_t description[MAX_DESCRIPTION_LENGTH],
 			NATIVE_UNIT32 uiVersion);
+
+	/**
+	 * forcefully unlinks the plugin instantly
+	 * 
+	 * this function directly circumvents the timeout wait of the link plugin
+	 *
+	 * this effect is undone when calling an update method
+	 */
+	LINKAPI_API
+	void unlink();
 
 
 	/**
@@ -318,8 +321,8 @@ extern "C" {
 	bool updateData(LinkedMem *source);
 
 
-#ifdef	__cplusplus
+#    ifdef	__cplusplus
 }
-#endif
+#    endif
 
 #endif	/* LINKAPI_H */

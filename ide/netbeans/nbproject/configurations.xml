@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="88">
+<configurationDescriptor version="89">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
@@ -15,7 +15,7 @@
       <logicalFolder name="src" displayName="src" projectFiles="true">
         <itemPath>../../src/LinkAPI.cpp</itemPath>
         <itemPath>../../src/LinkAPI.h</itemPath>
-        <itemPath>D:/mumble-LinkAPI/src/apiHelper.h</itemPath>
+        <itemPath>D:/mumble-LinkAPI/src/apiExportHelper.h</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -39,6 +39,8 @@
       <toolsSet>
         <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
         <ccTool>
@@ -69,13 +71,18 @@
       </item>
       <item path="../../src/LinkAPI.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="D:/mumble-LinkAPI/src/apiHelper.h" ex="false" tool="3" flavor2="0">
+      <item path="D:/mumble-LinkAPI/src/apiExportHelper.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
     </conf>
     <conf name="Debug_x64" type="2">
       <toolsSet>
         <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
         <ccTool>
@@ -107,13 +114,18 @@
       </item>
       <item path="../../src/LinkAPI.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="D:/mumble-LinkAPI/src/apiHelper.h" ex="false" tool="3" flavor2="0">
+      <item path="D:/mumble-LinkAPI/src/apiExportHelper.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="2">
       <toolsSet>
         <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
         <cTool>
@@ -133,13 +145,18 @@
       </item>
       <item path="../../src/LinkAPI.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="D:/mumble-LinkAPI/src/apiHelper.h" ex="false" tool="3" flavor2="0">
+      <item path="D:/mumble-LinkAPI/src/apiExportHelper.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
     </conf>
     <conf name="Release_x64" type="2">
       <toolsSet>
         <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
-        <compilerSet>default</compilerSet>
+        <compilerSet>Cygwin_4.x|Cygwin_4.x</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
         <cTool>
@@ -149,6 +166,7 @@
           <developmentMode>5</developmentMode>
           <commandlineTool>x86_64-w64-mingw32-g++</commandlineTool>
           <commandLine>-mno-cygwin</commandLine>
+          <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
@@ -159,10 +177,6 @@
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT}</output>
           <commandlineTool>x86_64-w64-mingw32-g++</commandlineTool>
-          <linkerLibItems>
-            <linkerLibFileItem>C:/cygwin/lib/gcc/x86_64-w64-mingw32/4.5.3/libstdc++.a</linkerLibFileItem>
-            <linkerLibFileItem>C:/cygwin/lib/gcc/x86_64-w64-mingw32/4.5.3/libgcc.a</linkerLibFileItem>
-          </linkerLibItems>
         </linkerTool>
       </compileType>
       <packaging>
@@ -181,7 +195,10 @@
       </item>
       <item path="../../src/LinkAPI.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="D:/mumble-LinkAPI/src/apiHelper.h" ex="false" tool="3" flavor2="0">
+      <item path="D:/mumble-LinkAPI/src/apiExportHelper.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
     </conf>
   </confs>
