@@ -277,9 +277,9 @@ public class ManualTesterFrame extends javax.swing.JFrame {
 			lm.fCameraTop = parseToFloatBuffer("fCameraTop").array();
 		} catch (NumberFormatException e) {
 			return;
-		}
+		}	
 
-		link.updateData(lm);
+		link.setData(lm);
     }//GEN-LAST:event_updateDataActionPerformed
 
     private void updateIdentityAndContextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateIdentityAndContextActionPerformed

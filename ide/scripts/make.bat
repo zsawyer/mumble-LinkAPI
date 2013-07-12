@@ -17,14 +17,14 @@ cd %buildFolder%
 REM ### set the path:   ###
 set LIB=%vcDirectory%\LIB;%sdkDirectory%\Lib;
 REM ### compile: 		###
-cl.exe /EHcs /Fe"%libraryName%.dll" "..\..\..\src\%srcFile%.cpp" /I "%sdkDirectory%\Include" /I "%vcDirectory%\include" /link /DLL
+cl.exe /EHcs /Fe"%libraryName%.dll" "..\..\..\src\%srcFile%.c" /I "%sdkDirectory%\Include" /I "%vcDirectory%\include" /link /DLL
 
 
   REM # 64-Bit version: #
 REM ### set the path:   ###
 set LIB=%vcDirectory%\lib\amd64;%sdkDirectory%\Lib\x64
 REM ### compile: 		###
-"%vcDirectory%\bin\x86_amd64\cl.exe" /EHcs /Fe"%libraryName%64.dll" "..\..\..\src\%srcFile%.cpp" /I "%sdkDirectory%\Include" /I "%vcDirectory%\include" /link /DLL
+"%vcDirectory%\bin\x86_amd64\cl.exe" /EHcs /Fe"%libraryName%64.dll" "..\..\..\src\%srcFile%.c" /I "%sdkDirectory%\Include" /I "%vcDirectory%\include" /link /DLL
 
   REM # cleaning up #
 del *.obj

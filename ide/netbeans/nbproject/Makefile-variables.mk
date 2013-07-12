@@ -31,13 +31,13 @@ CND_PACKAGE_DIR_Release=dist/Release/Cygwin_4.x-Windows/package
 CND_PACKAGE_NAME_Release=libnetbeans.dll.tar
 CND_PACKAGE_PATH_Release=dist/Release/Cygwin_4.x-Windows/package/libnetbeans.dll.tar
 # Release_x64 configuration
-CND_PLATFORM_Release_x64=Cygwin_4.x-Windows
-CND_ARTIFACT_DIR_Release_x64=dist/Release_x64/Cygwin_4.x-Windows
+CND_PLATFORM_Release_x64=Cygwin_4.x_1_+_mingw-Windows
+CND_ARTIFACT_DIR_Release_x64=dist/Release_x64/Cygwin_4.x_1_+_mingw-Windows
 CND_ARTIFACT_NAME_Release_x64=libLinkAPI.dll
-CND_ARTIFACT_PATH_Release_x64=dist/Release_x64/Cygwin_4.x-Windows/libLinkAPI.dll
-CND_PACKAGE_DIR_Release_x64=dist/Release_x64/Cygwin_4.x-Windows/package
+CND_ARTIFACT_PATH_Release_x64=dist/Release_x64/Cygwin_4.x_1_+_mingw-Windows/libLinkAPI.dll
+CND_PACKAGE_DIR_Release_x64=dist/Release_x64/Cygwin_4.x_1_+_mingw-Windows/package
 CND_PACKAGE_NAME_Release_x64=libLinkAPI.dll.tar
-CND_PACKAGE_PATH_Release_x64=dist/Release_x64/Cygwin_4.x-Windows/package/libLinkAPI.dll.tar
+CND_PACKAGE_PATH_Release_x64=dist/Release_x64/Cygwin_4.x_1_+_mingw-Windows/package/libLinkAPI.dll.tar
 #
 # include compiler specific variables
 #

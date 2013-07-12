@@ -55,11 +55,47 @@ import java.util.List;
 public interface LinkAPILibrary extends Library {
 
 	public static final String JNA_LIBRARY_NAME = "LinkAPI";
-	public static final NativeLibrary JNA_NATIVE_LIB = NativeLibrary
-			.getInstance(LinkAPILibrary.JNA_LIBRARY_NAME);
-	public static final LinkAPILibrary INSTANCE = (LinkAPILibrary) Native
-			.loadLibrary(LinkAPILibrary.JNA_LIBRARY_NAME, LinkAPILibrary.class);
-	//
+	public static final NativeLibrary JNA_NATIVE_LIB = NativeLibrary.
+			getInstance(LinkAPILibrary.JNA_LIBRARY_NAME);
+	public static final LinkAPILibrary INSTANCE = (LinkAPILibrary) Native.
+			loadLibrary(LinkAPILibrary.JNA_LIBRARY_NAME, LinkAPILibrary.class);
+
+	/**
+	 * error codes hinting at the root cause of a failure
+	 */
+	public static interface ErrorCode {
+
+		/**
+		 * no error<br>
+		 * <i>native declaration : line 55</i>
+		 */
+		public static final int ERROR_CODE_NO_ERROR = 0;
+		/**
+		 * win32 specific: OpenFileMappingW failed to return a handle<br>
+		 * <i>native declaration : line 57</i>
+		 */
+		public static final int ERROR_CODE_WIN32_NO_HANDLE = 1;
+		/**
+		 * win32 specific: MapViewOfFile failed to return a structure<br>
+		 * <i>native declaration : line 59</i>
+		 */
+		public static final int ERROR_CODE_WIN32_NO_STRUCTURE = 2;
+		/**
+		 * unix specific: shm_open returned a negative integer<br>
+		 * <i>native declaration : line 61</i>
+		 */
+		public static final int ERROR_CODE_UNIX_NO_HANDLE = 3;
+		/**
+		 * unix specific: mmap failed to return a structure<br>
+		 * <i>native declaration : line 63</i>
+		 */
+		public static final int ERROR_CODE_UNIX_NO_STRUCTURE = 4;
+		/**
+		 * shared memory was not initialized<br>
+		 * <i>native declaration : line 65</i>
+		 */
+		public static final int ERROR_CODE_NO_MEMORY_WAS_INITIALIZED = 5;
+	};
 	public static final int VECTOR_LENGTH = 3;
 	public static final int MAX_IDENTITY_LENGTH = 256;
 	public static final int MAX_NAME_LENGTH = 256;
@@ -81,19 +117,28 @@ public interface LinkAPILibrary extends Library {
 	 * @param uiVersion	  no description available (this should usually be set
 	 *                       to 2)
 	 *
-	 * @return	an error code <br>
-	 * 0: no error<br>
-	 * 1: win32 specific: OpenFileMappingW failed to return a handle<br>
-	 * 2: win32 specific: MapViewOfFile failed to return a structure<br>
-	 * 3: unix specific: shm_open returned a negative integer<br>
-	 * 4: unix specific: mmap failed to return a structure<br>
-	 * 5: shared memory was not initialized<br>
+	 * @return	an error code {@link ErrorCode}
 	 *
 	 * <br>
 	 * Original signature :
-	 * <code>int initialize(wchar_t[256], wchar_t[2048], UINT32)</code>
+	 * <code>ErrorCode initialize(wchar_t[256], wchar_t[2048], int)</code><br>
+	 * <i>native declaration : line 83</i>
 	 */
 	int initialize(CharBuffer name, CharBuffer description, int uiVersion);
+
+	/**
+	 * Original signature :
+	 * <code>void doUnlink()</code><br>
+	 * <i>native declaration : line 95</i>
+	 */
+	void doUnlink();
+
+	/**
+	 * Original signature :
+	 * <code>int commit()</code><br>
+	 * <i>native declaration : line 106</i>
+	 */
+	int commit();
 
 	/**
 	 * update the identity only
@@ -119,9 +164,25 @@ public interface LinkAPILibrary extends Library {
 	 *            memory structure was not initialized properly)
 	 *
 	 * <br>
-	 * Original signature : <code>bool updateIdentity(wchar_t[256])</code>
+	 * Original signature :
+	 * <code>int updateIdentity(wchar_t[256])</code><br>
+	 * <i>native declaration : line 131</i>
 	 */
-	byte updateIdentity(CharBuffer identity);
+	int updateIdentity(CharBuffer identity);
+
+	/**
+	 * Original signature :
+	 * <code>wchar_t* getIdentity()</code><br>
+	 * <i>native declaration : line 133</i>
+	 */
+	CharBuffer getIdentity();
+
+	/**
+	 * Original signature :
+	 * <code>int setIdentity(wchar_t[256])</code><br>
+	 * <i>native declaration : line 135</i>
+	 */
+	int setIdentity(CharBuffer identity);
 
 	/**
 	 * update the context only
@@ -148,9 +209,24 @@ public interface LinkAPILibrary extends Library {
 	 *
 	 * <br>
 	 * Original signature :
-	 * <code>bool updateContext(unsigned char[256], UINT32)</code>
+	 * <code>int updateContext(unsigned char[256], int)</code><br>
+	 * <i>native declaration : line 160</i>
 	 */
-	byte updateContext(ByteBuffer context, int context_len);
+	int updateContext(ByteBuffer context, int context_len);
+
+	/**
+	 * Original signature :
+	 * <code>char* getContext()</code><br>
+	 * <i>native declaration : line 163</i>
+	 */
+	ByteBuffer getContext();
+
+	/**
+	 * Original signature :
+	 * <code>int setContext(unsigned char[], int)</code><br>
+	 * <i>native declaration : line 165</i>
+	 */
+	int setContext(ByteBuffer context, int context_len);
 
 	/**
 	 * update the identity and context
@@ -171,9 +247,19 @@ public interface LinkAPILibrary extends Library {
 	 *
 	 * <br>
 	 * Original signature :
-	 * <code>bool updateIdentityAndContext(wchar_t[256], unsigned char[256], UINT32)</code>
+	 * <code>int updateIdentityAndContext(wchar_t[256], unsigned char[256], int)</code><br>
+	 * <i>native declaration : line 185</i>
 	 */
-	byte updateIdentityAndContext(CharBuffer identity, ByteBuffer context, int context_len);
+	int updateIdentityAndContext(CharBuffer identity, ByteBuffer context,
+			int context_len);
+
+	/**
+	 * Original signature :
+	 * <code>int setIdentityAndContext(wchar_t[], unsigned char[], int)</code><br>
+	 * <i>native declaration : line 190</i>
+	 */
+	int setIdentityAndContext(CharBuffer identity, ByteBuffer context,
+			int context_len);
 
 	/**
 	 * update the name only
@@ -192,9 +278,25 @@ public interface LinkAPILibrary extends Library {
 	 *            memory structure was not initialized properly)
 	 *
 	 * <br>
-	 * Original signature : <code>bool updateName(wchar_t[256])</code>
+	 * Original signature :
+	 * <code>int updateName(wchar_t[256])</code><br>
+	 * <i>native declaration : line 208</i>
 	 */
-	byte updateName(CharBuffer name);
+	int updateName(CharBuffer name);
+
+	/**
+	 * Original signature :
+	 * <code>wchar_t* getName()</code><br>
+	 * <i>native declaration : line 210</i>
+	 */
+	CharBuffer getName();
+
+	/**
+	 * Original signature :
+	 * <code>int setName(wchar_t[256])</code><br>
+	 * <i>native declaration : line 212</i>
+	 */
+	int setName(CharBuffer name);
 
 	/**
 	 * update the description only
@@ -211,9 +313,24 @@ public interface LinkAPILibrary extends Library {
 	 *
 	 * <br>
 	 * Original signature :
-	 * <code>bool updateDescription(wchar_t[2048])</code>
+	 * <code>int updateDescription(wchar_t[2048])</code><br>
+	 * <i>native declaration : line 228</i>
 	 */
-	byte updateDescription(CharBuffer description);
+	int updateDescription(CharBuffer description);
+
+	/**
+	 * Original signature :
+	 * <code>wchar_t* getDescription()</code><br>
+	 * <i>native declaration : line 230</i>
+	 */
+	CharBuffer getDescription();
+
+	/**
+	 * Original signature :
+	 * <code>int setDescription(wchar_t[2048])</code><br>
+	 * <i>native declaration : line 232</i>
+	 */
+	int setDescription(CharBuffer description);
 
 	/**
 	 * updates avatar and camera vectors
@@ -234,9 +351,19 @@ public interface LinkAPILibrary extends Library {
 	 *
 	 * <br>
 	 * Original signature :
-	 * <code>bool updateVectors(float[3], float[3], float[3], float[3], float[3], float[3])</code>
+	 * <code>int updateVectors(float[3], float[3], float[3], float[3], float[3], float[3])</code><br>
+	 * <i>native declaration : line 251</i>
 	 */
-	byte updateVectors(FloatBuffer fAvatarPosition, FloatBuffer fAvatarFront,
+	int updateVectors(FloatBuffer fAvatarPosition, FloatBuffer fAvatarFront,
+			FloatBuffer fAvatarTop, FloatBuffer fCameraPosition,
+			FloatBuffer fCameraFront, FloatBuffer fCameraTop);
+
+	/**
+	 * Original signature :
+	 * <code>int setVectors(float[3], float[3], float[3], float[3], float[3], float[3])</code><br>
+	 * <i>native declaration : line 259</i>
+	 */
+	int setVectors(FloatBuffer fAvatarPosition, FloatBuffer fAvatarFront,
 			FloatBuffer fAvatarTop, FloatBuffer fCameraPosition,
 			FloatBuffer fCameraFront, FloatBuffer fCameraTop);
 
@@ -262,10 +389,145 @@ public interface LinkAPILibrary extends Library {
 	 *
 	 * <br>
 	 * Original signature :
-	 * <code>bool updateVectorsByAvatar(float[3], float[3], float[3])</code>
+	 * <code>int updateVectorsByAvatar(float[3], float[3], float[3])</code><br>
+	 * <i>native declaration : line 286</i>
 	 */
-	byte updateVectorsByAvatar(FloatBuffer fAvatarPosition,
+	int updateVectorsByAvatar(FloatBuffer fAvatarPosition,
 			FloatBuffer fAvatarFront, FloatBuffer fAvatarTop);
+
+	/**
+	 * Original signature :
+	 * <code>int setVectorsByAvatar(float[3], float[3], float[3])</code><br>
+	 * <i>native declaration : line 291</i>
+	 */
+	int setVectorsByAvatar(FloatBuffer fAvatarPosition, FloatBuffer fAvatarFront,
+			FloatBuffer fAvatarTop);
+
+	/**
+	 * Original signature :
+	 * <code>float* getAvatarPosition()</code><br>
+	 * <i>native declaration : line 297</i>
+	 */
+	float[] getAvatarPosition();
+
+	/**
+	 * Original signature :
+	 * <code>int setAvatarPosition(float, float, float)</code><br>
+	 * <i>native declaration : line 299</i>
+	 */
+	int setAvatarPosition(float x, float y, float z);
+
+	/**
+	 * Original signature :
+	 * <code>float* getAvatarFront()</code><br>
+	 * <i>native declaration : line 302</i>
+	 */
+	float[] getAvatarFront();
+
+	/**
+	 * Original signature :
+	 * <code>int setAvatarFront(float, float, float)</code><br>
+	 * <i>native declaration : line 304</i>
+	 */
+	int setAvatarFront(float x, float y, float z);
+
+	/**
+	 * Original signature :
+	 * <code>float* getAvatarTop()</code><br>
+	 * <i>native declaration : line 307</i>
+	 */
+	float[] getAvatarTop();
+
+	/**
+	 * Original signature :
+	 * <code>int setAvatarTop(float, float, float)</code><br>
+	 * <i>native declaration : line 309</i>
+	 */
+	int setAvatarTop(float x, float y, float z);
+
+	/**
+	 * Original signature :
+	 * <code>float* getCameraPosition()</code><br>
+	 * <i>native declaration : line 313</i>
+	 */
+	float[] getCameraPosition();
+
+	/**
+	 * Original signature :
+	 * <code>int setCameraPosition(float, float, float)</code><br>
+	 * <i>native declaration : line 315</i>
+	 */
+	int setCameraPosition(float x, float y, float z);
+
+	/**
+	 * Original signature :
+	 * <code>float* getCameraFront()</code><br>
+	 * <i>native declaration : line 318</i>
+	 */
+	float[] getCameraFront();
+
+	/**
+	 * Original signature :
+	 * <code>int setCameraFront(float, float, float)</code><br>
+	 * <i>native declaration : line 320</i>
+	 */
+	int setCameraFront(float x, float y, float z);
+
+	/**
+	 * Original signature :
+	 * <code>float* getCameraTop()</code><br>
+	 * <i>native declaration : line 323</i>
+	 */
+	float[] getCameraTop();
+
+	/**
+	 * Original signature :
+	 * <code>int setCameraTop(float, float, float)</code><br>
+	 * <i>native declaration : line 325</i>
+	 */
+	int setCameraTop(float x, float y, float z);
+
+	/**
+	 * Original signature :
+	 * <code>int getUiVersion()</code><br>
+	 * <i>native declaration : line 329</i>
+	 */
+	int getUiVersion();
+
+	/**
+	 * Original signature :
+	 * <code>int setUiVersion(int)</code><br>
+	 * <i>native declaration : line 331</i>
+	 */
+	int setUiVersion(int version);
+
+	/**
+	 * Original signature :
+	 * <code>int updateUiVersion(int)</code><br>
+	 * <i>native declaration : line 333</i>
+	 */
+	int updateUiVersion(int version);
+
+	/**
+	 * Original signature :
+	 * <code>DWORD getUiTick()</code><br>
+	 * <i>native declaration : line 336</i>
+	 */
+	int getUiTick();
+
+	/**
+	 * Original signature :
+	 * <code>int setUiTick(DWORD)</code><br>
+	 * <i>native declaration : line 338</i>
+	 */
+	int setUiTick(int tick);
+
+	/**
+	 * Original signature :
+	 * <code>int updateUiTick(DWORD)</code><br>
+	 * <i>native declaration : line 340</i>
+	 */
+	int updateUiTick(int tick);
 
 	/**
 	 * a convenience function to directly manipulate the entire linked memory at
@@ -280,14 +542,21 @@ public interface LinkAPILibrary extends Library {
 	 *            memory structure was not initialized properly)
 	 *
 	 * <br>
-	 * Original signature : <code>bool updateData(LinkedMem*)</code>
+	 * Original signature :
+	 * <code>int setData(LinkedMem*)</code><br>
+	 * <i>native declaration : line 358</i>
 	 */
-	byte updateData(LinkAPILibrary.LinkedMem source);
+	int setData(LinkAPILibrary.LinkedMem source);
 
-	/** <i>native declaration : line 89</i> */
+	/**
+	 * Original signature :
+	 * <code>LinkedMem*getData()</code><br>
+	 * <i>native declaration : line 360</i>
+	 */
+	LinkAPILibrary.LinkedMem getData();
+
 	public static class LinkedMem extends Structure {
 
-		/** C type : UINT32 */
 		public int uiVersion;
 		public int uiTick;
 		/** C type : float[3] */
@@ -306,7 +575,6 @@ public interface LinkAPILibrary extends Library {
 		public float[] fCameraTop = new float[VECTOR_LENGTH];
 		/** C type : wchar_t[256] */
 		public char[] identity = new char[MAX_IDENTITY_LENGTH];
-		/** C type : UINT32 */
 		public int context_len;
 		/** C type : unsigned char[256] */
 		public byte[] context = new byte[MAX_CONTEXT_LENGTH];
@@ -317,7 +585,7 @@ public interface LinkAPILibrary extends Library {
 			super();
 		}
 
-		protected List getFieldOrder() {
+		protected List<?> getFieldOrder() {
 			return Arrays.asList("uiVersion", "uiTick", "fAvatarPosition",
 					"fAvatarFront", "fAvatarTop", "name", "fCameraPosition",
 					"fCameraFront", "fCameraTop", "identity", "context_len",

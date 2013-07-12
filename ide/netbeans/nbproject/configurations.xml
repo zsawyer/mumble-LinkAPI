@@ -13,7 +13,7 @@
                    displayName="Source Files"
                    projectFiles="true">
       <logicalFolder name="src" displayName="src" projectFiles="true">
-        <itemPath>../../src/LinkAPI.cpp</itemPath>
+        <itemPath>../../src/LinkAPI.c</itemPath>
         <itemPath>../../src/LinkAPI.h</itemPath>
         <itemPath>D:/mumble-LinkAPI/src/apiExportHelper.h</itemPath>
       </logicalFolder>
@@ -67,7 +67,7 @@
                             group="bin"/>
         </packFileList>
       </packaging>
-      <item path="../../src/LinkAPI.cpp" ex="false" tool="1" flavor2="0">
+      <item path="../../src/LinkAPI.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="../../src/LinkAPI.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -110,7 +110,7 @@
                             group="bin"/>
         </packFileList>
       </packaging>
-      <item path="../../src/LinkAPI.cpp" ex="false" tool="1" flavor2="0">
+      <item path="../../src/LinkAPI.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="../../src/LinkAPI.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -141,7 +141,7 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
-      <item path="../../src/LinkAPI.cpp" ex="false" tool="1" flavor2="0">
+      <item path="../../src/LinkAPI.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="../../src/LinkAPI.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -154,7 +154,7 @@
     <conf name="Release_x64" type="2">
       <toolsSet>
         <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
-        <compilerSet>Cygwin_4.x|Cygwin_4.x</compilerSet>
+        <compilerSet>Cygwin_4.x_1_+_mingw|Cygwin_4.x</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
@@ -191,7 +191,7 @@
                             group="bin"/>
         </packFileList>
       </packaging>
-      <item path="../../src/LinkAPI.cpp" ex="false" tool="1" flavor2="0">
+      <item path="../../src/LinkAPI.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="../../src/LinkAPI.h" ex="false" tool="3" flavor2="0">
       </item>
