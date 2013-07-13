@@ -32,7 +32,9 @@ package zsawyer.mumble.jna;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
+import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
+import com.sun.jna.ptr.FloatByReference;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.FloatBuffer;
@@ -95,465 +97,17 @@ public interface LinkAPILibrary extends Library {
 		 * <i>native declaration : line 65</i>
 		 */
 		public static final int ERROR_CODE_NO_MEMORY_WAS_INITIALIZED = 5;
+		/**
+		 * the provided context length was out of bounds<br>
+		 * <i>native declaration : line 67</i>
+		 */
+		public static final int ERROR_CODE_CONTEXT_LENGTH_EXCEEDED = 6;
 	};
 	public static final int VECTOR_LENGTH = 3;
 	public static final int MAX_IDENTITY_LENGTH = 256;
 	public static final int MAX_NAME_LENGTH = 256;
 	public static final int MAX_CONTEXT_LENGTH = 256;
 	public static final int MAX_DESCRIPTION_LENGTH = 2048;
-
-	/**
-	 * initialize the linked memory
-	 * and set the name and description
-	 *
-	 * it corresponds to initMumble() defined here:
-	 * http://mumble.sourceforge.net/Link
-	 * but also sets the name and description as this should only needed to be
-	 * set once
-	 *
-	 * @param name	       the display name of the application which links with
-	 *                       mumble (i.e. L"TestLink")
-	 * @param description	a text stating the purpose of this link
-	 * @param uiVersion	  no description available (this should usually be set
-	 *                       to 2)
-	 *
-	 * @return	an error code {@link ErrorCode}
-	 *
-	 * <br>
-	 * Original signature :
-	 * <code>ErrorCode initialize(wchar_t[256], wchar_t[2048], int)</code><br>
-	 * <i>native declaration : line 83</i>
-	 */
-	int initialize(CharBuffer name, CharBuffer description, int uiVersion);
-
-	/**
-	 * Original signature :
-	 * <code>void doUnlink()</code><br>
-	 * <i>native declaration : line 95</i>
-	 */
-	void doUnlink();
-
-	/**
-	 * Original signature :
-	 * <code>int commit()</code><br>
-	 * <i>native declaration : line 106</i>
-	 */
-	int commit();
-
-	/**
-	 * update the identity only
-	 *
-	 * Notice: The identity does not need to be updated every single frame. It
-	 * shouldn't change more than a few times per second if at all during a
-	 * game.
-	 *
-	 * Identity should contain a string which uniquely identifies the player in
-	 * the given context. This is usually satisfied by the in-game player name
-	 * or the players ID (player-/connection-ID on the server or a global ID).
-	 *
-	 * Additionally the identity can contain any additional information about
-	 * the player that might be interesting for the mumble server.
-	 *
-	 * We recommend using an easily parseable format like JSON or CSV for
-	 * encoding the information but this is up to the game. Remember that the
-	 * link structures only allow for limited characters of identity data.
-	 *
-	 * @param identity	unique id of the user
-	 *
-	 * @return true if success else false (this would usually mean that the
-	 *            memory structure was not initialized properly)
-	 *
-	 * <br>
-	 * Original signature :
-	 * <code>int updateIdentity(wchar_t[256])</code><br>
-	 * <i>native declaration : line 131</i>
-	 */
-	int updateIdentity(CharBuffer identity);
-
-	/**
-	 * Original signature :
-	 * <code>wchar_t* getIdentity()</code><br>
-	 * <i>native declaration : line 133</i>
-	 */
-	CharBuffer getIdentity();
-
-	/**
-	 * Original signature :
-	 * <code>int setIdentity(wchar_t[256])</code><br>
-	 * <i>native declaration : line 135</i>
-	 */
-	int setIdentity(CharBuffer identity);
-
-	/**
-	 * update the context only
-	 *
-	 * Notice: The context does not need to be updated every single frame. It
-	 * shouldn't change more than a few times per second if at all during a
-	 * game.
-	 *
-	 * The context string is used to determine which users on a Mumble server
-	 * should hear each other positionally. If context between two mumble user
-	 * does not match the positional audio data is stripped server-side and
-	 * voice will be received as non-positional.
-	 *
-	 * Accordingly the context should only match for players on the same server
-	 * in the same game on the same map. Whether to include things like team in
-	 * this string depends on the game itself. When in doubt err on the side of
-	 * including less. This gives more flexibility later on.
-	 *
-	 * @param context	    a generic context
-	 * @param context_len	the length of the context (number of array elements)
-	 *
-	 * @return true if success else false (this would usually mean that the
-	 *            memory structure was not initialized properly)
-	 *
-	 * <br>
-	 * Original signature :
-	 * <code>int updateContext(unsigned char[256], int)</code><br>
-	 * <i>native declaration : line 160</i>
-	 */
-	int updateContext(ByteBuffer context, int context_len);
-
-	/**
-	 * Original signature :
-	 * <code>char* getContext()</code><br>
-	 * <i>native declaration : line 163</i>
-	 */
-	ByteBuffer getContext();
-
-	/**
-	 * Original signature :
-	 * <code>int setContext(unsigned char[], int)</code><br>
-	 * <i>native declaration : line 165</i>
-	 */
-	int setContext(ByteBuffer context, int context_len);
-
-	/**
-	 * update the identity and context
-	 *
-	 * Notice: The identity and/or context does not need to be updated every
-	 * single frame. It shouldn't change more than a few times per second if at
-	 * all during a game.
-	 *
-	 * see updateIdentity(..) and updateContext(..) for detailed information
-	 *
-	 * @param identity	   unique id of the user
-	 * @param context	    a generic context
-	 * @param context_len	the length of the context (number of active array
-	 *                       elements)
-	 *
-	 * @return true if success else false (this would usually mean that the
-	 *            memory structure was not initialized properly)
-	 *
-	 * <br>
-	 * Original signature :
-	 * <code>int updateIdentityAndContext(wchar_t[256], unsigned char[256], int)</code><br>
-	 * <i>native declaration : line 185</i>
-	 */
-	int updateIdentityAndContext(CharBuffer identity, ByteBuffer context,
-			int context_len);
-
-	/**
-	 * Original signature :
-	 * <code>int setIdentityAndContext(wchar_t[], unsigned char[], int)</code><br>
-	 * <i>native declaration : line 190</i>
-	 */
-	int setIdentityAndContext(CharBuffer identity, ByteBuffer context,
-			int context_len);
-
-	/**
-	 * update the name only
-	 *
-	 * Notice: This does not need to be updated every single frame. It shouldn't
-	 * change at all during a game.
-	 *
-	 * this name is shown in the mumble interface to indicate which plugin's
-	 * positional audio is being used (i.e. used for the "XXX linked." message
-	 * in the mumble log)
-	 *
-	 * @param name	the display name of the application which links with mumble
-	 *                (i.e. L"TestLink")
-	 *
-	 * @return true if success else false (this would usually mean that the
-	 *            memory structure was not initialized properly)
-	 *
-	 * <br>
-	 * Original signature :
-	 * <code>int updateName(wchar_t[256])</code><br>
-	 * <i>native declaration : line 208</i>
-	 */
-	int updateName(CharBuffer name);
-
-	/**
-	 * Original signature :
-	 * <code>wchar_t* getName()</code><br>
-	 * <i>native declaration : line 210</i>
-	 */
-	CharBuffer getName();
-
-	/**
-	 * Original signature :
-	 * <code>int setName(wchar_t[256])</code><br>
-	 * <i>native declaration : line 212</i>
-	 */
-	int setName(CharBuffer name);
-
-	/**
-	 * update the description only
-	 *
-	 * Notice: This does not need to be updated every single frame. It shouldn't
-	 * change at all during a game.
-	 *
-	 * this is the text to explain the plugin and its purpose
-	 *
-	 * @param description	a text stating the purpose of this link
-	 *
-	 * @return true if success else false (this would usually mean that the
-	 *            memory structure was not initialized properly)
-	 *
-	 * <br>
-	 * Original signature :
-	 * <code>int updateDescription(wchar_t[2048])</code><br>
-	 * <i>native declaration : line 228</i>
-	 */
-	int updateDescription(CharBuffer description);
-
-	/**
-	 * Original signature :
-	 * <code>wchar_t* getDescription()</code><br>
-	 * <i>native declaration : line 230</i>
-	 */
-	CharBuffer getDescription();
-
-	/**
-	 * Original signature :
-	 * <code>int setDescription(wchar_t[2048])</code><br>
-	 * <i>native declaration : line 232</i>
-	 */
-	int setDescription(CharBuffer description);
-
-	/**
-	 * updates avatar and camera vectors
-	 *
-	 * Notice: Mumble fetches these values 50 times a second, so please update
-	 * them every frame.
-	 *
-	 * @param fAvatarPosition	Position of the avatar.
-	 * @param fAvatarFront	   Unit vector pointing out of the avatar's eyes.
-	 * @param fAvatarTop	     Unit vector pointing out of the top of the
-	 *                           avatar's head.
-	 * @param fCameraPosition	Position of the camera.
-	 * @param fCameraFront	   Unit vector pointing out of the camera's lense.
-	 * @param fCameraTop	     Unit vector pointing out of the camera's top.
-	 *
-	 * @return true if success else false (this would usually mean that the
-	 *            memory structure was not initialized properly)
-	 *
-	 * <br>
-	 * Original signature :
-	 * <code>int updateVectors(float[3], float[3], float[3], float[3], float[3], float[3])</code><br>
-	 * <i>native declaration : line 251</i>
-	 */
-	int updateVectors(FloatBuffer fAvatarPosition, FloatBuffer fAvatarFront,
-			FloatBuffer fAvatarTop, FloatBuffer fCameraPosition,
-			FloatBuffer fCameraFront, FloatBuffer fCameraTop);
-
-	/**
-	 * Original signature :
-	 * <code>int setVectors(float[3], float[3], float[3], float[3], float[3], float[3])</code><br>
-	 * <i>native declaration : line 259</i>
-	 */
-	int setVectors(FloatBuffer fAvatarPosition, FloatBuffer fAvatarFront,
-			FloatBuffer fAvatarTop, FloatBuffer fCameraPosition,
-			FloatBuffer fCameraFront, FloatBuffer fCameraTop);
-
-	/**
-	 * updates avatar AND camera vectors
-	 *
-	 * this simply reuses the given vectors for the camera
-	 *
-	 * short cut function to use when the camera of the game/program is not
-	 * independent of the avatar
-	 *
-	 * Notice: Mumble fetches these values 50 times a second, so please update
-	 * them every frame.
-	 *
-	 * @param fAvatarPosition	Position of the avatar and camera.
-	 * @param fAvatarFront	   Unit vector pointing out of the camera/avatar's
-	 *                           eyes.
-	 * @param fAvatarTop	     Unit vector pointing out of the top of the
-	 *                           avatar's head/camera's top.
-	 *
-	 * @return true if success else false (this would usually mean that the
-	 *            memory structure was not initialized properly)
-	 *
-	 * <br>
-	 * Original signature :
-	 * <code>int updateVectorsByAvatar(float[3], float[3], float[3])</code><br>
-	 * <i>native declaration : line 286</i>
-	 */
-	int updateVectorsByAvatar(FloatBuffer fAvatarPosition,
-			FloatBuffer fAvatarFront, FloatBuffer fAvatarTop);
-
-	/**
-	 * Original signature :
-	 * <code>int setVectorsByAvatar(float[3], float[3], float[3])</code><br>
-	 * <i>native declaration : line 291</i>
-	 */
-	int setVectorsByAvatar(FloatBuffer fAvatarPosition, FloatBuffer fAvatarFront,
-			FloatBuffer fAvatarTop);
-
-	/**
-	 * Original signature :
-	 * <code>float* getAvatarPosition()</code><br>
-	 * <i>native declaration : line 297</i>
-	 */
-	float[] getAvatarPosition();
-
-	/**
-	 * Original signature :
-	 * <code>int setAvatarPosition(float, float, float)</code><br>
-	 * <i>native declaration : line 299</i>
-	 */
-	int setAvatarPosition(float x, float y, float z);
-
-	/**
-	 * Original signature :
-	 * <code>float* getAvatarFront()</code><br>
-	 * <i>native declaration : line 302</i>
-	 */
-	float[] getAvatarFront();
-
-	/**
-	 * Original signature :
-	 * <code>int setAvatarFront(float, float, float)</code><br>
-	 * <i>native declaration : line 304</i>
-	 */
-	int setAvatarFront(float x, float y, float z);
-
-	/**
-	 * Original signature :
-	 * <code>float* getAvatarTop()</code><br>
-	 * <i>native declaration : line 307</i>
-	 */
-	float[] getAvatarTop();
-
-	/**
-	 * Original signature :
-	 * <code>int setAvatarTop(float, float, float)</code><br>
-	 * <i>native declaration : line 309</i>
-	 */
-	int setAvatarTop(float x, float y, float z);
-
-	/**
-	 * Original signature :
-	 * <code>float* getCameraPosition()</code><br>
-	 * <i>native declaration : line 313</i>
-	 */
-	float[] getCameraPosition();
-
-	/**
-	 * Original signature :
-	 * <code>int setCameraPosition(float, float, float)</code><br>
-	 * <i>native declaration : line 315</i>
-	 */
-	int setCameraPosition(float x, float y, float z);
-
-	/**
-	 * Original signature :
-	 * <code>float* getCameraFront()</code><br>
-	 * <i>native declaration : line 318</i>
-	 */
-	float[] getCameraFront();
-
-	/**
-	 * Original signature :
-	 * <code>int setCameraFront(float, float, float)</code><br>
-	 * <i>native declaration : line 320</i>
-	 */
-	int setCameraFront(float x, float y, float z);
-
-	/**
-	 * Original signature :
-	 * <code>float* getCameraTop()</code><br>
-	 * <i>native declaration : line 323</i>
-	 */
-	float[] getCameraTop();
-
-	/**
-	 * Original signature :
-	 * <code>int setCameraTop(float, float, float)</code><br>
-	 * <i>native declaration : line 325</i>
-	 */
-	int setCameraTop(float x, float y, float z);
-
-	/**
-	 * Original signature :
-	 * <code>int getUiVersion()</code><br>
-	 * <i>native declaration : line 329</i>
-	 */
-	int getUiVersion();
-
-	/**
-	 * Original signature :
-	 * <code>int setUiVersion(int)</code><br>
-	 * <i>native declaration : line 331</i>
-	 */
-	int setUiVersion(int version);
-
-	/**
-	 * Original signature :
-	 * <code>int updateUiVersion(int)</code><br>
-	 * <i>native declaration : line 333</i>
-	 */
-	int updateUiVersion(int version);
-
-	/**
-	 * Original signature :
-	 * <code>DWORD getUiTick()</code><br>
-	 * <i>native declaration : line 336</i>
-	 */
-	int getUiTick();
-
-	/**
-	 * Original signature :
-	 * <code>int setUiTick(DWORD)</code><br>
-	 * <i>native declaration : line 338</i>
-	 */
-	int setUiTick(int tick);
-
-	/**
-	 * Original signature :
-	 * <code>int updateUiTick(DWORD)</code><br>
-	 * <i>native declaration : line 340</i>
-	 */
-	int updateUiTick(int tick);
-
-	/**
-	 * a convenience function to directly manipulate the entire linked memory at
-	 * once
-	 *
-	 * Notice: Parts of this does not need to be updated every single frame.
-	 * Please use the more directly appropriate update functions instead.
-	 *
-	 * @param source data structure which is to be copied
-	 *
-	 * @return true if success else false (this would usually mean that the
-	 *            memory structure was not initialized properly)
-	 *
-	 * <br>
-	 * Original signature :
-	 * <code>int setData(LinkedMem*)</code><br>
-	 * <i>native declaration : line 358</i>
-	 */
-	int setData(LinkAPILibrary.LinkedMem source);
-
-	/**
-	 * Original signature :
-	 * <code>LinkedMem*getData()</code><br>
-	 * <i>native declaration : line 360</i>
-	 */
-	LinkAPILibrary.LinkedMem getData();
 
 	public static class LinkedMem extends Structure {
 
@@ -600,4 +154,431 @@ public interface LinkAPILibrary extends Library {
 				Structure.ByValue {
 		};
 	};
+
+	/**
+	 * initialize the linked memory
+	 * and set the name and description
+	 *
+	 * it corresponds to initMumble() defined here:
+	 * http://mumble.sourceforge.net/Link
+	 * but also sets the name and description as this should only needed to be
+	 * set once
+	 *
+	 * @param name	       the display name of the application which links with
+	 *                       mumble (i.e. L"TestLink")
+	 * @param description	a text stating the purpose of this link
+	 * @param uiVersion	  no description available (this should usually be set
+	 *                       to 2)
+	 *
+	 * @return	an error code {@link ErrorCode}
+	 *
+	 * <br>
+	 * Original signature :
+	 * <code>ErrorCode initialize(wchar_t[256], wchar_t[2048], int)</code><br>
+	 * <i>native declaration : line 85</i>
+	 */
+	int initialize(CharBuffer name, CharBuffer description, int uiVersion);
+
+	/**
+	 * Original signature :
+	 * <code>void doUnlink()</code><br>
+	 * <i>native declaration : line 97</i>
+	 */
+	void doUnlink();
+
+	/**
+	 * Original signature :
+	 * <code>ErrorCode commit()</code><br>
+	 * <i>native declaration : line 108</i>
+	 */
+	int commit();
+
+	/**
+	 * update the identity only
+	 *
+	 * Notice: The identity does not need to be updated every single frame. It
+	 * shouldn't change more than a few times per second if at all during a
+	 * game.
+	 *
+	 * Identity should contain a string which uniquely identifies the player in
+	 * the given context. This is usually satisfied by the in-game player name
+	 * or the players ID (player-/connection-ID on the server or a global ID).
+	 *
+	 * Additionally the identity can contain any additional information about
+	 * the player that might be interesting for the mumble server.
+	 *
+	 * We recommend using an easily parseable format like JSON or CSV for
+	 * encoding the information but this is up to the game. Remember that the
+	 * link structures only allow for limited characters of identity data.
+	 *
+	 * @param identity	unique id of the user
+	 *
+	 * @return true if success else false (this would usually mean that the
+	 *            memory structure was not initialized properly)
+	 *
+	 * <br>
+	 * Original signature :
+	 * <code>ErrorCode updateIdentity(wchar_t[256])</code><br>
+	 * <i>native declaration : line 133</i>
+	 */
+	int updateIdentity(CharBuffer identity);
+
+	/**
+	 * Original signature :
+	 * <code>wchar_t* getIdentity()</code><br>
+	 * <i>native declaration : line 135</i>
+	 */
+	CharBuffer getIdentity();
+
+	/**
+	 * Original signature :
+	 * <code>ErrorCode setIdentity(wchar_t[256])</code><br>
+	 * <i>native declaration : line 159</i>
+	 */
+	int setIdentity(CharBuffer identity);
+
+	/**
+	 * update the context only
+	 *
+	 * Notice: The context does not need to be updated every single frame. It
+	 * shouldn't change more than a few times per second if at all during a
+	 * game.
+	 *
+	 * The context string is used to determine which users on a Mumble server
+	 * should hear each other positionally. If context between two mumble user
+	 * does not match the positional audio data is stripped server-side and
+	 * voice will be received as non-positional.
+	 *
+	 * Accordingly the context should only match for players on the same server
+	 * in the same game on the same map. Whether to include things like team in
+	 * this string depends on the game itself. When in doubt err on the side of
+	 * including less. This gives more flexibility later on.
+	 *
+	 * @param context	    a generic context
+	 * @param context_len	the length of the context (number of array elements)
+	 *
+	 * @return true if success else false (this would usually mean that the
+	 *            memory structure was not initialized properly)
+	 *
+	 * <br>
+	 * Original signature :
+	 * <code>ErrorCode updateContext(unsigned char[256], int)</code><br>
+	 * <i>native declaration : line 184</i>
+	 */
+	int updateContext(ByteBuffer context, int context_len);
+
+	/**
+	 * Original signature :
+	 * <code>unsigned char* getContext()</code><br>
+	 * <i>native declaration : line 187</i>
+	 */
+	ByteBuffer getContext();
+
+	/**
+	 * Original signature :
+	 * <code>ErrorCode setContext(unsigned char[], int)</code><br>
+	 * <i>native declaration : line 189</i>
+	 */
+	int setContext(ByteBuffer context, int context_len);
+
+	/**
+	 * Original signature :
+	 * <code>int getContextLen()</code><br>
+	 * <i>native declaration : line 191</i>
+	 */
+	int getContextLen();
+
+	/**
+	 * Original signature :
+	 * <code>ErrorCode updateIdentityAndContext(wchar_t[256], unsigned char[256], int)</code><br>
+	 * <i>native declaration : line 211</i>
+	 */
+	int updateIdentityAndContext(CharBuffer identity, ByteBuffer context,
+			int context_len);
+
+	/**
+	 * Original signature :
+	 * <code>ErrorCode setIdentityAndContext(wchar_t[], unsigned char[], int)</code><br>
+	 * <i>native declaration : line 216</i>
+	 */
+	int setIdentityAndContext(CharBuffer identity, ByteBuffer context,
+			int context_len);
+
+	/**
+	 * Original signature :
+	 * <code>ErrorCode updateName(wchar_t[256])</code><br>
+	 * <i>native declaration : line 234</i>
+	 */
+	int updateName(CharBuffer name);
+
+	/**
+	 * Original signature :
+	 * <code>wchar_t* getName()</code><br>
+	 * <i>native declaration : line 236</i>
+	 */
+	CharBuffer getName();
+
+	/**
+	 * Original signature :
+	 * <code>ErrorCode setName(wchar_t[256])</code><br>
+	 * <i>native declaration : line 238</i>
+	 */
+	int setName(CharBuffer name);
+
+	/**
+	 * update the description only
+	 *
+	 * Notice: This does not need to be updated every single frame. It shouldn't
+	 * change at all during a game.
+	 *
+	 * this is the text to explain the plugin and its purpose
+	 *
+	 * @param description	a text stating the purpose of this link
+	 *
+	 * @return true if success else false (this would usually mean that the
+	 *            memory structure was not initialized properly)
+	 *
+	 * <br>
+	 * Original signature :
+	 * <code>ErrorCode updateDescription(wchar_t[2048])</code><br>
+	 * <i>native declaration : line 254</i>
+	 */
+	int updateDescription(CharBuffer description);
+
+	/**
+	 * Original signature :
+	 * <code>wchar_t* getDescription()</code><br>
+	 * <i>native declaration : line 256</i>
+	 */
+	CharBuffer getDescription();
+
+	/**
+	 * Original signature :
+	 * <code>ErrorCode setDescription(wchar_t[2048])</code><br>
+	 * <i>native declaration : line 258</i>
+	 */
+	int setDescription(CharBuffer description);
+
+	/**
+	 * updates avatar and camera vectors
+	 *
+	 * Notice: Mumble fetches these values 50 times a second, so please update
+	 * them every frame.
+	 *
+	 * @param fAvatarPosition	Position of the avatar.
+	 * @param fAvatarFront	   Unit vector pointing out of the avatar's eyes.
+	 * @param fAvatarTop	     Unit vector pointing out of the top of the
+	 *                           avatar's head.
+	 * @param fCameraPosition	Position of the camera.
+	 * @param fCameraFront	   Unit vector pointing out of the camera's lense.
+	 * @param fCameraTop	     Unit vector pointing out of the camera's top.
+	 *
+	 * @return true if success else false (this would usually mean that the
+	 *            memory structure was not initialized properly)
+	 *
+	 * <br>
+	 * Original signature :
+	 * <code>ErrorCode updateVectors(float[3], float[3], float[3], float[3], float[3], float[3])</code><br>
+	 * <i>native declaration : line 277</i>
+	 */
+	int updateVectors(FloatBuffer fAvatarPosition, FloatBuffer fAvatarFront,
+			FloatBuffer fAvatarTop, FloatBuffer fCameraPosition,
+			FloatBuffer fCameraFront, FloatBuffer fCameraTop);
+
+	/**
+	 * Original signature :
+	 * <code>ErrorCode setVectors(float[3], float[3], float[3], float[3], float[3], float[3])</code><br>
+	 * <i>native declaration : line 285</i>
+	 */
+	int setVectors(FloatBuffer fAvatarPosition, FloatBuffer fAvatarFront,
+			FloatBuffer fAvatarTop, FloatBuffer fCameraPosition,
+			FloatBuffer fCameraFront, FloatBuffer fCameraTop);
+
+	/**
+	 * updates avatar AND camera vectors
+	 *
+	 * this simply reuses the given vectors for the camera
+	 *
+	 * short cut function to use when the camera of the game/program is not
+	 * independent of the avatar
+	 *
+	 * Notice: Mumble fetches these values 50 times a second, so please update
+	 * them every frame.
+	 *
+	 * @param fAvatarPosition	Position of the avatar and camera.
+	 * @param fAvatarFront	   Unit vector pointing out of the camera/avatar's
+	 *                           eyes.
+	 * @param fAvatarTop	     Unit vector pointing out of the top of the
+	 *                           avatar's head/camera's top.
+	 *
+	 * @return true if success else false (this would usually mean that the
+	 *            memory structure was not initialized properly)
+	 *
+	 * <br>
+	 * Original signature :
+	 * <code>ErrorCode updateVectorsByAvatar(float[3], float[3], float[3])</code><br>
+	 * <i>native declaration : line 312</i>
+	 */
+	int updateVectorsByAvatar(FloatBuffer fAvatarPosition,
+			FloatBuffer fAvatarFront, FloatBuffer fAvatarTop);
+
+	/**
+	 * Original signature :
+	 * <code>ErrorCode setVectorsByAvatar(float[3], float[3], float[3])</code><br>
+	 * <i>native declaration : line 317</i>
+	 */
+	int setVectorsByAvatar(FloatBuffer fAvatarPosition, FloatBuffer fAvatarFront,
+			FloatBuffer fAvatarTop);
+
+	/**
+	 * Original signature :
+	 * <code>float* getAvatarPosition()</code><br>
+	 * <i>native declaration : line 323</i>
+	 */
+	FloatBuffer getAvatarPosition();
+
+	/**
+	 * Original signature :
+	 * <code>ErrorCode setAvatarPosition(float, float, float)</code><br>
+	 * <i>native declaration : line 325</i>
+	 */
+	int setAvatarPosition(float x, float y, float z);
+
+	/**
+	 * Original signature :
+	 * <code>float* getAvatarFront()</code><br>
+	 * <i>native declaration : line 328</i>
+	 */
+	FloatBuffer getAvatarFront();
+
+	/**
+	 * Original signature :
+	 * <code>ErrorCode setAvatarFront(float, float, float)</code><br>
+	 * <i>native declaration : line 330</i>
+	 */
+	int setAvatarFront(float x, float y, float z);
+
+	/**
+	 * Original signature :
+	 * <code>float* getAvatarTop()</code><br>
+	 * <i>native declaration : line 333</i>
+	 */
+	FloatBuffer getAvatarTop();
+
+	/**
+	 * Original signature :
+	 * <code>ErrorCode setAvatarTop(float, float, float)</code><br>
+	 * <i>native declaration : line 335</i>
+	 */
+	int setAvatarTop(float x, float y, float z);
+
+	/**
+	 * Original signature :
+	 * <code>float* getCameraPosition()</code><br>
+	 * <i>native declaration : line 339</i>
+	 */
+	FloatBuffer getCameraPosition();
+
+	/**
+	 * Original signature :
+	 * <code>ErrorCode setCameraPosition(float, float, float)</code><br>
+	 * <i>native declaration : line 341</i>
+	 */
+	int setCameraPosition(float x, float y, float z);
+
+	/**
+	 * Original signature :
+	 * <code>float* getCameraFront()</code><br>
+	 * <i>native declaration : line 344</i>
+	 */
+	FloatBuffer getCameraFront();
+
+	/**
+	 * Original signature :
+	 * <code>ErrorCode setCameraFront(float, float, float)</code><br>
+	 * <i>native declaration : line 346</i>
+	 */
+	int setCameraFront(float x, float y, float z);
+
+	/**
+	 * Original signature :
+	 * <code>float* getCameraTop()</code><br>
+	 * <i>native declaration : line 349</i>
+	 */
+	FloatBuffer getCameraTop();
+
+	/**
+	 * Original signature :
+	 * <code>ErrorCode setCameraTop(float, float, float)</code><br>
+	 * <i>native declaration : line 351</i>
+	 */
+	int setCameraTop(float x, float y, float z);
+
+	/**
+	 * Original signature :
+	 * <code>int getUiVersion()</code><br>
+	 * <i>native declaration : line 355</i>
+	 */
+	int getUiVersion();
+
+	/**
+	 * Original signature :
+	 * <code>ErrorCode setUiVersion(int)</code><br>
+	 * <i>native declaration : line 357</i>
+	 */
+	int setUiVersion(int version);
+
+	/**
+	 * Original signature :
+	 * <code>ErrorCode updateUiVersion(int)</code><br>
+	 * <i>native declaration : line 359</i>
+	 */
+	int updateUiVersion(int version);
+
+	/**
+	 * Original signature :
+	 * <code>DWORD getUiTick()</code><br>
+	 * <i>native declaration : line 362</i>
+	 */
+	int getUiTick();
+
+	/**
+	 * Original signature :
+	 * <code>ErrorCode setUiTick(DWORD)</code><br>
+	 * <i>native declaration : line 364</i>
+	 */
+	int setUiTick(int tick);
+
+	/**
+	 * Original signature :
+	 * <code>ErrorCode updateUiTick(DWORD)</code><br>
+	 * <i>native declaration : line 366</i>
+	 */
+	int updateUiTick(int tick);
+
+	/**
+	 * a convenience function to directly manipulate the entire linked memory at
+	 * once
+	 *
+	 * Notice: Parts of this does not need to be updated every single frame.
+	 * Please use the more directly appropriate update functions instead.
+	 *
+	 * @param source data structure which is to be copied
+	 *
+	 * @return true if success else false (this would usually mean that the
+	 *            memory structure was not initialized properly)
+	 *
+	 * <br>
+	 * Original signature :
+	 * <code>ErrorCode setData(LinkedMem*)</code><br>
+	 * <i>native declaration : line 384</i>
+	 */
+	int setData(LinkAPILibrary.LinkedMem source);
+
+	/**
+	 * Original signature :
+	 * <code>LinkedMem* getData()</code><br>
+	 * <i>native declaration : line 386</i>
+	 */
+	LinkAPILibrary.LinkedMem getData();
 }

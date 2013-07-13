@@ -4,6 +4,8 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>../../src/LinkAPI.h</itemPath>
+      <itemPath>D:/mumble-LinkAPI/src/apiExportHelper.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -14,8 +16,6 @@
                    projectFiles="true">
       <logicalFolder name="src" displayName="src" projectFiles="true">
         <itemPath>../../src/LinkAPI.c</itemPath>
-        <itemPath>../../src/LinkAPI.h</itemPath>
-        <itemPath>D:/mumble-LinkAPI/src/apiExportHelper.h</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -28,10 +28,14 @@
                    projectFiles="false"
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
+      <itemPath>nbproject/Makefile-Release_x64.mk</itemPath>
+      <itemPath>nbproject/configurations.xml</itemPath>
+      <itemPath>nbproject/project.xml</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
     <Elem>../../src/</Elem>
+    <Elem>../../tests</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -43,11 +47,19 @@
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
         <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
           <commandLine>-mno-cygwin</commandLine>
         </ccTool>
         <linkerTool>
-          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT}</output>
+          <output>${TESTDIR}/TestFiles/f1</output>
           <commandlineTool>g++.exe</commandlineTool>
           <linkerLibItems>
             <linkerOptionItem>-lstdc++</linkerOptionItem>
@@ -76,6 +88,21 @@
             tool="3"
             flavor2="0">
       </item>
+      <folder path="TestFiles/f1">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f1</output>
+        </linkerTool>
+      </folder>
     </conf>
     <conf name="Debug_x64" type="2">
       <toolsSet>
@@ -85,12 +112,20 @@
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
         <ccTool>
           <commandlineTool>x86_64-w64-mingw32-g++</commandlineTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
           <commandLine>-mno-cygwin</commandLine>
         </ccTool>
         <linkerTool>
-          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT}</output>
+          <output>${TESTDIR}/TestFiles/f1</output>
           <commandlineTool>x86_64-w64-mingw32-g++</commandlineTool>
           <linkerLibItems>
             <linkerLibFileItem>C:/cygwin/lib/gcc/x86_64-w64-mingw32/4.5.3/libstdc++.a</linkerLibFileItem>
@@ -119,6 +154,21 @@
             tool="3"
             flavor2="0">
       </item>
+      <folder path="TestFiles/f1">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f1</output>
+        </linkerTool>
+      </folder>
     </conf>
     <conf name="Release" type="2">
       <toolsSet>
@@ -130,9 +180,15 @@
       <compileType>
         <cTool>
           <developmentMode>5</developmentMode>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
@@ -140,6 +196,9 @@
         <asmTool>
           <developmentMode>5</developmentMode>
         </asmTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f1</output>
+        </linkerTool>
       </compileType>
       <item path="../../src/LinkAPI.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -150,6 +209,21 @@
             tool="3"
             flavor2="0">
       </item>
+      <folder path="TestFiles/f1">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f1</output>
+        </linkerTool>
+      </folder>
     </conf>
     <conf name="Release_x64" type="2">
       <toolsSet>
@@ -161,10 +235,18 @@
       <compileType>
         <cTool>
           <developmentMode>5</developmentMode>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>../../src</pElem>
+          </incDir>
+          <warningLevel>2</warningLevel>
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
           <commandlineTool>x86_64-w64-mingw32-g++</commandlineTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
           <commandLine>-mno-cygwin</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
@@ -183,12 +265,6 @@
         <packType>Tar</packType>
         <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/libLinkAPI.dll.tar</output>
         <packFileList>
-          <packFileListElem type="File"
-                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
-                            from="${OUTPUT_PATH}"
-                            perm="644"
-                            owner="root"
-                            group="bin"/>
         </packFileList>
       </packaging>
       <item path="../../src/LinkAPI.c" ex="false" tool="0" flavor2="0">
@@ -200,6 +276,21 @@
             tool="3"
             flavor2="0">
       </item>
+      <folder path="TestFiles/f1">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f1</output>
+        </linkerTool>
+      </folder>
     </conf>
   </confs>
 </configurationDescriptor>

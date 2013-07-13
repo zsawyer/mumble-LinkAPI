@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="89">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+      <itemPath>cutest-1.5/CuTest.h</itemPath>
+      <itemPath>CustomCuTest.h</itemPath>
+      <itemPath>CustomHelperFunctions.h</itemPath>
+      <itemPath>../../src/LinkAPI.h</itemPath>
+      <itemPath>../../src/apiExportHelper.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <itemPath>AllTests.c</itemPath>
+      <itemPath>cutest-1.5/CuTest.c</itemPath>
+      <itemPath>CustomCuTest.c</itemPath>
+      <itemPath>CustomHelperFunctions.c</itemPath>
+      <itemPath>MiscTestSuite.c</itemPath>
+      <itemPath>SettersTestSuite.c</itemPath>
+      <itemPath>UpdatersTestSuite.c</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>Cygwin_4.x_1_+_mingw|Cygwin_4.x</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <incDir>
+            <pElem>cutest-1.5</pElem>
+            <pElem>../../src</pElem>
+          </incDir>
+        </cTool>
+        <linkerTool>
+          <linkerLibItems>
+            <linkerLibFileItem>../../ide/netbeans/dist/Release_x64/Cygwin_4.x_1_+_mingw-Windows/libLinkAPI.dll</linkerLibFileItem>
+          </linkerLibItems>
+        </linkerTool>
+        <requiredProjects>
+          <makeArtifact PL="../../ide/netbeans"
+                        CT="2"
+                        CN="Release_x64"
+                        AC="true"
+                        BL="true"
+                        WD="../../ide/netbeans"
+                        BC="${MAKE}  -f Makefile CONF=Release_x64"
+                        CC="${MAKE}  -f Makefile CONF=Release_x64 clean"
+                        OP="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT}">
+          </makeArtifact>
+        </requiredProjects>
+      </compileType>
+      <item path="../../src/LinkAPI.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../src/apiExportHelper.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="AllTests.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="CustomCuTest.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="CustomCuTest.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="CustomHelperFunctions.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="CustomHelperFunctions.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="MiscTestSuite.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="SettersTestSuite.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="UpdatersTestSuite.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="cutest-1.5/CuTest.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="cutest-1.5/CuTest.h" ex="false" tool="3" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>Cygwin_4.x_1_+_mingw|Cygwin_4.x</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+      </compileType>
+      <item path="../../src/LinkAPI.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../src/apiExportHelper.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="AllTests.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="CustomCuTest.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="CustomCuTest.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="CustomHelperFunctions.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="CustomHelperFunctions.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="MiscTestSuite.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="SettersTestSuite.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="UpdatersTestSuite.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="cutest-1.5/CuTest.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="cutest-1.5/CuTest.h" ex="false" tool="3" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>

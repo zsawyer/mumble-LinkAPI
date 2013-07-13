@@ -7,13 +7,13 @@
    are met:
 
    - Redistributions of source code must retain the above copyright notice,
-	 this list of conditions and the following disclaimer.
+         this list of conditions and the following disclaimer.
    - Redistributions in binary form must reproduce the above copyright notice,
-	 this list of conditions and the following disclaimer in the documentation
-	 and/or other materials provided with the distribution.
+         this list of conditions and the following disclaimer in the documentation
+         and/or other materials provided with the distribution.
    - Neither the name of the Mumble Developers nor the names of its
-	 contributors may be used to endorse or promote products derived from this
-	 software without specific prior written permission.
+         contributors may be used to endorse or promote products derived from this
+         software without specific prior written permission.
 
    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
    ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -84,38 +84,39 @@
 #    define MAX_DESCRIPTION_LENGTH 2048
 
 typedef struct LinkedMem {
-	NATIVE_UINT32 uiVersion;
-	NATIVE_DWORD uiTick;
-	float fAvatarPosition[VECTOR_LENGTH];
-	float fAvatarFront[VECTOR_LENGTH];
-	float fAvatarTop[VECTOR_LENGTH];
-	wchar_t name[MAX_NAME_LENGTH];
-	float fCameraPosition[VECTOR_LENGTH];
-	float fCameraFront[VECTOR_LENGTH];
-	float fCameraTop[VECTOR_LENGTH];
-	wchar_t identity[MAX_IDENTITY_LENGTH];
-	NATIVE_UINT32 context_len;
-	unsigned char context[MAX_CONTEXT_LENGTH];
-	wchar_t description[MAX_DESCRIPTION_LENGTH];
+    NATIVE_UINT32 uiVersion;
+    NATIVE_DWORD uiTick;
+    float fAvatarPosition[VECTOR_LENGTH];
+    float fAvatarFront[VECTOR_LENGTH];
+    float fAvatarTop[VECTOR_LENGTH];
+    wchar_t name[MAX_NAME_LENGTH];
+    float fCameraPosition[VECTOR_LENGTH];
+    float fCameraFront[VECTOR_LENGTH];
+    float fCameraTop[VECTOR_LENGTH];
+    wchar_t identity[MAX_IDENTITY_LENGTH];
+    NATIVE_UINT32 context_len;
+    unsigned char context[MAX_CONTEXT_LENGTH];
+    wchar_t description[MAX_DESCRIPTION_LENGTH];
 } LinkedMem;
-LinkedMem *lm = NULL;
 
 /**
  * error codes hinting at the root cause of a failure
  */
-typedef enum {
-	/** no error */
-	ERROR_CODE_NO_ERROR = 0,
-	/** win32 specific: OpenFileMappingW failed to return a handle */
-	ERROR_CODE_WIN32_NO_HANDLE = 1,
-	/** win32 specific: MapViewOfFile failed to return a structure */
-	ERROR_CODE_WIN32_NO_STRUCTURE = 2,
-	/** unix specific: shm_open returned a negative integer */
-	ERROR_CODE_UNIX_NO_HANDLE = 3,
-	/** unix specific: mmap failed to return a structure */
-	ERROR_CODE_UNIX_NO_STRUCTURE = 4,
-	/** shared memory was not initialized */
-	ERROR_CODE_NO_MEMORY_WAS_INITIALIZED = 5
+typedef enum ErrorCode {
+    /** no error */
+    ERROR_CODE_NO_ERROR = 0,
+    /** win32 specific: OpenFileMappingW failed to return a handle */
+    ERROR_CODE_WIN32_NO_HANDLE = 1,
+    /** win32 specific: MapViewOfFile failed to return a structure */
+    ERROR_CODE_WIN32_NO_STRUCTURE = 2,
+    /** unix specific: shm_open returned a negative integer */
+    ERROR_CODE_UNIX_NO_HANDLE = 3,
+    /** unix specific: mmap failed to return a structure */
+    ERROR_CODE_UNIX_NO_STRUCTURE = 4,
+    /** shared memory was not initialized */
+    ERROR_CODE_NO_MEMORY_WAS_INITIALIZED = 5,
+    /** the provided context length was out of bounds */
+    ERROR_CODE_CONTEXT_LENGTH_EXCEEDED = 6
 } ErrorCode;
 
 /**
@@ -134,32 +135,55 @@ typedef enum {
  */
 LINKAPI_API
 ErrorCode initialize(wchar_t name[MAX_NAME_LENGTH],
-		wchar_t description[MAX_DESCRIPTION_LENGTH],
-		NATIVE_UINT32 uiVersion);
+        wchar_t description[MAX_DESCRIPTION_LENGTH],
+        NATIVE_UINT32 uiVersion);
 
 /**
  * forcefully unlinks the plugin instantly
  *
  * this function directly circumvents the timeout wait of the link plugin
  *
- * this effect is undone when calling an update method
+ * this effect is undone when calling an update method or <code>initialize(...)</code>
  */
 LINKAPI_API
 void doUnlink();
 
 /**
- * notifies the plugin that the data is up-to-date
- * update* functions call this method at the end else a timeout will occur and
- * the plugin automatically unlinks
+ * notifies the plugin that the data is up-to-date update...-functions call
+ * this method at the end
+ * 
+ * this is to prevent a timeout which causes the plugin to automatically unlink
  *
- * @return true if success else false (this would usually mean that the
- * memory structure was not initialized properly)
+ * @return	an error code, see <code>enum ErrorCode</code>
  */
 LINKAPI_API
-int commit();
+ErrorCode commit();
 
 /**
- * update the identity only
+ * sets and commits the identity
+ *
+ * Notice: The identity does not need to be updated every single frame. It
+ * shouldn't change more than a few times per second if at all during a game.
+ *
+ *      see <code>setIdentity(...)</code> for details
+ *
+ * @param identity	unique id of the user in a given context
+ *
+ * @return	an error code, see <code>enum ErrorCode</code>
+ */
+LINKAPI_API
+ErrorCode updateIdentity(wchar_t identity[MAX_IDENTITY_LENGTH]);
+
+/**
+ * get the client's identity
+ *      see <code>setIdentity(...)</code> for details
+ * @return the client's identity
+ */
+LINKAPI_API
+wchar_t* getIdentity();
+
+/**
+ * set the identity only
  *
  * Notice: The identity does not need to be updated every single frame. It
  * shouldn't change more than a few times per second if at all during a game.
@@ -175,20 +199,40 @@ int commit();
  * encoding the information but this is up to the game. Remember that the
  * link structures only allow for limited characters of identity data.
  *
- * @param identity	unique id of the user
+ * @param identity	unique id of the user in a given context
  *
- * @return true if success else false (this would usually mean that the
- * memory structure was not initialized properly)
+ * @return	an error code, see <code>enum ErrorCode</code>
  */
 LINKAPI_API
-int updateIdentity(wchar_t identity[MAX_IDENTITY_LENGTH]);
-LINKAPI_API
-wchar_t* getIdentity();
-LINKAPI_API
-int setIdentity(wchar_t identity[MAX_IDENTITY_LENGTH]);
+ErrorCode setIdentity(wchar_t identity[MAX_IDENTITY_LENGTH]);
 
 /**
- * update the context only
+ * sets and commits the context
+ *
+ * Notice: The context does not need to be updated every single frame. It
+ * shouldn't change more than a few times per second if at all during a game.
+ *
+ *      see <code>setContext(...)</code> for details
+ *
+ * @param context	a generic context
+ * @param context_len	the length of the context (number of array elements)
+ *
+ * @return	an error code, see <code>enum ErrorCode</code>
+ */
+LINKAPI_API
+ErrorCode updateContext(unsigned char context[MAX_CONTEXT_LENGTH],
+        NATIVE_UINT32 context_len);
+
+/**
+ * getter for the client's context
+ *      see <code>setContext(...)</code> for details
+ * @return the client's context
+ */
+LINKAPI_API
+unsigned char * getContext();
+
+/**
+ * sets the context
  *
  * Notice: The context does not need to be updated every single frame. It
  * shouldn't change more than a few times per second if at all during a game.
@@ -206,44 +250,73 @@ int setIdentity(wchar_t identity[MAX_IDENTITY_LENGTH]);
  * @param context	a generic context
  * @param context_len	the length of the context (number of array elements)
  *
- * @return true if success else false (this would usually mean that the
- * memory structure was not initialized properly)
+ * @return	an error code, see <code>enum ErrorCode</code>
  */
 LINKAPI_API
-int updateContext(unsigned char context[MAX_CONTEXT_LENGTH],
-		NATIVE_UINT32 context_len);
+ErrorCode setContext(unsigned char context[], NATIVE_UINT32 context_len);
 LINKAPI_API
-unsigned char * getContext();
-LINKAPI_API
-int setContext(unsigned char context[], NATIVE_UINT32 context_len);
+NATIVE_UINT32 getContextLen();
 
 /**
- * update the identity and context
+ * sets and commits the identity AND context
  *
  * Notice: The identity and/or context does not need to be updated every
  * single frame. It shouldn't change more than a few times per second if at
  * all during a game.
  *
- * see updateIdentity(..) and updateContext(..) for detailed information
+ * see <code>setIdentity(..)</code> and <code>setContext(..)</code> for detailed information
  *
  * @param identity	unique id of the user
  * @param context	a generic context
  * @param context_len	the length of the context (number of active array
  *		elements)
  *
- * @return true if success else false (this would usually mean that the
- * memory structure was not initialized properly)
+ * @return	an error code, see <code>enum ErrorCode</code>
  */
 LINKAPI_API
-int updateIdentityAndContext(
-		wchar_t identity[MAX_IDENTITY_LENGTH],
-		unsigned char context[MAX_CONTEXT_LENGTH],
-		NATIVE_UINT32 context_len);
-LINKAPI_API
-int setIdentityAndContext(wchar_t identity[], unsigned char context[], NATIVE_UINT32 context_len);
+ErrorCode updateIdentityAndContext(
+        wchar_t identity[MAX_IDENTITY_LENGTH],
+        unsigned char context[MAX_CONTEXT_LENGTH],
+        NATIVE_UINT32 context_len);
 
 /**
- * update the name only
+ * sets the identity AND context
+ *
+ * Notice: The identity and/or context does not need to be updated every
+ * single frame. It shouldn't change more than a few times per second if at
+ * all during a game.
+ *
+ * see <code>setIdentity(..)</code> and <code>setContext(..)</code> for detailed informations
+ *
+ * @param identity	unique id of the user
+ * @param context	a generic context
+ * @param context_len	the length of the context (number of active array
+ *		elements)
+ *
+ * @return	an error code, see <code>enum ErrorCode</code>
+ */
+LINKAPI_API
+ErrorCode setIdentityAndContext(wchar_t identity[], unsigned char context[], NATIVE_UINT32 context_len);
+
+/**
+ * sets and commits the name
+ *
+ * Notice: This does not need to be updated every single frame. It shouldn't
+ * change at all during a game.
+ *
+ *      see <code>setName(...)</code> for details
+ *
+ * @param name	the display name of the application which links with mumble (i.e. L"TestLink")
+ *
+ * @return	an error code, see <code>enum ErrorCode</code>
+ */
+LINKAPI_API
+ErrorCode updateName(wchar_t name[MAX_NAME_LENGTH]);
+LINKAPI_API
+wchar_t* getName();
+
+/**
+ * sets the name only
  *
  * Notice: This does not need to be updated every single frame. It shouldn't
  * change at all during a game.
@@ -254,18 +327,30 @@ int setIdentityAndContext(wchar_t identity[], unsigned char context[], NATIVE_UI
  *
  * @param name	the display name of the application which links with mumble (i.e. L"TestLink")
  *
- * @return true if success else false (this would usually mean that the
- * memory structure was not initialized properly)
+ * @return	an error code, see <code>enum ErrorCode</code>
  */
 LINKAPI_API
-int updateName(wchar_t name[MAX_NAME_LENGTH]);
-LINKAPI_API
-wchar_t* getName();
-LINKAPI_API
-int setName(wchar_t name[MAX_NAME_LENGTH]);
+ErrorCode setName(wchar_t name[MAX_NAME_LENGTH]);
 
 /**
- * update the description only
+ * sets and commits the description
+ *
+ * Notice: This does not need to be updated every single frame. It shouldn't
+ * change at all during a game.
+ *
+ *      see <code>setDescription(...)</code> for details
+ *
+ * @param description	a text stating the purpose of this link
+ *
+ * @return	an error code, see <code>enum ErrorCode</code>
+ */
+LINKAPI_API
+ErrorCode updateDescription(wchar_t description[MAX_DESCRIPTION_LENGTH]);
+LINKAPI_API
+wchar_t* getDescription();
+
+/**
+ * sets the description only
  *
  * Notice: This does not need to be updated every single frame. It shouldn't
  * change at all during a game.
@@ -274,18 +359,13 @@ int setName(wchar_t name[MAX_NAME_LENGTH]);
  *
  * @param description	a text stating the purpose of this link
  *
- * @return true if success else false (this would usually mean that the
- * memory structure was not initialized properly)
+ * @return	an error code, see <code>enum ErrorCode</code>
  */
 LINKAPI_API
-int updateDescription(wchar_t description[MAX_DESCRIPTION_LENGTH]);
-LINKAPI_API
-wchar_t* getDescription();
-LINKAPI_API
-int setDescription(wchar_t description[MAX_DESCRIPTION_LENGTH]);
+ErrorCode setDescription(wchar_t description[MAX_DESCRIPTION_LENGTH]);
 
 /**
- * updates avatar and camera vectors
+ * updates and commits the avatar and camera vectors
  *
  * Notice: Mumble fetches these values 50 times a second, so please update
  * them every frame.
@@ -297,28 +377,63 @@ int setDescription(wchar_t description[MAX_DESCRIPTION_LENGTH]);
  * @param fCameraFront	Unit vector pointing out of the camera's lense.
  * @param fCameraTop	Unit vector pointing out of the camera's top.
  *
- * @return true if success else false (this would usually mean that the
- * memory structure was not initialized properly)
+ * @return	an error code, see <code>enum ErrorCode</code>
  */
 LINKAPI_API
-int updateVectors(
-		float fAvatarPosition[VECTOR_LENGTH],
-		float fAvatarFront[VECTOR_LENGTH],
-		float fAvatarTop[VECTOR_LENGTH],
-		float fCameraPosition[VECTOR_LENGTH],
-		float fCameraFront[VECTOR_LENGTH],
-		float fCameraTop[VECTOR_LENGTH]);
-LINKAPI_API
-int setVectors(
-		float fAvatarPosition[VECTOR_LENGTH],
-		float fAvatarFront[VECTOR_LENGTH],
-		float fAvatarTop[VECTOR_LENGTH],
-		float fCameraPosition[VECTOR_LENGTH],
-		float fCameraFront[VECTOR_LENGTH],
-		float fCameraTop[VECTOR_LENGTH]);
+ErrorCode updateVectors(
+        float fAvatarPosition[VECTOR_LENGTH],
+        float fAvatarFront[VECTOR_LENGTH],
+        float fAvatarTop[VECTOR_LENGTH],
+        float fCameraPosition[VECTOR_LENGTH],
+        float fCameraFront[VECTOR_LENGTH],
+        float fCameraTop[VECTOR_LENGTH]);
 
 /**
- * updates avatar AND camera vectors
+ * sets avatar and camera vectors
+ *
+ * Notice: Mumble fetches these values 50 times a second, so please update
+ * them every frame.
+ *
+ * @param fAvatarPosition	Position of the avatar.
+ * @param fAvatarFront	Unit vector pointing out of the avatar's eyes.
+ * @param fAvatarTop	Unit vector pointing out of the top of the avatar's head.
+ * @param fCameraPosition	Position of the camera.
+ * @param fCameraFront	Unit vector pointing out of the camera's lense.
+ * @param fCameraTop	Unit vector pointing out of the camera's top.
+ *
+ * @return	an error code, see <code>enum ErrorCode</code>
+ */
+LINKAPI_API
+ErrorCode setVectors(
+        float fAvatarPosition[VECTOR_LENGTH],
+        float fAvatarFront[VECTOR_LENGTH],
+        float fAvatarTop[VECTOR_LENGTH],
+        float fCameraPosition[VECTOR_LENGTH],
+        float fCameraFront[VECTOR_LENGTH],
+        float fCameraTop[VECTOR_LENGTH]);
+
+/**
+ * updates and commits avatar AND camera vectors with the same values
+ *
+ * Notice: Mumble fetches these values 50 times a second, so please update
+ * them every frame.
+ *
+ *      see <code>setVectorsByAvatar(...)</code> for details
+ *
+ * @param fAvatarPosition	Position of the avatar and camera.
+ * @param fAvatarFront	Unit vector pointing out of the camera/avatar's eyes.
+ * @param fAvatarTop	Unit vector pointing out of the top of the avatar's head/camera's top.
+ *
+ * @return	an error code, see <code>enum ErrorCode</code>
+ */
+LINKAPI_API
+ErrorCode updateVectorsByAvatar(
+        float fAvatarPosition[VECTOR_LENGTH],
+        float fAvatarFront[VECTOR_LENGTH],
+        float fAvatarTop[VECTOR_LENGTH]);
+
+/**
+ * sets avatar AND camera vectors with the same values
  *
  * this simply reuses the given vectors for the camera
  *
@@ -328,87 +443,233 @@ int setVectors(
  * Notice: Mumble fetches these values 50 times a second, so please update
  * them every frame.
  *
+ *      see the respective single vector setters for details
+ *
  * @param fAvatarPosition	Position of the avatar and camera.
  * @param fAvatarFront	Unit vector pointing out of the camera/avatar's eyes.
  * @param fAvatarTop	Unit vector pointing out of the top of the avatar's head/camera's top.
  *
- * @return true if success else false (this would usually mean that the
- * memory structure was not initialized properly)
+ * @return	an error code, see <code>enum ErrorCode</code>
  */
 LINKAPI_API
-int updateVectorsByAvatar(
-		float fAvatarPosition[VECTOR_LENGTH],
-		float fAvatarFront[VECTOR_LENGTH],
-		float fAvatarTop[VECTOR_LENGTH]);
-LINKAPI_API
-int setVectorsByAvatar(
-		float fAvatarPosition[VECTOR_LENGTH],
-		float fAvatarFront[VECTOR_LENGTH],
-		float fAvatarTop[VECTOR_LENGTH]);
+ErrorCode setVectorsByAvatar(
+        float fAvatarPosition[VECTOR_LENGTH],
+        float fAvatarFront[VECTOR_LENGTH],
+        float fAvatarTop[VECTOR_LENGTH]);
 
+/**
+ * The position of the avatar
+ * 
+ * location of the avatar or avatar's head where it is located in the 3D game world
+ *
+ * @return a 3D vector
+ */
 LINKAPI_API
 float* getAvatarPosition();
-LINKAPI_API
-int setAvatarPosition(float x, float y, float z);
 
+/**
+ * The position of the avatar
+ *
+ * location of the avatar or avatar's head where it is located in the 3D game world
+ *
+ * @param x the magnitude of the x basis vector
+ * @param y the magnitude of the y basis vector
+ * @param z the magnitude of the z basis vector
+ * @return	an error code, see <code>enum ErrorCode</code>
+ */
+LINKAPI_API
+ErrorCode setAvatarPosition(float x, float y, float z);
+
+/**
+ * Unit vector pointing out of the avatar's eyes
+ *
+ * indicates the direction the avatar or avatar's head is pointing at
+ *
+ * @return a 3D vector (look vector)
+ */
 LINKAPI_API
 float* getAvatarFront();
-LINKAPI_API
-int setAvatarFront(float x, float y, float z);
 
+/**
+ * Unit vector pointing out of the avatars eyes
+ *
+ * indicates the direction the avatar or avatar's head is pointing at
+ *
+ * Note: this vector should be perpendicular to the top vector
+ *
+ * @param x the magnitude of the x basis vector
+ * @param y the magnitude of the y basis vector
+ * @param z the magnitude of the z basis vector
+ * @return	an error code, see <code>enum ErrorCode</code>
+ */
+LINKAPI_API
+ErrorCode setAvatarFront(float x, float y, float z);
+
+/**
+ * Unit vector pointing out of the top of the avatar's head
+ *
+ * indicates the direction that the top of the avatar or
+ * avatar's head is pointing at
+ *
+ * @return a 3D vector (the avatar's up vector)
+ */
 LINKAPI_API
 float* getAvatarTop();
+
+/**
+ * Unit vector pointing out of the top of the avatar's head
+ *
+ * indicates the direction that the top of the avatar or
+ * avatar's head is pointing at
+ *
+ * Note: this vector should be perpendicular to the front vector
+ * 
+ * @param x the magnitude of the x basis vector
+ * @param y the magnitude of the y basis vector
+ * @param z the magnitude of the z basis vector
+ * @return	an error code, see <code>enum ErrorCode</code>
+ */
 LINKAPI_API
-int setAvatarTop(float x, float y, float z);
+ErrorCode setAvatarTop(float x, float y, float z);
 
-
+/**
+ * The position of the camera
+ *
+ * location of the camera where it is located in the 3D game world
+ * 
+ * @return a 3D vector
+ */
 LINKAPI_API
 float* getCameraPosition();
-LINKAPI_API
-int setCameraPosition(float x, float y, float z);
 
+/**
+ * The position of the camera
+ *
+ * location of the camera where it is located in the 3D game world
+ *
+ * @param x the magnitude of the x basis vector
+ * @param y the magnitude of the y basis vector
+ * @param z the magnitude of the z basis vector
+ * @return	an error code, see <code>enum ErrorCode</code>
+ */
+LINKAPI_API
+ErrorCode setCameraPosition(float x, float y, float z);
+
+/**
+ * Unit vector pointing out of the front/lens of the camera
+ *
+ * indicates the direction the camera is pointing at
+ * 
+ * @return a 3D vector (look vector)
+ */
 LINKAPI_API
 float* getCameraFront();
-LINKAPI_API
-int setCameraFront(float x, float y, float z);
 
+/**
+ * Unit vector pointing out of the front/lens of the camera
+ *
+ * indicates the direction the camera is pointing at
+ *
+ * Note: this vector should be perpendicular to the top vector
+ *
+ * @param x the magnitude of the x basis vector
+ * @param y the magnitude of the y basis vector
+ * @param z the magnitude of the z basis vector
+ * @return	an error code, see <code>enum ErrorCode</code>
+ */
+LINKAPI_API
+ErrorCode setCameraFront(float x, float y, float z);
+
+/**
+ * Unit vector pointing out of the top of the camera
+ *
+ * indicates the direction that the top of the camera is pointing at
+ *
+ * @return a 3D vector (the camera's up vector)
+ */
 LINKAPI_API
 float* getCameraTop();
-LINKAPI_API
-int setCameraTop(float x, float y, float z);
 
+/**
+ * Unit vector pointing out of the top of the camera
+ *
+ * indicates the direction that the top of the camera is pointing at
+ * 
+ * Note: this vector should be perpendicular to the front vector
+ *
+ * @param x the magnitude of the x basis vector
+ * @param y the magnitude of the y basis vector
+ * @param z the magnitude of the z basis vector
+ * @return	an error code, see <code>enum ErrorCode</code>
+ */
+LINKAPI_API
+ErrorCode setCameraTop(float x, float y, float z);
 
 LINKAPI_API
 NATIVE_UINT32 getUiVersion();
 LINKAPI_API
-int setUiVersion(NATIVE_UINT32 version);
+ErrorCode setUiVersion(NATIVE_UINT32 version);
 LINKAPI_API
-int updateUiVersion(NATIVE_UINT32 version);
-
-LINKAPI_API
-NATIVE_DWORD getUiTick();
-LINKAPI_API
-int setUiTick(NATIVE_DWORD tick);
-LINKAPI_API
-int updateUiTick(NATIVE_DWORD tick);
+ErrorCode updateUiVersion(NATIVE_UINT32 version);
 
 /**
- * a convenience function to directly manipulate the entire linked memory at once
+ * tick counter which is used to tell if updates to the shared memory occur
+ *
+ * if this number stays the same no the rest of the shared memory is not read
+ * and the link plugin will unlink after a certain timeout
+ *
+ * @return the last tick number
+ */
+LINKAPI_API
+NATIVE_DWORD getUiTick();
+
+/**
+ * tick counter which is used to tell if updates to the shared memory occur
+ *
+ * if this number stays the same the rest of the shared memory is not read
+ * and the link plugin will unlink after a certain timeout
+ *
+ * @param tick the tick number to set
+ * @return	an error code, see <code>enum ErrorCode</code>
+ */
+LINKAPI_API
+ErrorCode setUiTick(NATIVE_DWORD tick);
+
+/**
+ * tick counter which is used to tell if updates to the shared memory occur
+ *
+ * if this number stays the same the rest of the shared memory is not read
+ * and the link plugin will unlink after a certain timeout
+ *
+ * @param tick the tick number to set
+ * @return	an error code, see <code>enum ErrorCode</code>
+ */
+LINKAPI_API
+ErrorCode updateUiTick(NATIVE_DWORD tick);
+
+/**
+ * directly manipulate the entire linked memory at once
+ *
+ * IMPORTANT: Note that you should also update uiTick yourself, else a timeout
+ * will occur and your data will not be read. Subsequently calling the
+ * commit()-function once will not help when uiTick is always set to the same
+ * value.
  *
  * Notice: Parts of this does not need to be updated every single frame.
  * Please use the more directly appropriate update functions instead.
  *
- * Note that you should also update uiTick yourself, else a timeout will occur
- * and your data will not be read. Subsequently calling the commit()-function
- * once will not help when uiTick is always set to the same value.
- *
  * @param source data structure which is to be copied
  *
- * @return true if success else false (this would usually mean that the
- * memory structure was not initialized properly)
+ * @return	an error code, see <code>enum ErrorCode</code>
  */
 LINKAPI_API
-int setData(LinkedMem *source);
+ErrorCode setData(LinkedMem *source);
+
+/**
+ * the entire shared memory for direct access
+ *
+ * @return a pointer to the shared memory structure
+ */
 LINKAPI_API
 LinkedMem* getData();
 
