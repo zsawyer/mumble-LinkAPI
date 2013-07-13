@@ -255,6 +255,12 @@ unsigned char * getContext();
 LINKAPI_API
 ErrorCode setContext(unsigned char context[], NATIVE_UINT32 context_len);
 LINKAPI_API
+
+/**
+ * the length of the context (number of array elements)
+ *
+ * @return the length of the current context
+ */
 NATIVE_UINT32 getContextLen();
 
 /**
@@ -264,7 +270,7 @@ NATIVE_UINT32 getContextLen();
  * single frame. It shouldn't change more than a few times per second if at
  * all during a game.
  *
- * see <code>setIdentity(..)</code> and <code>setContext(..)</code> for detailed information
+ * see <code>setIdentity(...)</code> and <code>setContext(...)</code> for detailed information
  *
  * @param identity	unique id of the user
  * @param context	a generic context
@@ -312,6 +318,12 @@ ErrorCode setIdentityAndContext(wchar_t identity[], unsigned char context[], NAT
  */
 LINKAPI_API
 ErrorCode updateName(wchar_t name[MAX_NAME_LENGTH]);
+
+/**
+ * the display name of the application currently linked with mumble
+ *      see <code>setName(...)</code> for details
+ * @return application name
+ */
 LINKAPI_API
 wchar_t* getName();
 
@@ -346,6 +358,12 @@ ErrorCode setName(wchar_t name[MAX_NAME_LENGTH]);
  */
 LINKAPI_API
 ErrorCode updateDescription(wchar_t description[MAX_DESCRIPTION_LENGTH]);
+
+/**
+ * the linked applications description
+ *      see <code>setDescription(...)</code> for details
+ * @return a text stating the purpose of this link
+ */
 LINKAPI_API
 wchar_t* getDescription();
 

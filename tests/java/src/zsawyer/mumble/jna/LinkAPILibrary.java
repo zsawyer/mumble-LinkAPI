@@ -32,9 +32,7 @@ package zsawyer.mumble.jna;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
-import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
-import com.sun.jna.ptr.FloatByReference;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.FloatBuffer;
@@ -171,30 +169,77 @@ public interface LinkAPILibrary extends Library {
 	 *                       to 2)
 	 *
 	 * @return	an error code {@link ErrorCode}
-	 *
-	 * <br>
-	 * Original signature :
+	 */
+	/* Original signature :
 	 * <code>ErrorCode initialize(wchar_t[256], wchar_t[2048], int)</code><br>
 	 * <i>native declaration : line 85</i>
 	 */
 	int initialize(CharBuffer name, CharBuffer description, int uiVersion);
 
 	/**
-	 * Original signature :
+	 * forcefully unlinks the plugin instantly
+	 *
+	 * this function directly circumvents the timeout wait of the link plugin
+	 *
+	 * this effect is undone when calling an update method or
+	 * {@link #initialize(java.nio.CharBuffer, java.nio.CharBuffer, int)}
+	 */
+	/* Original signature :
 	 * <code>void doUnlink()</code><br>
 	 * <i>native declaration : line 97</i>
 	 */
 	void doUnlink();
 
 	/**
-	 * Original signature :
+	 * notifies the plugin that the data is up-to-date update...-functions call
+	 * this method at the end
+	 *
+	 * this is to prevent a timeout which causes the plugin to automatically
+	 * unlink
+	 *
+	 * @return an error code {@link ErrorCode}
+	 */
+	/* Original signature :
 	 * <code>ErrorCode commit()</code><br>
 	 * <i>native declaration : line 108</i>
 	 */
 	int commit();
 
 	/**
-	 * update the identity only
+	 * sets and commits the identity
+	 *
+	 * Notice: The identity does not need to be updated every single frame. It
+	 * shouldn't change more than a few times per second if at all during a
+	 * game.
+	 *
+	 * see {@link #setIdentity(java.nio.CharBuffer)} for details
+	 *
+	 * @param identity	unique id of the user in a given context
+	 *
+	 * @return an error code {@link ErrorCode}
+	 *
+	 */
+	/* Original signature :
+	 * <code>ErrorCode updateIdentity(wchar_t[256])</code><br>
+	 * <i>native declaration : line 123</i>
+	 */
+	int updateIdentity(CharBuffer identity);
+
+	/**
+	 * get the client's identity
+	 *
+	 * see {@link #setIdentity(java.nio.CharBuffer)} for details
+	 *
+	 * @return the client's identity
+	 */
+	/* Original signature :
+	 * <code>wchar_t* getIdentity()</code><br>
+	 * <i>native declaration : line 131</i>
+	 */
+	CharBuffer getIdentity();
+
+	/**
+	 * set the identity only
 	 *
 	 * Notice: The identity does not need to be updated every single frame. It
 	 * shouldn't change more than a few times per second if at all during a
@@ -211,34 +256,53 @@ public interface LinkAPILibrary extends Library {
 	 * encoding the information but this is up to the game. Remember that the
 	 * link structures only allow for limited characters of identity data.
 	 *
-	 * @param identity	unique id of the user
+	 * @param identity	unique id of the user in a given context
 	 *
-	 * @return true if success else false (this would usually mean that the
-	 *            memory structure was not initialized properly)
-	 *
-	 * <br>
-	 * Original signature :
-	 * <code>ErrorCode updateIdentity(wchar_t[256])</code><br>
-	 * <i>native declaration : line 133</i>
+	 * @return	an error code {@link ErrorCode}
 	 */
-	int updateIdentity(CharBuffer identity);
-
-	/**
-	 * Original signature :
-	 * <code>wchar_t* getIdentity()</code><br>
-	 * <i>native declaration : line 135</i>
-	 */
-	CharBuffer getIdentity();
-
-	/**
-	 * Original signature :
+	/* Original signature :
 	 * <code>ErrorCode setIdentity(wchar_t[256])</code><br>
-	 * <i>native declaration : line 159</i>
+	 * <i>native declaration : line 155</i>
 	 */
 	int setIdentity(CharBuffer identity);
 
 	/**
-	 * update the context only
+	 * sets and commits the context
+	 *
+	 * Notice: The context does not need to be updated every single frame. It
+	 * shouldn't change more than a few times per second if at all during a
+	 * game.
+	 *
+	 * see
+	 * {@link #setContext(java.nio.ByteBuffer, int)} for details
+	 *
+	 * @param context	    a generic context
+	 * @param context_len	the length of the context (number of array elements)
+	 *
+	 * @return an error code {@link ErrorCode}
+	 */
+	/* Original signature :
+	 * <code>ErrorCode updateContext(unsigned char[256], int)</code><br>
+	 * <i>native declaration : line 171</i>
+	 */
+	int updateContext(ByteBuffer context, int context_len);
+
+	/**
+	 * getter for the client's context
+	 * see
+	 * {@link #setContext(java.nio.ByteBuffer, int)} for details
+	 *
+	 * @return the client's context
+	 *
+	 */
+	/* Original signature :
+	 * <code>unsigned char* getContext()</code><br>
+	 * <i>native declaration : line 180</i>
+	 */
+	ByteBuffer getContext();
+
+	/**
+	 * sets the context
 	 *
 	 * Notice: The context does not need to be updated every single frame. It
 	 * shouldn't change more than a few times per second if at all during a
@@ -257,76 +321,172 @@ public interface LinkAPILibrary extends Library {
 	 * @param context	    a generic context
 	 * @param context_len	the length of the context (number of array elements)
 	 *
-	 * @return true if success else false (this would usually mean that the
-	 *            memory structure was not initialized properly)
+	 * @return an error code {@link ErrorCode}
 	 *
-	 * <br>
-	 * Original signature :
-	 * <code>ErrorCode updateContext(unsigned char[256], int)</code><br>
-	 * <i>native declaration : line 184</i>
 	 */
-	int updateContext(ByteBuffer context, int context_len);
-
-	/**
-	 * Original signature :
-	 * <code>unsigned char* getContext()</code><br>
-	 * <i>native declaration : line 187</i>
-	 */
-	ByteBuffer getContext();
-
-	/**
-	 * Original signature :
+	/* Original signature :
 	 * <code>ErrorCode setContext(unsigned char[], int)</code><br>
-	 * <i>native declaration : line 189</i>
+	 * <i>native declaration : line 204</i>
 	 */
 	int setContext(ByteBuffer context, int context_len);
 
 	/**
-	 * Original signature :
+	 * the length of the context (number of array elements)
+	 *
+	 * @return the length of the current context
+	 *
+	 */
+	/* Original signature :
 	 * <code>int getContextLen()</code><br>
-	 * <i>native declaration : line 191</i>
+	 * <i>native declaration : line 206</i>
 	 */
 	int getContextLen();
 
 	/**
-	 * Original signature :
+	 * sets and commits the identity AND context
+	 *
+	 * Notice: The identity and/or context does not need to be updated every
+	 * single frame. It shouldn't change more than a few times per second if at
+	 * all during a game.
+	 *
+	 * see
+	 * {@link #setIdentity(java.nio.CharBuffer)} and
+	 * {@link #setContext(java.nio.ByteBuffer, int)} for detailed information
+	 *
+	 * @param identity	   unique id of the user
+	 * @param context	    a generic context
+	 * @param context_len	the length of the context (number of active array
+	 *                       elements)
+	 *
+	 * @return an error code {@link ErrorCode}
+	 *
+	 */
+	/* Original signature :
 	 * <code>ErrorCode updateIdentityAndContext(wchar_t[256], unsigned char[256], int)</code><br>
-	 * <i>native declaration : line 211</i>
+	 * <i>native declaration : line 225</i>
 	 */
 	int updateIdentityAndContext(CharBuffer identity, ByteBuffer context,
 			int context_len);
 
 	/**
-	 * Original signature :
+	 * sets the identity AND context
+	 *
+	 * Notice: The identity and/or context does not need to be updated every
+	 * single frame. It shouldn't change more than a few times per second if at
+	 * all during a game.
+	 *
+	 * see
+	 * {@link #setIdentity(java.nio.CharBuffer)} and
+	 * {@link #setContext(java.nio.ByteBuffer, int)} for detailed informations
+	 *
+	 * @param identity	   unique id of the user
+	 * @param context	    a generic context
+	 * @param context_len	the length of the context (number of active array
+	 *                       elements)
+	 *
+	 * @return an error code {@link ErrorCode}
+	 *
+	 */
+	/* Original signature :
 	 * <code>ErrorCode setIdentityAndContext(wchar_t[], unsigned char[], int)</code><br>
-	 * <i>native declaration : line 216</i>
+	 * <i>native declaration : line 247</i>
 	 */
 	int setIdentityAndContext(CharBuffer identity, ByteBuffer context,
 			int context_len);
 
 	/**
-	 * Original signature :
+	 * sets and commits the name
+	 *
+	 * Notice: This does not need to be updated every single frame. It shouldn't
+	 * change at all during a game.
+	 *
+	 * see
+	 * {@link #setName(java.nio.CharBuffer)} for details
+	 *
+	 * @param name	the display name of the application which links with mumble
+	 *                (i.e. L"TestLink")
+	 *
+	 * @return an error code {@link ErrorCode}
+	 *
+	 */
+	/* Original signature :
 	 * <code>ErrorCode updateName(wchar_t[256])</code><br>
-	 * <i>native declaration : line 234</i>
+	 * <i>native declaration : line 262</i>
 	 */
 	int updateName(CharBuffer name);
 
 	/**
-	 * Original signature :
+	 * the display name of the application currently linked with mumble
+	 * see
+	 * {@link #setName(java.nio.CharBuffer)} for details
+	 *
+	 * @return application name
+	 *
+	 */
+	/* Original signature :
 	 * <code>wchar_t* getName()</code><br>
-	 * <i>native declaration : line 236</i>
+	 * <i>native declaration : line 264</i>
 	 */
 	CharBuffer getName();
 
 	/**
-	 * Original signature :
+	 * sets the name only
+	 *
+	 * Notice: This does not need to be updated every single frame. It shouldn't
+	 * change at all during a game.
+	 *
+	 * this name is shown in the mumble interface to indicate which plugin's
+	 * positional audio is being used (i.e. used for the "XXX linked." message
+	 * in the mumble log)
+	 *
+	 * @param name	the display name of the application which links with mumble
+	 *                (i.e. L"TestLink")
+	 *
+	 * @return an error code {@link ErrorCode}
+	 *
+	 */
+	/* Original signature :
 	 * <code>ErrorCode setName(wchar_t[256])</code><br>
-	 * <i>native declaration : line 238</i>
+	 * <i>native declaration : line 281</i>
 	 */
 	int setName(CharBuffer name);
 
 	/**
-	 * update the description only
+	 * sets and commits the description
+	 *
+	 * Notice: This does not need to be updated every single frame. It shouldn't
+	 * change at all during a game.
+	 *
+	 * see
+	 * {@link #setDescription(java.nio.CharBuffer)} for details
+	 *
+	 * @param description	a text stating the purpose of this link
+	 *
+	 * @return an error code {@link ErrorCode}
+	 *
+	 */
+	/* Original signature :
+	 * <code>ErrorCode updateDescription(wchar_t[2048])</code><br>
+	 * <i>native declaration : line 296</i>
+	 */
+	int updateDescription(CharBuffer description);
+
+	/**
+	 * the linked applications description
+	 * see
+	 * {@link #setDescription(java.nio.CharBuffer)} for details
+	 *
+	 * @return a text stating the purpose of this link
+	 *
+	 */
+	/* Original signature :
+	 * <code>wchar_t* getDescription()</code><br>
+	 * <i>native declaration : line 298</i>
+	 */
+	CharBuffer getDescription();
+
+	/**
+	 * sets the description only
 	 *
 	 * Notice: This does not need to be updated every single frame. It shouldn't
 	 * change at all during a game.
@@ -335,32 +495,17 @@ public interface LinkAPILibrary extends Library {
 	 *
 	 * @param description	a text stating the purpose of this link
 	 *
-	 * @return true if success else false (this would usually mean that the
-	 *            memory structure was not initialized properly)
+	 * @return an error code {@link ErrorCode}
 	 *
-	 * <br>
-	 * Original signature :
-	 * <code>ErrorCode updateDescription(wchar_t[2048])</code><br>
-	 * <i>native declaration : line 254</i>
 	 */
-	int updateDescription(CharBuffer description);
-
-	/**
-	 * Original signature :
-	 * <code>wchar_t* getDescription()</code><br>
-	 * <i>native declaration : line 256</i>
-	 */
-	CharBuffer getDescription();
-
-	/**
-	 * Original signature :
+	/* Original signature :
 	 * <code>ErrorCode setDescription(wchar_t[2048])</code><br>
-	 * <i>native declaration : line 258</i>
+	 * <i>native declaration : line 313</i>
 	 */
 	int setDescription(CharBuffer description);
 
 	/**
-	 * updates avatar and camera vectors
+	 * updates and commits the avatar and camera vectors
 	 *
 	 * Notice: Mumble fetches these values 50 times a second, so please update
 	 * them every frame.
@@ -373,29 +518,69 @@ public interface LinkAPILibrary extends Library {
 	 * @param fCameraFront	   Unit vector pointing out of the camera's lense.
 	 * @param fCameraTop	     Unit vector pointing out of the camera's top.
 	 *
-	 * @return true if success else false (this would usually mean that the
-	 *            memory structure was not initialized properly)
+	 * @return an error code {@link ErrorCode}
 	 *
-	 * <br>
-	 * Original signature :
+	 */
+	/* Original signature :
 	 * <code>ErrorCode updateVectors(float[3], float[3], float[3], float[3], float[3], float[3])</code><br>
-	 * <i>native declaration : line 277</i>
+	 * <i>native declaration : line 331</i>
 	 */
 	int updateVectors(FloatBuffer fAvatarPosition, FloatBuffer fAvatarFront,
 			FloatBuffer fAvatarTop, FloatBuffer fCameraPosition,
 			FloatBuffer fCameraFront, FloatBuffer fCameraTop);
 
 	/**
-	 * Original signature :
+	 * sets avatar and camera vectors
+	 *
+	 * Notice: Mumble fetches these values 50 times a second, so please update
+	 * them every frame.
+	 *
+	 * @param fAvatarPosition	Position of the avatar.
+	 * @param fAvatarFront	   Unit vector pointing out of the avatar's eyes.
+	 * @param fAvatarTop	     Unit vector pointing out of the top of the
+	 *                           avatar's head.
+	 * @param fCameraPosition	Position of the camera.
+	 * @param fCameraFront	   Unit vector pointing out of the camera's lense.
+	 * @param fCameraTop	     Unit vector pointing out of the camera's top.
+	 *
+	 * @return an error code {@link ErrorCode}
+	 *
+	 */
+	/* Original signature :
 	 * <code>ErrorCode setVectors(float[3], float[3], float[3], float[3], float[3], float[3])</code><br>
-	 * <i>native declaration : line 285</i>
+	 * <i>native declaration : line 355</i>
 	 */
 	int setVectors(FloatBuffer fAvatarPosition, FloatBuffer fAvatarFront,
 			FloatBuffer fAvatarTop, FloatBuffer fCameraPosition,
 			FloatBuffer fCameraFront, FloatBuffer fCameraTop);
 
 	/**
-	 * updates avatar AND camera vectors
+	 * updates and commits avatar AND camera vectors with the same values
+	 *
+	 * Notice: Mumble fetches these values 50 times a second, so please update
+	 * them every frame.
+	 *
+	 * see
+	 * {@link #setVectorsByAvatar(java.nio.FloatBuffer, java.nio.FloatBuffer, java.nio.FloatBuffer)}
+	 * for details
+	 *
+	 * @param fAvatarPosition	Position of the avatar and camera.
+	 * @param fAvatarFront	   Unit vector pointing out of the camera/avatar's
+	 *                           eyes.
+	 * @param fAvatarTop	     Unit vector pointing out of the top of the
+	 *                           avatar's head/camera's top.
+	 *
+	 * @return an error code {@link ErrorCode}
+	 */
+	/* Original signature :
+	 * <code>ErrorCode updateVectorsByAvatar(float[3], float[3], float[3])</code><br>
+	 * <i>native declaration : line 378</i>
+	 */
+	int updateVectorsByAvatar(FloatBuffer fAvatarPosition,
+			FloatBuffer fAvatarFront, FloatBuffer fAvatarTop);
+
+	/**
+	 * sets avatar AND camera vectors with the same values
 	 *
 	 * this simply reuses the given vectors for the camera
 	 *
@@ -405,180 +590,335 @@ public interface LinkAPILibrary extends Library {
 	 * Notice: Mumble fetches these values 50 times a second, so please update
 	 * them every frame.
 	 *
+	 * see the respective single vector setters for details
+	 *
 	 * @param fAvatarPosition	Position of the avatar and camera.
 	 * @param fAvatarFront	   Unit vector pointing out of the camera/avatar's
 	 *                           eyes.
 	 * @param fAvatarTop	     Unit vector pointing out of the top of the
 	 *                           avatar's head/camera's top.
 	 *
-	 * @return true if success else false (this would usually mean that the
-	 *            memory structure was not initialized properly)
+	 * @return an error code {@link ErrorCode}
 	 *
-	 * <br>
-	 * Original signature :
-	 * <code>ErrorCode updateVectorsByAvatar(float[3], float[3], float[3])</code><br>
-	 * <i>native declaration : line 312</i>
 	 */
-	int updateVectorsByAvatar(FloatBuffer fAvatarPosition,
-			FloatBuffer fAvatarFront, FloatBuffer fAvatarTop);
-
-	/**
-	 * Original signature :
+	/* Original signature :
 	 * <code>ErrorCode setVectorsByAvatar(float[3], float[3], float[3])</code><br>
-	 * <i>native declaration : line 317</i>
+	 * <i>native declaration : line 403</i>
 	 */
 	int setVectorsByAvatar(FloatBuffer fAvatarPosition, FloatBuffer fAvatarFront,
 			FloatBuffer fAvatarTop);
 
 	/**
-	 * Original signature :
+	 * The position of the avatar
+	 *
+	 * location of the avatar or avatar's head where it is located in the 3D
+	 * game world
+	 *
+	 * @return a 3D vector
+	 *
+	 */
+	/* Original signature :
 	 * <code>float* getAvatarPosition()</code><br>
-	 * <i>native declaration : line 323</i>
+	 * <i>native declaration : line 416</i>
 	 */
 	FloatBuffer getAvatarPosition();
 
 	/**
-	 * Original signature :
+	 * The position of the avatar
+	 *
+	 * location of the avatar or avatar's head where it is located in the 3D
+	 * game world
+	 *
+	 * @param x the magnitude of the x basis vector
+	 * @param y the magnitude of the y basis vector
+	 * @param z the magnitude of the z basis vector
+	 *
+	 * @return an error code {@link ErrorCode}
+	 *
+	 */
+	/* Original signature :
 	 * <code>ErrorCode setAvatarPosition(float, float, float)</code><br>
-	 * <i>native declaration : line 325</i>
+	 * <i>native declaration : line 429</i>
 	 */
 	int setAvatarPosition(float x, float y, float z);
 
 	/**
-	 * Original signature :
+	 * Unit vector pointing out of the avatar's eyes
+	 *
+	 * indicates the direction the avatar or avatar's head is pointing at
+	 *
+	 * @return a 3D vector (look vector)
+	 *
+	 */
+	/* Original signature :
 	 * <code>float* getAvatarFront()</code><br>
-	 * <i>native declaration : line 328</i>
+	 * <i>native declaration : line 439</i>
 	 */
 	FloatBuffer getAvatarFront();
 
 	/**
-	 * Original signature :
+	 * Unit vector pointing out of the avatars eyes
+	 *
+	 * indicates the direction the avatar or avatar's head is pointing at
+	 *
+	 * Note: this vector should be perpendicular to the top vector
+	 *
+	 * @param x the magnitude of the x basis vector
+	 * @param y the magnitude of the y basis vector
+	 * @param z the magnitude of the z basis vector
+	 *
+	 * @return an error code {@link ErrorCode}
+	 *
+	 */
+	/* Original signature :
 	 * <code>ErrorCode setAvatarFront(float, float, float)</code><br>
-	 * <i>native declaration : line 330</i>
+	 * <i>native declaration : line 454</i>
 	 */
 	int setAvatarFront(float x, float y, float z);
 
 	/**
-	 * Original signature :
+	 * Unit vector pointing out of the top of the avatar's head
+	 *
+	 * indicates the direction that the top of the avatar or
+	 * avatar's head is pointing at
+	 *
+	 * @return a 3D vector (the avatar's up vector)
+	 *
+	 */
+	/* Original signature :
 	 * <code>float* getAvatarTop()</code><br>
-	 * <i>native declaration : line 333</i>
+	 * <i>native declaration : line 465</i>
 	 */
 	FloatBuffer getAvatarTop();
 
 	/**
-	 * Original signature :
+	 * Unit vector pointing out of the top of the avatar's head
+	 *
+	 * indicates the direction that the top of the avatar or
+	 * avatar's head is pointing at
+	 *
+	 * Note: this vector should be perpendicular to the front vector
+	 *
+	 * @param x the magnitude of the x basis vector
+	 * @param y the magnitude of the y basis vector
+	 * @param z the magnitude of the z basis vector
+	 *
+	 * @return an error code {@link ErrorCode}
+	 *
+	 */
+	/* Original signature :
 	 * <code>ErrorCode setAvatarTop(float, float, float)</code><br>
-	 * <i>native declaration : line 335</i>
+	 * <i>native declaration : line 481</i>
 	 */
 	int setAvatarTop(float x, float y, float z);
 
 	/**
-	 * Original signature :
+	 * The position of the camera
+	 *
+	 * location of the camera where it is located in the 3D game world
+	 *
+	 * @return a 3D vector
+	 *
+	 */
+	/* Original signature :
 	 * <code>float* getCameraPosition()</code><br>
-	 * <i>native declaration : line 339</i>
+	 * <i>native declaration : line 491</i>
 	 */
 	FloatBuffer getCameraPosition();
 
 	/**
-	 * Original signature :
+	 * The position of the camera
+	 *
+	 * location of the camera where it is located in the 3D game world
+	 *
+	 * @param x the magnitude of the x basis vector
+	 * @param y the magnitude of the y basis vector
+	 * @param z the magnitude of the z basis vector
+	 *
+	 * @return an error code {@link ErrorCode}
+	 *
+	 */
+	/* Original signature :
 	 * <code>ErrorCode setCameraPosition(float, float, float)</code><br>
-	 * <i>native declaration : line 341</i>
+	 * <i>native declaration : line 504</i>
 	 */
 	int setCameraPosition(float x, float y, float z);
 
 	/**
-	 * Original signature :
+	 * Unit vector pointing out of the front/lens of the camera
+	 *
+	 * indicates the direction the camera is pointing at
+	 *
+	 * @return a 3D vector (look vector)
+	 *
+	 */
+	/* Original signature :
 	 * <code>float* getCameraFront()</code><br>
-	 * <i>native declaration : line 344</i>
+	 * <i>native declaration : line 514</i>
 	 */
 	FloatBuffer getCameraFront();
 
 	/**
-	 * Original signature :
+	 * Unit vector pointing out of the front/lens of the camera
+	 *
+	 * indicates the direction the camera is pointing at
+	 *
+	 * Note: this vector should be perpendicular to the top vector
+	 *
+	 * @param x the magnitude of the x basis vector
+	 * @param y the magnitude of the y basis vector
+	 * @param z the magnitude of the z basis vector
+	 *
+	 * @return an error code {@link ErrorCode}
+	 *
+	 */
+	/* Original signature :
 	 * <code>ErrorCode setCameraFront(float, float, float)</code><br>
-	 * <i>native declaration : line 346</i>
+	 * <i>native declaration : line 529</i>
 	 */
 	int setCameraFront(float x, float y, float z);
 
 	/**
-	 * Original signature :
+	 * Unit vector pointing out of the top of the camera
+	 *
+	 * indicates the direction that the top of the camera is pointing at
+	 *
+	 * @return a 3D vector (the camera's up vector)
+	 *
+	 */
+	/* Original signature :
 	 * <code>float* getCameraTop()</code><br>
-	 * <i>native declaration : line 349</i>
+	 * <i>native declaration : line 539</i>
 	 */
 	FloatBuffer getCameraTop();
 
 	/**
-	 * Original signature :
+	 * Unit vector pointing out of the top of the camera
+	 *
+	 * indicates the direction that the top of the camera is pointing at
+	 *
+	 * Note: this vector should be perpendicular to the front vector
+	 *
+	 * @param x the magnitude of the x basis vector
+	 * @param y the magnitude of the y basis vector
+	 * @param z the magnitude of the z basis vector
+	 *
+	 * @return an error code {@link ErrorCode}
+	 *
+	 */
+	/* Original signature :
 	 * <code>ErrorCode setCameraTop(float, float, float)</code><br>
-	 * <i>native declaration : line 351</i>
+	 * <i>native declaration : line 554</i>
 	 */
 	int setCameraTop(float x, float y, float z);
 
 	/**
-	 * Original signature :
+	 */
+	/* Original signature :
 	 * <code>int getUiVersion()</code><br>
-	 * <i>native declaration : line 355</i>
+	 * <i>native declaration : line 557</i>
 	 */
 	int getUiVersion();
 
 	/**
-	 * Original signature :
+	 */
+	/* Original signature :
 	 * <code>ErrorCode setUiVersion(int)</code><br>
-	 * <i>native declaration : line 357</i>
+	 * <i>native declaration : line 559</i>
 	 */
 	int setUiVersion(int version);
 
 	/**
-	 * Original signature :
+	 */
+	/* Original signature :
 	 * <code>ErrorCode updateUiVersion(int)</code><br>
-	 * <i>native declaration : line 359</i>
+	 * <i>native declaration : line 561</i>
 	 */
 	int updateUiVersion(int version);
 
 	/**
-	 * Original signature :
+	 * tick counter which is used to tell if updates to the shared memory occur
+	 *
+	 * if this number stays the same no the rest of the shared memory is not
+	 * read
+	 * and the link plugin will unlink after a certain timeout
+	 *
+	 * @return the last tick number
+	 *
+	 */
+	/* Original signature :
 	 * <code>DWORD getUiTick()</code><br>
-	 * <i>native declaration : line 362</i>
+	 * <i>native declaration : line 572</i>
 	 */
 	int getUiTick();
 
 	/**
-	 * Original signature :
+	 * tick counter which is used to tell if updates to the shared memory occur
+	 *
+	 * if this number stays the same the rest of the shared memory is not read
+	 * and the link plugin will unlink after a certain timeout
+	 *
+	 * @param tick the tick number to set
+	 *
+	 * @return an error code {@link ErrorCode}
+	 *
+	 */
+	/* Original signature :
 	 * <code>ErrorCode setUiTick(DWORD)</code><br>
-	 * <i>native declaration : line 364</i>
+	 * <i>native declaration : line 584</i>
 	 */
 	int setUiTick(int tick);
 
 	/**
-	 * Original signature :
+	 * tick counter which is used to tell if updates to the shared memory occur
+	 *
+	 * if this number stays the same the rest of the shared memory is not read
+	 * and the link plugin will unlink after a certain timeout
+	 *
+	 * @param tick the tick number to set
+	 *
+	 * @return an error code {@link ErrorCode}
+	 *
+	 */
+	/* Original signature :
 	 * <code>ErrorCode updateUiTick(DWORD)</code><br>
-	 * <i>native declaration : line 366</i>
+	 * <i>native declaration : line 596</i>
 	 */
 	int updateUiTick(int tick);
 
 	/**
-	 * a convenience function to directly manipulate the entire linked memory at
-	 * once
+	 * directly manipulate the entire linked memory at once
+	 *
+	 * IMPORTANT: Note that you should also update uiTick yourself, else a
+	 * timeout
+	 * will occur and your data will not be read. Subsequently calling the
+	 * commit()-function once will not help when uiTick is always set to the
+	 * same
+	 * value.
 	 *
 	 * Notice: Parts of this does not need to be updated every single frame.
 	 * Please use the more directly appropriate update functions instead.
 	 *
 	 * @param source data structure which is to be copied
 	 *
-	 * @return true if success else false (this would usually mean that the
-	 *            memory structure was not initialized properly)
+	 * @return an error code {@link ErrorCode}
 	 *
-	 * <br>
-	 * Original signature :
+	 */
+	/* Original signature :
 	 * <code>ErrorCode setData(LinkedMem*)</code><br>
-	 * <i>native declaration : line 384</i>
+	 * <i>native declaration : line 614</i>
 	 */
 	int setData(LinkAPILibrary.LinkedMem source);
 
 	/**
-	 * Original signature :
+	 * the entire shared memory for direct access
+	 *
+	 * @return a pointer to the shared memory structure
+	 *
+	 */
+	/* Original signature :
 	 * <code>LinkedMem* getData()</code><br>
-	 * <i>native declaration : line 386</i>
+	 * <i>native declaration : line 622</i>
 	 */
 	LinkAPILibrary.LinkedMem getData();
 }
