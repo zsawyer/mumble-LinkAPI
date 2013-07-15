@@ -106,6 +106,7 @@ public interface LinkAPILibrary extends Library {
 	public static final int MAX_NAME_LENGTH = 256;
 	public static final int MAX_CONTEXT_LENGTH = 256;
 	public static final int MAX_DESCRIPTION_LENGTH = 2048;
+	public static final int UI_VERSION_UNLINK = 0;
 
 	public static class LinkedMem extends Structure {
 

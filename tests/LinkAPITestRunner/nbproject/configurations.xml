@@ -52,6 +52,7 @@
             <pElem>cutest-1.5</pElem>
             <pElem>../../src</pElem>
           </incDir>
+          <warningLevel>2</warningLevel>
         </cTool>
         <linkerTool>
           <linkerLibItems>

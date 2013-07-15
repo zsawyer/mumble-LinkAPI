@@ -58,7 +58,7 @@
 
 #    include "apiExportHelper.h"
 
-#    ifdef _WIN32
+#    if defined (_WIN32) && ! defined (WIN32)
 #        define WIN32
 #    endif
 
@@ -82,6 +82,8 @@
 #    define MAX_CONTEXT_LENGTH 256
 #    define MAX_NAME_LENGTH 256
 #    define MAX_DESCRIPTION_LENGTH 2048
+
+#    define UI_VERSION_UNLINK 0
 
 typedef struct LinkedMem {
     NATIVE_UINT32 uiVersion;

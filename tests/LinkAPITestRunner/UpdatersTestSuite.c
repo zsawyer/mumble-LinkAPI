@@ -9,7 +9,6 @@
  */
 
 void TestUpdaterSuite_updateUiTick(CuTest* tc) {
-
 	NATIVE_DWORD tick = 123;
 	NATIVE_DWORD tick2 = 125;
 
@@ -58,7 +57,7 @@ void TestUpdaterSuite_updateIdentity(CuTest* tc) {
 	ErrorCode err = updateIdentity(text);
 	CuAssertIntEquals(tc, ERROR_CODE_NO_ERROR, err);
 	wchar_t* actual = getIdentity();
-	CuAssertByteArrayEquals(tc, text, actual, MAX_IDENTITY_LENGTH);
+	CuAssertWCharTArrayEquals(tc, text, actual, MAX_IDENTITY_LENGTH);
 	CuAssertPtrNotEquals(tc, text, actual);
 	NATIVE_DWORD actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 1, actualTick);
@@ -66,7 +65,7 @@ void TestUpdaterSuite_updateIdentity(CuTest* tc) {
 	err = updateIdentity(text2);
 	CuAssertIntEquals(tc, ERROR_CODE_NO_ERROR, err);
 	actual = getIdentity();
-	CuAssertByteArrayEquals(tc, text2, actual, MAX_IDENTITY_LENGTH);
+	CuAssertWCharTArrayEquals(tc, text2, actual, MAX_IDENTITY_LENGTH);
 	CuAssertPtrNotEquals(tc, text2, actual);
 	actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 2, actualTick);
@@ -81,7 +80,7 @@ void TestUpdaterSuite_updateName(CuTest* tc) {
 	ErrorCode err = updateName(text);
 	CuAssertIntEquals(tc, ERROR_CODE_NO_ERROR, err);
 	wchar_t* actual = getName();
-	CuAssertByteArrayEquals(tc, text, actual, MAX_NAME_LENGTH);
+	CuAssertWCharTArrayEquals(tc, text, actual, MAX_NAME_LENGTH);
 	CuAssertPtrNotEquals(tc, text, actual);
 	NATIVE_DWORD actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 1, actualTick);
@@ -89,7 +88,7 @@ void TestUpdaterSuite_updateName(CuTest* tc) {
 	err = updateName(text2);
 	CuAssertIntEquals(tc, ERROR_CODE_NO_ERROR, err);
 	actual = getName();
-	CuAssertByteArrayEquals(tc, text2, actual, MAX_NAME_LENGTH);
+	CuAssertWCharTArrayEquals(tc, text2, actual, MAX_NAME_LENGTH);
 	CuAssertPtrNotEquals(tc, text2, actual);
 	actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 2, actualTick);
@@ -104,7 +103,7 @@ void TestUpdaterSuite_updateDescription(CuTest* tc) {
 	ErrorCode err = updateDescription(text);
 	CuAssertIntEquals(tc, ERROR_CODE_NO_ERROR, err);
 	wchar_t* actual = getDescription();
-	CuAssertByteArrayEquals(tc, text, actual, MAX_DESCRIPTION_LENGTH);
+	CuAssertWCharTArrayEquals(tc, text, actual, MAX_DESCRIPTION_LENGTH);
 	CuAssertPtrNotEquals(tc, text, actual);
 	NATIVE_DWORD actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 1, actualTick);
@@ -112,7 +111,7 @@ void TestUpdaterSuite_updateDescription(CuTest* tc) {
 	err = updateDescription(text2);
 	CuAssertIntEquals(tc, ERROR_CODE_NO_ERROR, err);
 	actual = getDescription();
-	CuAssertByteArrayEquals(tc, text2, actual, MAX_DESCRIPTION_LENGTH);
+	CuAssertWCharTArrayEquals(tc, text2, actual, MAX_DESCRIPTION_LENGTH);
 	CuAssertPtrNotEquals(tc, text2, actual);
 	actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 2, actualTick);
@@ -126,16 +125,16 @@ void TestUpdaterSuite_updateContext(CuTest* tc) {
 	unsigned char text3[MAX_CONTEXT_LENGTH] = "This context string is ridiculously long.\0";
 	unsigned char text3Excerpt[256] = "This context\0";
 
-	size_t len = strlen(text);
-	size_t len2 = strlen(text2);
-	size_t len3Excerpt = strlen(text3Excerpt);
+	size_t len = strlen((char*) text);
+	size_t len2 = strlen((char*) text2);
+	size_t len3Excerpt = strlen((char*) text3Excerpt);
 
 	ErrorCode err = updateContext(text, len);
 	CuAssertIntEquals(tc, ERROR_CODE_NO_ERROR, err);
 	NATIVE_UINT32 actualLen = getContextLen();
 	CuAssertIntEquals(tc, len, actualLen);
 	unsigned char* actual = getContext();
-	CuAssertByteArrayEquals(tc, text, actual, len);
+	CuAssertCharArrayEquals(tc, text, actual, len);
 	CuAssertPtrNotEquals(tc, text, actual);
 	NATIVE_DWORD actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 1, actualTick);
@@ -145,7 +144,7 @@ void TestUpdaterSuite_updateContext(CuTest* tc) {
 	actualLen = getContextLen();
 	CuAssertIntEquals(tc, len2, actualLen);
 	actual = getContext();
-	CuAssertByteArrayEquals(tc, text2, actual, len2);
+	CuAssertCharArrayEquals(tc, text2, actual, len2);
 	CuAssertPtrNotEquals(tc, text2, actual);
 	actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 2, actualTick);
@@ -155,7 +154,7 @@ void TestUpdaterSuite_updateContext(CuTest* tc) {
 	actualLen = getContextLen();
 	CuAssertIntEquals(tc, len3Excerpt, actualLen);
 	actual = getContext();
-	CuAssertByteArrayEquals(tc, text3Excerpt, actual, len3Excerpt);
+	CuAssertCharArrayEquals(tc, text3Excerpt, actual, len3Excerpt);
 	CuAssertPtrNotEquals(tc, text3, actual);
 	actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 3, actualTick);
@@ -165,7 +164,7 @@ void TestUpdaterSuite_updateContext(CuTest* tc) {
 	actualLen = getContextLen();
 	CuAssertIntEquals(tc, len3Excerpt, actualLen);
 	actual = getContext();
-	CuAssertByteArrayEquals(tc, text3Excerpt, actual, len3Excerpt);
+	CuAssertCharArrayEquals(tc, text3Excerpt, actual, len3Excerpt);
 	CuAssertPtrNotEquals(tc, text3, actual);
 	actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 3, actualTick);
@@ -182,17 +181,17 @@ void TestUpdaterSuite_updateIdentityAndContext(CuTest* tc) {
 	unsigned char text3[MAX_CONTEXT_LENGTH] = "This context string is ridiculously long.\0";
 	unsigned char text3Excerpt[256] = "This context\0";
 
-	size_t actualLen = strlen(text);
-	size_t actualLen2 = strlen(text2);
-	size_t actualLen3Excerpt = strlen(text3Excerpt);
+	size_t actualLen = strlen((char*) text);
+	size_t actualLen2 = strlen((char*) text2);
+	size_t actualLen3Excerpt = strlen((char*) text3Excerpt);
 
 	ErrorCode err = updateIdentityAndContext(identity, text, actualLen);
 	CuAssertIntEquals(tc, ERROR_CODE_NO_ERROR, err);
 	unsigned char* actual = getContext();
-	CuAssertByteArrayEquals(tc, text, actual, actualLen);
+	CuAssertCharArrayEquals(tc, text, actual, actualLen);
 	CuAssertPtrNotEquals(tc, text, actual);
 	wchar_t* actualId = getIdentity();
-	CuAssertByteArrayEquals(tc, identity, actualId, MAX_IDENTITY_LENGTH);
+	CuAssertWCharTArrayEquals(tc, identity, actualId, MAX_IDENTITY_LENGTH);
 	CuAssertPtrNotEquals(tc, identity, actualId);
 	NATIVE_DWORD actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 1, actualTick);
@@ -200,10 +199,10 @@ void TestUpdaterSuite_updateIdentityAndContext(CuTest* tc) {
 	err = updateIdentityAndContext(identity2, text2, actualLen2);
 	CuAssertIntEquals(tc, ERROR_CODE_NO_ERROR, err);
 	actual = getContext();
-	CuAssertByteArrayEquals(tc, text2, actual, actualLen2);
+	CuAssertCharArrayEquals(tc, text2, actual, actualLen2);
 	CuAssertPtrNotEquals(tc, text2, actual);
 	actualId = getIdentity();
-	CuAssertByteArrayEquals(tc, identity2, actualId, MAX_IDENTITY_LENGTH);
+	CuAssertWCharTArrayEquals(tc, identity2, actualId, MAX_IDENTITY_LENGTH);
 	CuAssertPtrNotEquals(tc, identity2, actualId);
 	actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 2, actualTick);
@@ -211,10 +210,10 @@ void TestUpdaterSuite_updateIdentityAndContext(CuTest* tc) {
 	err = updateIdentityAndContext(identity, text3, actualLen3Excerpt);
 	CuAssertIntEquals(tc, ERROR_CODE_NO_ERROR, err);
 	actual = getContext();
-	CuAssertByteArrayEquals(tc, text3Excerpt, actual, actualLen3Excerpt);
+	CuAssertCharArrayEquals(tc, text3Excerpt, actual, actualLen3Excerpt);
 	CuAssertPtrNotEquals(tc, text3, actual);
 	actualId = getIdentity();
-	CuAssertByteArrayEquals(tc, identity, actualId, MAX_IDENTITY_LENGTH);
+	CuAssertWCharTArrayEquals(tc, identity, actualId, MAX_IDENTITY_LENGTH);
 	CuAssertPtrNotEquals(tc, identity, actualId);
 	actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 3, actualTick);
@@ -305,15 +304,13 @@ void TestUpdaterSuite_updateVectorsByAvatar(CuTest* tc) {
  * ---------------------------- SUITE SETUP -------------------------------
  */
 
-ErrorCode initError;
-
 /**
  * main suite assembly function
  */
 CuSuite* UpdatersSuite(void) {
 	CuSuite* suite = CuSuiteNew();
 
-	initError = initialize((wchar_t*) "TestName\0", (wchar_t*) "TestDescription\0", 2);
+	ErrorCode initError = initialize((wchar_t*) "TestName\0", (wchar_t*) "TestDescription\0", 2);
 	if (initError == ERROR_CODE_NO_ERROR) {
 
 

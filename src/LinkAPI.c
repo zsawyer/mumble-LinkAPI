@@ -46,11 +46,10 @@
 #    include <sys/mman.h> // shm_open, PROT_READ, PROT_WRITE, MAP_SHARED mmap
 #endif
 
-LinkedMem *lm = NULL;
+static LinkedMem *lm = NULL;
 
-#define UI_VERSION_UNLINK 0
-
-#define VERIFY_LM if (!lm) { return ERROR_CODE_NO_MEMORY_WAS_INITIALIZED; }
+#define VERIFY_LM			if (!lm) { return ERROR_CODE_NO_MEMORY_WAS_INITIALIZED; }
+#define VERIFY_NO_ERROR 	if (err != ERROR_CODE_NO_ERROR) { return err; }
 
 ErrorCode nativeInitialize() {
 #ifdef WIN32
@@ -85,33 +84,26 @@ ErrorCode nativeInitialize() {
 	return ERROR_CODE_NO_ERROR;
 }
 
-static wchar_t backupedName[MAX_NAME_LENGTH];
-static wchar_t backupedDescription[MAX_DESCRIPTION_LENGTH];
+static wchar_t backupName[MAX_NAME_LENGTH];
+static wchar_t backupDescription[MAX_DESCRIPTION_LENGTH];
 static NATIVE_UINT32 backupUiVersion;
-
-void backupName(wchar_t name[]);
-void backupDescription(wchar_t description[]);
 
 ErrorCode initialize(wchar_t name[MAX_NAME_LENGTH], wchar_t description[MAX_DESCRIPTION_LENGTH], NATIVE_UINT32 uiVersion) {
 	ErrorCode err;
-	backupName(name);
-	backupDescription(description);
-	backupUiVersion = uiVersion;
 
 	err = nativeInitialize();
+	VERIFY_NO_ERROR;
 
-	if (err != ERROR_CODE_NO_ERROR) {
-		return err;
-	}
-
-	VERIFY_LM
+	VERIFY_LM;
 	if (lm->uiVersion != uiVersion) {
-		wcsncpy(lm->name, name, MAX_NAME_LENGTH);
-		wcsncpy(lm->description, description, MAX_DESCRIPTION_LENGTH);
-
-		lm->uiVersion = uiVersion;
+		err = setName(name);
+		VERIFY_NO_ERROR;
+		err = setDescription(description);
+		VERIFY_NO_ERROR;
+		err = setUiVersion(uiVersion);
+		VERIFY_NO_ERROR;
 	}
-	lm->uiTick = 0;
+	err = setUiTick(0);
 
 	return err;
 }
@@ -126,10 +118,10 @@ ErrorCode initialize(wchar_t name[MAX_NAME_LENGTH], wchar_t description[MAX_DESC
  *			on success
  */
 ErrorCode relock() {
-	VERIFY_LM
+	VERIFY_LM;
 	if (lm->uiVersion != backupUiVersion) {
-		wcsncpy(lm->name, backupedName, MAX_NAME_LENGTH);
-		wcsncpy(lm->description, backupedDescription, MAX_DESCRIPTION_LENGTH);
+		wcsncpy(lm->name, backupName, MAX_NAME_LENGTH);
+		wcsncpy(lm->description, backupDescription, MAX_DESCRIPTION_LENGTH);
 
 		lm->uiVersion = backupUiVersion;
 	}
@@ -168,21 +160,18 @@ ErrorCode setWCharTArray(wchar_t* destination, wchar_t* source, int count) {
 }
 
 ErrorCode setAndBackupWCharTArray(wchar_t* destination, wchar_t* source, wchar_t* backupDestination, int count) {
+	ErrorCode err = setWCharTArray(destination, source, count);
+	VERIFY_NO_ERROR;
 	wcsncpy(backupDestination, source, count);
-	return setWCharTArray(source, destination, count);
+	return err;
 }
 
 wchar_t* getName() {
 	return lm->name;
 }
 
-void backupName(wchar_t name[MAX_NAME_LENGTH]) {
-	wcsncpy(backupedName, name, MAX_NAME_LENGTH);
-}
-
 ErrorCode setName(wchar_t name[MAX_NAME_LENGTH]) {
-	backupName(name);
-	return setAndBackupWCharTArray(lm->name, name, backupedName, MAX_NAME_LENGTH);
+	return setAndBackupWCharTArray(lm->name, name, backupName, MAX_NAME_LENGTH);
 }
 
 ErrorCode updateName(wchar_t name[MAX_NAME_LENGTH]) {
@@ -193,13 +182,8 @@ wchar_t* getDescription() {
 	return lm->description;
 }
 
-void backupDescription(wchar_t description[MAX_DESCRIPTION_LENGTH]) {
-	wcsncpy(backupedDescription, description, MAX_DESCRIPTION_LENGTH);
-}
-
 ErrorCode setDescription(wchar_t description[MAX_DESCRIPTION_LENGTH]) {
-	backupDescription(description);
-	return setAndBackupWCharTArray(lm->description, description, backupedDescription, MAX_DESCRIPTION_LENGTH);
+	return setAndBackupWCharTArray(lm->description, description, backupDescription, MAX_DESCRIPTION_LENGTH);
 }
 
 ErrorCode updateDescription(wchar_t description[MAX_DESCRIPTION_LENGTH]) {
@@ -242,9 +226,7 @@ ErrorCode updateContext(unsigned char context[], NATIVE_UINT32 context_len) {
 
 ErrorCode setIdentityAndContext(wchar_t identity[], unsigned char context[], NATIVE_UINT32 context_len) {
 	ErrorCode err = setIdentity(identity);
-	if (err != ERROR_CODE_NO_ERROR) {
-		return err;
-	}
+	VERIFY_NO_ERROR;
 	return setContext(context, context_len);
 }
 
@@ -263,7 +245,7 @@ float* getAvatarPosition() {
 }
 
 ErrorCode setAvatarPosition(float x, float y, float z) {
-	VERIFY_LM
+	VERIFY_LM;
 	setVector(lm->fAvatarPosition, x, y, z);
 	return ERROR_CODE_NO_ERROR;
 }
@@ -273,7 +255,7 @@ float* getAvatarFront() {
 }
 
 ErrorCode setAvatarFront(float x, float y, float z) {
-	VERIFY_LM
+	VERIFY_LM;
 	setVector(lm->fAvatarFront, x, y, z);
 	return ERROR_CODE_NO_ERROR;
 }
@@ -283,7 +265,7 @@ float* getAvatarTop() {
 }
 
 ErrorCode setAvatarTop(float x, float y, float z) {
-	VERIFY_LM
+	VERIFY_LM;
 	setVector(lm->fAvatarTop, x, y, z);
 	return ERROR_CODE_NO_ERROR;
 }
@@ -293,7 +275,7 @@ float* getCameraPosition() {
 }
 
 ErrorCode setCameraPosition(float x, float y, float z) {
-	VERIFY_LM
+	VERIFY_LM;
 	setVector(lm->fCameraPosition, x, y, z);
 	return ERROR_CODE_NO_ERROR;
 }
@@ -303,7 +285,7 @@ float* getCameraFront() {
 }
 
 ErrorCode setCameraFront(float x, float y, float z) {
-	VERIFY_LM
+	VERIFY_LM;
 	setVector(lm->fCameraFront, x, y, z);
 	return ERROR_CODE_NO_ERROR;
 }
@@ -313,7 +295,7 @@ float* getCameraTop() {
 }
 
 ErrorCode setCameraTop(float x, float y, float z) {
-	VERIFY_LM
+	VERIFY_LM;
 	setVector(lm->fCameraTop, x, y, z);
 	return ERROR_CODE_NO_ERROR;
 }
@@ -378,16 +360,14 @@ NATIVE_DWORD getUiTick() {
 }
 
 ErrorCode setUiTick(NATIVE_DWORD tick) {
-	VERIFY_LM
+	VERIFY_LM;
 	lm->uiTick = tick;
 	return ERROR_CODE_NO_ERROR;
 }
 
 ErrorCode updateUiTick(NATIVE_DWORD tick) {
 	ErrorCode err = setUiTick(tick);
-	if (err != ERROR_CODE_NO_ERROR) {
-		return err;
-	}
+	VERIFY_NO_ERROR;
 	// cannot commit() as it would change the uiTick too
 	return relock();
 }
@@ -397,7 +377,7 @@ NATIVE_UINT32 getUiVersion() {
 }
 
 ErrorCode setUiVersion(NATIVE_UINT32 version) {
-	VERIFY_LM
+	VERIFY_LM;
 	backupUiVersion = version;
 	lm->uiVersion = version;
 	return ERROR_CODE_NO_ERROR;
@@ -412,7 +392,7 @@ LinkedMem* getData() {
 }
 
 ErrorCode setData(LinkedMem* source) {
-	VERIFY_LM
+	VERIFY_LM;
 	memcpy(lm, source, sizeof (LinkedMem));
 	return ERROR_CODE_NO_ERROR;
 }

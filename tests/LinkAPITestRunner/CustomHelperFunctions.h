@@ -17,6 +17,8 @@ extern "C" {
 
     void initializationFailed(CuTest* tc);
 
+    void CuStringAppendByteArray(CuString* string, char* format, const void* src, size_t size, int asChars, int asWCharT);
+
 #    ifdef	__cplusplus
 }
 #    endif

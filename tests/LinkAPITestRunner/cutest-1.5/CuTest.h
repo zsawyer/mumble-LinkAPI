@@ -13,7 +13,7 @@ char* CuStrCopy(const char* old);
 
 #define CU_ALLOC(TYPE)		((TYPE*) malloc(sizeof(TYPE)))
 
-#define HUGE_STRING_LEN	8192
+#define HUGE_STRING_LEN	8192 *4 // zsawyer, modified: increased
 #define STRING_MAX		256
 #define STRING_INC		256
 

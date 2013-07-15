@@ -1,4 +1,5 @@
 #include "CustomCuTest.h"
+#include "CustomHelperFunctions.h"
 #include <stdio.h>
 
 void CuAssertPtrNotEquals_LineMsg(CuTest* tc, const char* file, int line, const char* message,
@@ -23,32 +24,55 @@ void CuAssertVecEquals_LineMsg(CuTest* tc, const char* file, int line, const cha
 }
 
 void CuAssertByteArrayEquals_LineMsg(CuTest* tc, const char* file, int line, const char* message,
-		const void* expected, const void* actual, size_t size) {
+		const void* expected, const void* actual, size_t size, int asChars, int asWCharT) {
 	CuString string;
-	if ((expected == NULL && actual == NULL) ||
-			(expected != NULL && actual != NULL &&
-			memcmp(expected, actual, size) == 0)) {
+
+	char* type;
+	char* format;
+	int bytes;
+	if (asChars) {
+		format = "%c";
+		bytes = (size * (sizeof (char)));
+		type = "char";
+	} else if (asWCharT) {
+		format = "%lc";
+		bytes = (size * (sizeof (wchar_t)));
+		type = "wchar_t";
+	} else {
+		format = "%x";
+		bytes = size;
+		type = "byte";
+	}
+
+	int result;
+	if (expected == NULL && actual == NULL)
 		return;
+	if (expected != NULL && actual != NULL) {
+		if (asWCharT) {
+			result = wmemcmp(expected, actual, size);
+		} else {
+			result = memcmp(expected, actual, bytes);
+		}
+		if (result == 0) {
+			return;
+		}
 	}
 
 	CuStringInit(&string);
+	CuStringAppendFormat(&string, "(memcmp: %d) ", result);
 	if (message != NULL) {
 		CuStringAppend(&string, message);
 		CuStringAppend(&string, ": ");
 	}
-	CuStringAppendFormat(&string, "%d bytes", size);
-	CuStringAppendFormat(&string, " (%d chars)", (size / (sizeof (char))));
+
+	CuStringAppendFormat(&string, "%d %ss (%d bytes)", size, type, bytes);
 	CuStringAppend(&string, ": ");
 
-	int i;
 	CuStringAppend(&string, "expected \n\n<");
-	for (i = 0; i < (size / (sizeof (char))); i++) {
-		CuStringAppendChar(&string, ((char*) expected)[i]);
-	}
+	CuStringAppendByteArray(&string, format, expected, size, asChars, asWCharT);
 	CuStringAppend(&string, ">\n\n but was \n\n<");
-	for (i = 0; i < (size / (sizeof (char))); i++) {
-		CuStringAppendChar(&string, ((char*) actual)[i]);
-	}
-	CuStringAppend(&string, ">");
-	CuFail_Line(tc, file, line, "byte comparison failed", string.buffer);
+	CuStringAppendByteArray(&string, format, actual, size, asChars, asWCharT);
+	CuStringAppend(&string, ">\n");
+
+	CuFail_Line(tc, file, line, "array comparison failed", string.buffer);
 }
