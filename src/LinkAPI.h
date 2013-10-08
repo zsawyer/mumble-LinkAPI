@@ -50,11 +50,15 @@
  * To compile this as a static library define LINKAPI_NO_DLL
  * If you are using this header file to define your imports define LINKAPI_DLL_IMPORTS
  *
- * @author zsawyer, 2010-03-20
+ * @author zsawyer, 2013-03-20
  */
 
 #ifndef LINKAPI_H
 #    define	LINKAPI_H
+
+#   ifdef	__cplusplus
+extern "C" {
+#   endif
 
 #    include "apiExportHelper.h"
 
@@ -256,13 +260,13 @@ unsigned char * getContext();
  */
 LINKAPI_API
 ErrorCode setContext(unsigned char context[], NATIVE_UINT32 context_len);
-LINKAPI_API
 
 /**
  * the length of the context (number of array elements)
  *
  * @return the length of the current context
  */
+LINKAPI_API
 NATIVE_UINT32 getContextLen();
 
 /**
@@ -692,6 +696,10 @@ ErrorCode setData(LinkedMem *source);
  */
 LINKAPI_API
 LinkedMem* getData();
+
+#   ifdef	__cplusplus
+}
+#   endif
 
 #endif	/* LINKAPI_H */
 
