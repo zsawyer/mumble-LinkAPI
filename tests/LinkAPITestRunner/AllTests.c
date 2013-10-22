@@ -45,8 +45,8 @@ void RunSelectedTest(void) {
 	CuString *output = CuStringNew();
 	CuSuite* suite = CuSuiteNew();
 
-	ErrorCode initError = initialize((wchar_t*) "TestName\0", (wchar_t*) "TestDescription\0", 2);
-	if (initError == ERROR_CODE_NO_ERROR) {
+	LINKAPI_ERROR_CODE initError = initialize((wchar_t*) "TestName\0", (wchar_t*) "TestDescription\0", 2);
+	if (initError == LINKAPI_ERROR_CODE_NO_ERROR) {
 
 		// selected test
 		SUITE_ADD_TEST(suite, TestSettersSuite_setName);
@@ -62,26 +62,26 @@ void RunSelectedTest(void) {
 }
 
 
-LinkedMem* lm = NULL;
+LINKAPI_LINKED_MEMORY* lm = NULL;
 
 int setup(void) {
 	int bCreated = 0;
 #ifdef WIN32
 	HANDLE hMapObject = OpenFileMappingW(FILE_MAP_ALL_ACCESS, FALSE, L"MumbleLink");
 	if (hMapObject == NULL) {
-		hMapObject = CreateFileMappingW(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof (LinkedMem), L"MumbleLink");
+		hMapObject = CreateFileMappingW(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof (LINKAPI_LINKED_MEMORY), L"MumbleLink");
 		bCreated = 1;
 		if (hMapObject == NULL)
 			return 0;
 	}
-	lm = (LinkedMem *) (MapViewOfFile(hMapObject, FILE_MAP_ALL_ACCESS, 0, 0, 0));
+	lm = (LINKAPI_LINKED_MEMORY *) (MapViewOfFile(hMapObject, FILE_MAP_ALL_ACCESS, 0, 0, 0));
 	if (lm == NULL) {
 		CloseHandle(hMapObject);
 		hMapObject = NULL;
 		return 0;
 	}
 	if (bCreated)
-		memset(lm, 0, sizeof (LinkedMem));
+		memset(lm, 0, sizeof (LINKAPI_LINKED_MEMORY));
 #else
 	snprintf(memname, 256, "/MumbleLink.%d", getuid());
 
@@ -97,7 +97,7 @@ int setup(void) {
 	}
 
 	if (bCreated) {
-		if (ftruncate(shmfd, sizeof (struct LinkedMem)) != 0) {
+		if (ftruncate(shmfd, sizeof (struct LINKAPI_LINKED_MEMORY)) != 0) {
 			fprintf(stderr, "Mumble Link plugin: failed to resize shared memory\n");
 			close(shmfd);
 			shmfd = -1;
@@ -105,11 +105,11 @@ int setup(void) {
 		}
 	}
 
-	lm = (LinkedMem*) (
-			mmap(NULL, sizeof (struct LinkedMem), PROT_READ | PROT_WRITE, MAP_SHARED, shmfd, 0));
+	lm = (LINKAPI_LINKED_MEMORY*) (
+			mmap(NULL, sizeof (struct LINKAPI_LINKED_MEMORY), PROT_READ | PROT_WRITE, MAP_SHARED, shmfd, 0));
 
 	if ((lm != lm_invalid) && bCreated)
-		memset(lm, 0, sizeof (struct LinkedMem));
+		memset(lm, 0, sizeof (struct LINKAPI_LINKED_MEMORY));
 #endif
 
 	return 1;

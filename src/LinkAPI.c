@@ -30,38 +30,39 @@
 
 /*
  *
- * @author zsawyer, 2010-03-20
+ * @author zsawyer, 2013-03-20
  */
 
 #include "LinkAPI.h"
 
-#include <stdio.h> // snprintf
-#include <string.h> // memcpy
+#include <stdio.h> /* snprintf */
+#include <string.h> /* memcpy */
 
 #ifndef WIN32
-#    include <unistd.h> // getuid
-#    include <sys/stat.h> // S_IRUSR, S_IWUSR
-#    include <fcntl.h> // O_RDWR
+#    include <unistd.h> /* getuid */
+#    include <sys/stat.h> /* S_IRUSR, S_IWUSR */
+#    include <fcntl.h> /* O_RDWR */
 
-#    include <sys/mman.h> // shm_open, PROT_READ, PROT_WRITE, MAP_SHARED mmap
+#    include <sys/mman.h> /* shm_open, PROT_READ, PROT_WRITE, MAP_SHARED mmap */
 #endif
 
-static LinkedMem *lm = NULL;
+static LINKAPI_LINKED_MEMORY *lm = NULL;
 
-#define VERIFY_LM			if (!lm) { return ERROR_CODE_NO_MEMORY_WAS_INITIALIZED; }
-#define VERIFY_NO_ERROR 	if (err != ERROR_CODE_NO_ERROR) { return err; }
+#define LINKAPI_VERIFY_LM			if (!lm) { return LINKAPI_ERROR_CODE_NO_MEMORY_WAS_INITIALIZED; }
+#define LINKAPI_VERIFY_NO_ERROR 	if (err != LINKAPI_ERROR_CODE_NO_ERROR) { return err; }
 
-ErrorCode nativeInitialize() {
+LINKAPI_ERROR_CODE nativeInitialize() {
 #ifdef WIN32
 	HANDLE hMapObject = OpenFileMappingW(FILE_MAP_ALL_ACCESS, FALSE, L"MumbleLink");
-	if (hMapObject == NULL)
-		return ERROR_CODE_WIN32_NO_HANDLE;
+	if (hMapObject == NULL) {
+		return LINKAPI_ERROR_CODE_WIN32_NO_HANDLE;
+	}
 
-	lm = (LinkedMem *) MapViewOfFile(hMapObject, FILE_MAP_ALL_ACCESS, 0, 0, sizeof (LinkedMem));
+	lm = (LINKAPI_LINKED_MEMORY *) MapViewOfFile(hMapObject, FILE_MAP_ALL_ACCESS, 0, 0, sizeof (LINKAPI_LINKED_MEMORY));
 	if (lm == NULL) {
 		CloseHandle(hMapObject);
 		hMapObject = NULL;
-		return ERROR_CODE_WIN32_NO_STRUCTURE;
+		return LINKAPI_ERROR_CODE_WIN32_NO_STRUCTURE;
 	}
 #else
 	char memname[256];
@@ -70,38 +71,38 @@ ErrorCode nativeInitialize() {
 	int shmfd = shm_open(memname, O_RDWR, S_IRUSR | S_IWUSR);
 
 	if (shmfd < 0) {
-		return ERROR_CODE_UNIX_NO_HANDLE;
+		return LINKAPI_ERROR_CODE_UNIX_NO_HANDLE;
 	}
 
 	lm = (LinkedMem *) (mmap(NULL, sizeof (struct LinkedMem), PROT_READ | PROT_WRITE, MAP_SHARED, shmfd, 0));
 
 	if (lm == (void *) (-1)) {
 		lm = NULL;
-		return ERROR_CODE_UNIX_NO_STRUCTURE;
+		return LINKAPI_ERROR_CODE_UNIX_NO_STRUCTURE;
 	}
 #endif
 
-	return ERROR_CODE_NO_ERROR;
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
-static wchar_t backupName[MAX_NAME_LENGTH];
-static wchar_t backupDescription[MAX_DESCRIPTION_LENGTH];
-static NATIVE_UINT32 backupUiVersion;
+static wchar_t backupName[LINKAPI_MAX_NAME_LENGTH];
+static wchar_t backupDescription[LINKAPI_MAX_DESCRIPTION_LENGTH];
+static LINKAPI_NATIVE_UINT32 backupUiVersion;
 
-ErrorCode initialize(wchar_t name[MAX_NAME_LENGTH], wchar_t description[MAX_DESCRIPTION_LENGTH], NATIVE_UINT32 uiVersion) {
-	ErrorCode err;
+LINKAPI_ERROR_CODE initialize(wchar_t name[LINKAPI_MAX_NAME_LENGTH], wchar_t description[LINKAPI_MAX_DESCRIPTION_LENGTH], LINKAPI_NATIVE_UINT32 uiVersion) {
+	LINKAPI_ERROR_CODE err;
 
 	err = nativeInitialize();
-	VERIFY_NO_ERROR;
+	LINKAPI_VERIFY_NO_ERROR;
 
-	VERIFY_LM;
+	LINKAPI_VERIFY_LM;
 	if (lm->uiVersion != uiVersion) {
 		err = setName(name);
-		VERIFY_NO_ERROR;
+		LINKAPI_VERIFY_NO_ERROR;
 		err = setDescription(description);
-		VERIFY_NO_ERROR;
+		LINKAPI_VERIFY_NO_ERROR;
 		err = setUiVersion(uiVersion);
-		VERIFY_NO_ERROR;
+		LINKAPI_VERIFY_NO_ERROR;
 	}
 	err = setUiTick(0);
 
@@ -114,23 +115,23 @@ ErrorCode initialize(wchar_t name[MAX_NAME_LENGTH], wchar_t description[MAX_DESC
  *
  * this will effectively relink the plugin
  *
- * @return	an error code, see <code>enum ErrorCode</code>, ERROR_CODE_NO_ERROR
+ * @return	an error code, see <code>enum ErrorCode</code>, LINKAPI_ERROR_CODE_NO_ERROR
  *			on success
  */
-ErrorCode relock() {
-	VERIFY_LM;
+LINKAPI_ERROR_CODE relock() {
+	LINKAPI_VERIFY_LM;
 	if (lm->uiVersion != backupUiVersion) {
-		wcsncpy(lm->name, backupName, MAX_NAME_LENGTH);
-		wcsncpy(lm->description, backupDescription, MAX_DESCRIPTION_LENGTH);
+		wcsncpy(lm->name, backupName, LINKAPI_MAX_NAME_LENGTH);
+		wcsncpy(lm->description, backupDescription, LINKAPI_MAX_DESCRIPTION_LENGTH);
 
 		lm->uiVersion = backupUiVersion;
 	}
 
-	return ERROR_CODE_NO_ERROR;
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
-void doUnlink() {
-	lm->uiVersion = UI_VERSION_UNLINK;
+void unlinkMumble() {
+	lm->uiVersion = LINKAPI_UI_VERSION_UNLINK;
 }
 
 /**
@@ -141,27 +142,27 @@ void doUnlink() {
  * @return	the error code of the commit result or the previous error code if 
  *			it was considered severe
  */
-ErrorCode commitOnNoError(ErrorCode previousCode) {
-	if (previousCode != ERROR_CODE_NO_ERROR) {
+LINKAPI_ERROR_CODE commitOnNoError(LINKAPI_ERROR_CODE previousCode) {
+	if (previousCode != LINKAPI_ERROR_CODE_NO_ERROR) {
 		return previousCode;
 	}
 	return commit();
 }
 
-ErrorCode commit() {
+LINKAPI_ERROR_CODE commit() {
 	lm->uiTick++;
 	return relock();
 }
 
-ErrorCode setWCharTArray(wchar_t* destination, wchar_t* source, int count) {
-	VERIFY_LM;
+LINKAPI_ERROR_CODE setWCharTArray(wchar_t* destination, wchar_t* source, int count) {
+	LINKAPI_VERIFY_LM;
 	wcsncpy(destination, source, count);
-	return ERROR_CODE_NO_ERROR;
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
-ErrorCode setAndBackupWCharTArray(wchar_t* destination, wchar_t* source, wchar_t* backupDestination, int count) {
-	ErrorCode err = setWCharTArray(destination, source, count);
-	VERIFY_NO_ERROR;
+LINKAPI_ERROR_CODE setAndBackupWCharTArray(wchar_t* destination, wchar_t* source, wchar_t* backupDestination, int count) {
+	LINKAPI_ERROR_CODE err = setWCharTArray(destination, source, count);
+	LINKAPI_VERIFY_NO_ERROR;
 	wcsncpy(backupDestination, source, count);
 	return err;
 }
@@ -170,11 +171,11 @@ wchar_t* getName() {
 	return lm->name;
 }
 
-ErrorCode setName(wchar_t name[MAX_NAME_LENGTH]) {
-	return setAndBackupWCharTArray(lm->name, name, backupName, MAX_NAME_LENGTH);
+LINKAPI_ERROR_CODE setName(wchar_t name[LINKAPI_MAX_NAME_LENGTH]) {
+	return setAndBackupWCharTArray(lm->name, name, backupName, LINKAPI_MAX_NAME_LENGTH);
 }
 
-ErrorCode updateName(wchar_t name[MAX_NAME_LENGTH]) {
+LINKAPI_ERROR_CODE updateName(wchar_t name[LINKAPI_MAX_NAME_LENGTH]) {
 	return commitOnNoError(setName(name));
 }
 
@@ -182,11 +183,11 @@ wchar_t* getDescription() {
 	return lm->description;
 }
 
-ErrorCode setDescription(wchar_t description[MAX_DESCRIPTION_LENGTH]) {
-	return setAndBackupWCharTArray(lm->description, description, backupDescription, MAX_DESCRIPTION_LENGTH);
+LINKAPI_ERROR_CODE setDescription(wchar_t description[LINKAPI_MAX_DESCRIPTION_LENGTH]) {
+	return setAndBackupWCharTArray(lm->description, description, backupDescription, LINKAPI_MAX_DESCRIPTION_LENGTH);
 }
 
-ErrorCode updateDescription(wchar_t description[MAX_DESCRIPTION_LENGTH]) {
+LINKAPI_ERROR_CODE updateDescription(wchar_t description[LINKAPI_MAX_DESCRIPTION_LENGTH]) {
 	return commitOnNoError(setDescription(description));
 }
 
@@ -194,47 +195,46 @@ wchar_t* getIdentity() {
 	return lm->identity;
 }
 
-ErrorCode setIdentity(wchar_t identity[MAX_IDENTITY_LENGTH]) {
-	return setWCharTArray(lm->identity, identity, MAX_IDENTITY_LENGTH);
+LINKAPI_ERROR_CODE setIdentity(wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH]) {
+	return setWCharTArray(lm->identity, identity, LINKAPI_MAX_IDENTITY_LENGTH);
 }
 
-ErrorCode updateIdentity(wchar_t identity[MAX_IDENTITY_LENGTH]) {
+LINKAPI_ERROR_CODE updateIdentity(wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH]) {
 	return commitOnNoError(setIdentity(identity));
 }
 
-NATIVE_UINT32 getContextLen() {
-	return lm->context_len;
-}
-
-unsigned char * getContext() {
+unsigned char * getContext(LINKAPI_NATIVE_UINT32* context_len) {
+	if(context_len != NULL) {
+		*context_len = lm->context_len;
+	}
 	return lm->context;
 }
 
-ErrorCode setContext(unsigned char context[], NATIVE_UINT32 context_len) {
-	VERIFY_LM;
-	if (context_len > MAX_CONTEXT_LENGTH) {
-		return ERROR_CODE_CONTEXT_LENGTH_EXCEEDED;
+LINKAPI_ERROR_CODE setContext(unsigned char context[], LINKAPI_NATIVE_UINT32 context_len) {
+	LINKAPI_VERIFY_LM;
+	if (context_len > LINKAPI_MAX_CONTEXT_LENGTH) {
+		return LINKAPI_ERROR_CODE_CONTEXT_LENGTH_EXCEEDED;
 	}
 	memcpy(lm->context, context, context_len);
 	lm->context_len = context_len;
-	return ERROR_CODE_NO_ERROR;
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
-ErrorCode updateContext(unsigned char context[], NATIVE_UINT32 context_len) {
+LINKAPI_ERROR_CODE updateContext(unsigned char context[], LINKAPI_NATIVE_UINT32 context_len) {
 	return commitOnNoError(setContext(context, context_len));
 }
 
-ErrorCode setIdentityAndContext(wchar_t identity[], unsigned char context[], NATIVE_UINT32 context_len) {
-	ErrorCode err = setIdentity(identity);
-	VERIFY_NO_ERROR;
+LINKAPI_ERROR_CODE setIdentityAndContext(wchar_t identity[], unsigned char context[], LINKAPI_NATIVE_UINT32 context_len) {
+	LINKAPI_ERROR_CODE err = setIdentity(identity);
+	LINKAPI_VERIFY_NO_ERROR;
 	return setContext(context, context_len);
 }
 
-ErrorCode updateIdentityAndContext(wchar_t identity[], unsigned char context[], NATIVE_UINT32 context_len) {
+LINKAPI_ERROR_CODE updateIdentityAndContext(wchar_t identity[], unsigned char context[], LINKAPI_NATIVE_UINT32 context_len) {
 	return commitOnNoError(setIdentityAndContext(identity, context, context_len));
 }
 
-void setVector(float target[VECTOR_LENGTH], float x, float y, float z) {
+void setVector(float target[LINKAPI_VECTOR_LENGTH], float x, float y, float z) {
 	target[0] = x;
 	target[1] = y;
 	target[2] = z;
@@ -244,77 +244,77 @@ float* getAvatarPosition() {
 	return lm->fAvatarPosition;
 }
 
-ErrorCode setAvatarPosition(float x, float y, float z) {
-	VERIFY_LM;
+LINKAPI_ERROR_CODE setAvatarPosition(float x, float y, float z) {
+	LINKAPI_VERIFY_LM;
 	setVector(lm->fAvatarPosition, x, y, z);
-	return ERROR_CODE_NO_ERROR;
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
 float* getAvatarFront() {
 	return lm->fAvatarFront;
 }
 
-ErrorCode setAvatarFront(float x, float y, float z) {
-	VERIFY_LM;
+LINKAPI_ERROR_CODE setAvatarFront(float x, float y, float z) {
+	LINKAPI_VERIFY_LM;
 	setVector(lm->fAvatarFront, x, y, z);
-	return ERROR_CODE_NO_ERROR;
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
 float* getAvatarTop() {
 	return lm->fAvatarTop;
 }
 
-ErrorCode setAvatarTop(float x, float y, float z) {
-	VERIFY_LM;
+LINKAPI_ERROR_CODE setAvatarTop(float x, float y, float z) {
+	LINKAPI_VERIFY_LM;
 	setVector(lm->fAvatarTop, x, y, z);
-	return ERROR_CODE_NO_ERROR;
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
 float* getCameraPosition() {
 	return lm->fCameraPosition;
 }
 
-ErrorCode setCameraPosition(float x, float y, float z) {
-	VERIFY_LM;
+LINKAPI_ERROR_CODE setCameraPosition(float x, float y, float z) {
+	LINKAPI_VERIFY_LM;
 	setVector(lm->fCameraPosition, x, y, z);
-	return ERROR_CODE_NO_ERROR;
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
 float* getCameraFront() {
 	return lm->fCameraFront;
 }
 
-ErrorCode setCameraFront(float x, float y, float z) {
-	VERIFY_LM;
+LINKAPI_ERROR_CODE setCameraFront(float x, float y, float z) {
+	LINKAPI_VERIFY_LM;
 	setVector(lm->fCameraFront, x, y, z);
-	return ERROR_CODE_NO_ERROR;
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
 float* getCameraTop() {
 	return lm->fCameraTop;
 }
 
-ErrorCode setCameraTop(float x, float y, float z) {
-	VERIFY_LM;
+LINKAPI_ERROR_CODE setCameraTop(float x, float y, float z) {
+	LINKAPI_VERIFY_LM;
 	setVector(lm->fCameraTop, x, y, z);
-	return ERROR_CODE_NO_ERROR;
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
-void copyVector(float target[VECTOR_LENGTH], float source[VECTOR_LENGTH]) {
+void copyVector(float target[LINKAPI_VECTOR_LENGTH], float source[LINKAPI_VECTOR_LENGTH]) {
 	int i;
-	for (i = 0; i < VECTOR_LENGTH; i++) {
+	for (i = 0; i < LINKAPI_VECTOR_LENGTH; i++) {
 		target[i] = source[i];
 	}
 }
 
-ErrorCode setVectors(
-		float fAvatarPosition[VECTOR_LENGTH],
-		float fAvatarFront[VECTOR_LENGTH],
-		float fAvatarTop[VECTOR_LENGTH],
-		float fCameraPosition[VECTOR_LENGTH],
-		float fCameraFront[VECTOR_LENGTH],
-		float fCameraTop[VECTOR_LENGTH]) {
-	VERIFY_LM;
+LINKAPI_ERROR_CODE setVectors(
+		float fAvatarPosition[LINKAPI_VECTOR_LENGTH],
+		float fAvatarFront[LINKAPI_VECTOR_LENGTH],
+		float fAvatarTop[LINKAPI_VECTOR_LENGTH],
+		float fCameraPosition[LINKAPI_VECTOR_LENGTH],
+		float fCameraFront[LINKAPI_VECTOR_LENGTH],
+		float fCameraTop[LINKAPI_VECTOR_LENGTH]) {
+	LINKAPI_VERIFY_LM;
 
 	copyVector(lm->fAvatarPosition, fAvatarPosition);
 	copyVector(lm->fAvatarFront, fAvatarFront);
@@ -324,75 +324,75 @@ ErrorCode setVectors(
 	copyVector(lm->fCameraFront, fCameraFront);
 	copyVector(lm->fCameraTop, fCameraTop);
 
-	return ERROR_CODE_NO_ERROR;
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
-ErrorCode updateVectors(
-		float fAvatarPosition[VECTOR_LENGTH],
-		float fAvatarFront[VECTOR_LENGTH],
-		float fAvatarTop[VECTOR_LENGTH],
-		float fCameraPosition[VECTOR_LENGTH],
-		float fCameraFront[VECTOR_LENGTH],
-		float fCameraTop[VECTOR_LENGTH]) {
+LINKAPI_ERROR_CODE updateVectors(
+		float fAvatarPosition[LINKAPI_VECTOR_LENGTH],
+		float fAvatarFront[LINKAPI_VECTOR_LENGTH],
+		float fAvatarTop[LINKAPI_VECTOR_LENGTH],
+		float fCameraPosition[LINKAPI_VECTOR_LENGTH],
+		float fCameraFront[LINKAPI_VECTOR_LENGTH],
+		float fCameraTop[LINKAPI_VECTOR_LENGTH]) {
 
 	return commitOnNoError(setVectors(fAvatarPosition, fAvatarFront, fAvatarTop,
 			fCameraPosition, fCameraFront, fCameraTop));
 }
 
-ErrorCode setVectorsByAvatar(
-		float fAvatarPosition[VECTOR_LENGTH],
-		float fAvatarFront[VECTOR_LENGTH],
-		float fAvatarTop[VECTOR_LENGTH]) {
+LINKAPI_ERROR_CODE setVectorsAvatarAsCamera(
+		float fAvatarPosition[LINKAPI_VECTOR_LENGTH],
+		float fAvatarFront[LINKAPI_VECTOR_LENGTH],
+		float fAvatarTop[LINKAPI_VECTOR_LENGTH]) {
 	return setVectors(fAvatarPosition, fAvatarFront, fAvatarTop,
 			fAvatarPosition, fAvatarFront, fAvatarTop);
 }
 
-ErrorCode updateVectorsByAvatar(
-		float fAvatarPosition[VECTOR_LENGTH],
-		float fAvatarFront[VECTOR_LENGTH],
-		float fAvatarTop[VECTOR_LENGTH]) {
+LINKAPI_ERROR_CODE updateVectorsAvatarAsCamera(
+		float fAvatarPosition[LINKAPI_VECTOR_LENGTH],
+		float fAvatarFront[LINKAPI_VECTOR_LENGTH],
+		float fAvatarTop[LINKAPI_VECTOR_LENGTH]) {
 	return updateVectors(fAvatarPosition, fAvatarFront, fAvatarTop,
 			fAvatarPosition, fAvatarFront, fAvatarTop);
 }
 
-NATIVE_DWORD getUiTick() {
+LINKAPI_NATIVE_DWORD getUiTick() {
 	return lm->uiTick;
 }
 
-ErrorCode setUiTick(NATIVE_DWORD tick) {
-	VERIFY_LM;
+LINKAPI_ERROR_CODE setUiTick(LINKAPI_NATIVE_DWORD tick) {
+	LINKAPI_VERIFY_LM;
 	lm->uiTick = tick;
-	return ERROR_CODE_NO_ERROR;
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
-ErrorCode updateUiTick(NATIVE_DWORD tick) {
-	ErrorCode err = setUiTick(tick);
-	VERIFY_NO_ERROR;
-	// cannot commit() as it would change the uiTick too
+LINKAPI_ERROR_CODE updateUiTick(LINKAPI_NATIVE_DWORD tick) {
+	LINKAPI_ERROR_CODE err = setUiTick(tick);
+	LINKAPI_VERIFY_NO_ERROR;
+	/* cannot commit() as it would change the uiTick too! */
 	return relock();
 }
 
-NATIVE_UINT32 getUiVersion() {
+LINKAPI_NATIVE_UINT32 getUiVersion() {
 	return lm->uiVersion;
 }
 
-ErrorCode setUiVersion(NATIVE_UINT32 version) {
-	VERIFY_LM;
+LINKAPI_ERROR_CODE setUiVersion(LINKAPI_NATIVE_UINT32 version) {
+	LINKAPI_VERIFY_LM;
 	backupUiVersion = version;
 	lm->uiVersion = version;
-	return ERROR_CODE_NO_ERROR;
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
-ErrorCode updateUiVersion(NATIVE_UINT32 version) {
+LINKAPI_ERROR_CODE updateUiVersion(LINKAPI_NATIVE_UINT32 version) {
 	return commitOnNoError(setUiVersion(version));
 }
 
-LinkedMem* getData() {
+LINKAPI_LINKED_MEMORY* getData() {
 	return lm;
 }
 
-ErrorCode setData(LinkedMem* source) {
-	VERIFY_LM;
-	memcpy(lm, source, sizeof (LinkedMem));
-	return ERROR_CODE_NO_ERROR;
+LINKAPI_ERROR_CODE setData(LINKAPI_LINKED_MEMORY* source) {
+	LINKAPI_VERIFY_LM;
+	memcpy(lm, source, sizeof (LINKAPI_LINKED_MEMORY));
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }

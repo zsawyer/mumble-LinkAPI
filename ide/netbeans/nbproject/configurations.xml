@@ -201,6 +201,7 @@
             <pElem>../../src</pElem>
             <pElem>.</pElem>
           </incDir>
+          <commandLine>-std=c89 -pedantic -Werror</commandLine>
           <warningLevel>2</warningLevel>
         </cTool>
         <ccTool>

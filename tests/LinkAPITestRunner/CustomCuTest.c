@@ -11,7 +11,7 @@ void CuAssertPtrNotEquals_LineMsg(CuTest* tc, const char* file, int line, const 
 }
 
 void CuAssertVecEquals_LineMsg(CuTest* tc, const char* file, int line, const char* message,
-		float expected[VECTOR_LENGTH], float actual[VECTOR_LENGTH], int size) {
+		float expected[LINKAPI_VECTOR_LENGTH], float actual[LINKAPI_VECTOR_LENGTH], int size) {
 	char buf[STRING_MAX];
 
 	int i;

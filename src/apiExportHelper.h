@@ -1,15 +1,14 @@
 /* 
- * File:   apiHelper.h
- * Author: zsawyer
+ * This code was taken and adapted from http://gcc.gnu.org/wiki/Visibility
  *
- * Created on April 6, 2013, 10:31 PM
+ * modified by: zsawyer, 2013
  */
 
 #ifndef APIEXPORTHELPER_H
 #define	APIEXPORTHELPER_H
 
 
-// Generic helper definitions for shared library support
+/* Generic helper definitions for shared library support */
 #if defined _WIN32 || defined __CYGWIN__
   #define LINKAPI_HELPER_DLL_IMPORT __declspec(dllimport)
   #define LINKAPI_HELPER_DLL_EXPORT __declspec(dllexport)
@@ -26,21 +25,22 @@
   #endif
 #endif
 
-// Now we use the generic helper definitions above to define LINKAPI_API and LINKAPI_LOCAL.
-// LINKAPI_API is used for the public API symbols. It either DLL imports or DLL exports (or does nothing for static build)
-// LINKAPI_LOCAL is used for non-api symbols.
-
-#ifndef LINKAPI_NO_DLL // defined if LINKAPI is compiled as a DLL
-  #ifndef LINKAPI_DLL_IMPORTS // defined if we are building the LINKAPI DLL (instead of using it)
+/*
+ * Now we use the generic helper definitions above to define LINKAPI_API and LINKAPI_LOCAL.
+ * LINKAPI_API is used for the public API symbols. It either DLL imports or DLL exports (or does nothing for static build)
+ * LINKAPI_LOCAL is used for non-api symbols.
+ */
+#ifndef LINKAPI_NO_DLL /* defined if LINKAPI is compiled as a DLL */
+  #ifndef LINKAPI_DLL_IMPORTS /* defined if we are building the LINKAPI DLL (instead of using it) */
     #define LINKAPI_API LINKAPI_HELPER_DLL_EXPORT
   #else
     #define LINKAPI_API LINKAPI_HELPER_DLL_IMPORT
-  #endif // LINKAPI_DLL_EXPORTS
+  #endif /* LINKAPI_DLL_EXPORTS */
   #define LINKAPI_LOCAL LINKAPI_HELPER_DLL_LOCAL
-#else // LINKAPI_DLL is not defined: this means LINKAPI is a static lib.
+#else /* LINKAPI_DLL is not defined: this means LINKAPI is a static lib. */
   #define LINKAPI_API
   #define LINKAPI_LOCAL
-#endif // LINKAPI_DLL
+#endif /* LINKAPI_DLL */
 
 
 
