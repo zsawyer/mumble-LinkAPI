@@ -131,9 +131,9 @@ void TestUpdaterSuite_updateContext(CuTest* tc) {
 
 	LINKAPI_ERROR_CODE err = updateContext(text, len);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
-	LINKAPI_NATIVE_UINT32 actualLen;
-	unsigned char* actual = getContext(&actualLen);
+	LINKAPI_NATIVE_UINT32 actualLen = getContextLen();
 	CuAssertIntEquals(tc, len, actualLen);
+	unsigned char* actual = getContext();
 	CuAssertCharArrayEquals(tc, text, actual, len);
 	CuAssertPtrNotEquals(tc, text, actual);
 	LINKAPI_NATIVE_DWORD actualTick = getUiTick();
@@ -141,8 +141,9 @@ void TestUpdaterSuite_updateContext(CuTest* tc) {
 
 	err = updateContext(text2, len2);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
-	actual = getContext(&actualLen);
+	actualLen = getContextLen();
 	CuAssertIntEquals(tc, len2, actualLen);
+	actual = getContext();
 	CuAssertCharArrayEquals(tc, text2, actual, len2);
 	CuAssertPtrNotEquals(tc, text2, actual);
 	actualTick = getUiTick();
@@ -150,8 +151,9 @@ void TestUpdaterSuite_updateContext(CuTest* tc) {
 
 	err = updateContext(text3, len3Excerpt);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
-	actual = getContext(&actualLen);
+	actualLen = getContextLen();
 	CuAssertIntEquals(tc, len3Excerpt, actualLen);
+	actual = getContext();
 	CuAssertCharArrayEquals(tc, text3Excerpt, actual, len3Excerpt);
 	CuAssertPtrNotEquals(tc, text3, actual);
 	actualTick = getUiTick();
@@ -159,8 +161,9 @@ void TestUpdaterSuite_updateContext(CuTest* tc) {
 
 	err = updateContext(text, LINKAPI_MAX_CONTEXT_LENGTH + 10);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_CONTEXT_LENGTH_EXCEEDED, err);	
-	actual = getContext(&actualLen);
+	actualLen = getContextLen();
 	CuAssertIntEquals(tc, len3Excerpt, actualLen);
+	actual = getContext();
 	CuAssertCharArrayEquals(tc, text3Excerpt, actual, len3Excerpt);
 	CuAssertPtrNotEquals(tc, text3, actual);
 	actualTick = getUiTick();
@@ -184,7 +187,7 @@ void TestUpdaterSuite_updateIdentityAndContext(CuTest* tc) {
 
 	LINKAPI_ERROR_CODE err = updateIdentityAndContext(identity, text, actualLen);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
-	unsigned char* actual = getContext(NULL);
+	unsigned char* actual = getContext();
 	CuAssertCharArrayEquals(tc, text, actual, actualLen);
 	CuAssertPtrNotEquals(tc, text, actual);
 	wchar_t* actualId = getIdentity();
@@ -195,7 +198,7 @@ void TestUpdaterSuite_updateIdentityAndContext(CuTest* tc) {
 
 	err = updateIdentityAndContext(identity2, text2, actualLen2);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
-	actual = getContext(NULL);
+	actual = getContext();
 	CuAssertCharArrayEquals(tc, text2, actual, actualLen2);
 	CuAssertPtrNotEquals(tc, text2, actual);
 	actualId = getIdentity();
@@ -206,7 +209,7 @@ void TestUpdaterSuite_updateIdentityAndContext(CuTest* tc) {
 
 	err = updateIdentityAndContext(identity, text3, actualLen3Excerpt);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
-	actual = getContext(NULL);
+	actual = getContext();
 	CuAssertCharArrayEquals(tc, text3Excerpt, actual, actualLen3Excerpt);
 	CuAssertPtrNotEquals(tc, text3, actual);
 	actualId = getIdentity();

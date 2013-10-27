@@ -203,10 +203,11 @@ LINKAPI_ERROR_CODE updateIdentity(wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH])
 	return commitOnNoError(setIdentity(identity));
 }
 
-unsigned char * getContext(LINKAPI_NATIVE_UINT32* context_len) {
-	if(context_len != NULL) {
-		*context_len = lm->context_len;
-	}
+LINKAPI_NATIVE_UINT32 getContextLen() {
+	return lm->context_len;
+}
+
+unsigned char * getContext() {
 	return lm->context;
 }
 

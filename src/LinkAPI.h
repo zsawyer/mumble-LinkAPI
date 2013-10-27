@@ -32,11 +32,23 @@
  * This header file specifies a generic interface to provide positional audio
  * information to mumble it depends on the "Mumble Link Plugin" ("Link") v1.2.0
  *
- * note that all update* methods will increment uiTick
+ * Note that all update...(...) methods will increment uiTick and reinitialize
+ * the memory structure if the lock was lost (unlinked).
+ *
+ * CONCURRENCY WARNING:
+ * All methods are non-synchronized! Race conditions are likely to happen.
+ * Especially when calling getters in sequence, data writes to the shared memory
+ * can happen in between the read sequence.
+ * DO NOT rely upon a sequence of functions to work on the same "uiTick".
+ * Currently the memory does not provide the means to synchronize and ensure
+ * that all data are coherently relating to the same tick/each other.
+ * The context_len is not guaranteed to belong to the context retrieved
+ * immediately before or after thereof.
+ *
  *
  * The difference to a regular plugin is that instead of developing a native
- * plugin and submitting it to mumble,
- * one can use the provided library and call upon the native methods directly.
+ * plugin and submitting it to mumble, one can use the provided library and
+ * call upon the native methods directly.
  *
  * This is initially intended to work mainly for JNA (https://github.com/twall/jna)
  * but is not limited to it.
@@ -231,19 +243,23 @@ extern "C" {
             LINKAPI_NATIVE_UINT32 context_len);
 
     /**
+     * the length of the context (number of valid array elements retrieved).
+     *
+     * This cannot exceed <code>LINKAPI_MAX_CONTEXT_LENGTH</code>.
+     *
+     * @return the length of the current context
+     */
+    LINKAPI_API
+    LINKAPI_NATIVE_UINT32 getContextLen();
+
+    /**
      * getter for the client's context
      *      see <code>setContext(...)</code> for details    
-     *
-     * @param context_len       output parameter, the length of the context
-     *                          (number of valid array elements retrieved).
-     *                          This cannot exceed <code>LINKAPI_MAX_CONTEXT_LENGTH</code>.
-     *                          When <code>NULL</code> is passed the context is
-     *                          still returned but context_len will stay <code>NULL</code>.
      *
      * @return the client's context
      */
     LINKAPI_API
-    unsigned char * getContext(LINKAPI_NATIVE_UINT32* context_len);
+    unsigned char * getContext();
 
     /**
      * sets the context
