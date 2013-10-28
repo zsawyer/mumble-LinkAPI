@@ -71,4 +71,31 @@
     nbproject/build-impl.xml file. 
 
     -->
+
+
+	<target depends="init,-init-macrodef-copylibs,compile,-pre-pre-jar" name="-pre-jar">
+		<!-- BridJ -->
+		<!-- windows natives -->        
+		<copy failonerror="false" file="../../../../../ide/scripts/build/libLinkAPI.dll" tofile="${build.classes.dir}/lib/win32/libLinkAPI.dll"/>
+		<copy failonerror="false" file="../../../../../ide/scripts/build/libLinkAPI64.dll" tofile="${build.classes.dir}/lib/win64/libLinkAPI.dll"/>
+
+		<!-- unix natives -->
+		<copy failonerror="false" file="../../../../../ide/scripts/build/libLinkAPI.so" tofile="${build.classes.dir}/lib/linux_x86/libLinkAPI.so"/>
+		<copy failonerror="false" file="../../../../../ide/scripts/build/libLinkAPI64.so" tofile="${build.classes.dir}/lib/linux_x64/libLinkAPI.so"/>
+
+		<!-- osx native -->
+		<copy failonerror="false" file="../../../../../ide/scripts/build/libLinkAPI.dylib" tofile="${build.classes.dir}/lib/darwin_universal/libLinkAPI.dylib"/>
+
+		<!-- JNA -->
+		<!-- windows natives -->
+        <copy failonerror="false" file="../../../../../ide/scripts/build/libLinkAPI.dll" tofile="${build.classes.dir}/win32-x86/LinkAPI.dll"/>
+		<copy failonerror="false" file="../../../../../ide/scripts/build/libLinkAPI64.dll" tofile="${build.classes.dir}/win32-x86-64/LinkAPI.dll"/>
+
+		<!-- unix natives -->
+		<copy failonerror="false" file="../../../../../ide/scripts/build/libLinkAPI.so" tofile="${build.classes.dir}/linux-x86/libLinkAPI.so"/>
+		<copy failonerror="false" file="../../../../../ide/scripts/build/libLinkAPI64.so" tofile="${build.classes.dir}/linux-x86-64/libLinkAPI.so"/>
+
+		<!-- osx native -->
+		<copy failonerror="false" file="../../../../../ide/scripts/build/libLinkAPI.dylib" tofile="${build.classes.dir}/darwin/libLinkAPI.dylib"/>
+    </target>
 </project>

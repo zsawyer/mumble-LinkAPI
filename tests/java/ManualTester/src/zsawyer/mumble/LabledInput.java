@@ -27,7 +27,7 @@
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package zsawyer.mumble.jna;
+package zsawyer.mumble;
 
 import java.awt.Color;
 import javax.swing.JLabel;

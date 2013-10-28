@@ -27,7 +27,7 @@
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package zsawyer.mumble.jna;
+package zsawyer.mumble.bridj;
 
 import zsawyer.mumble.LabledInput;
 import java.awt.Color;
@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.GroupLayout;
 import javax.swing.JLabel;
+import org.bridj.Pointer;
 
 /**
  *
@@ -46,14 +47,11 @@ import javax.swing.JLabel;
 public class ManualTesterFrame extends javax.swing.JFrame {
 
 	Map<String, LabledInput> inputs = new HashMap<>();
-	LinkAPILibrary link;
 
 	/** Creates new form ManualTesterFrame */
 	public ManualTesterFrame() {
 		initComponents();
 		initCustomComponents();
-
-		link = LinkAPILibrary.INSTANCE;
 	}
 
 	/** This method is called from within the constructor to
@@ -76,7 +74,7 @@ public class ManualTesterFrame extends javax.swing.JFrame {
         updateIdentityAndContext = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("ManualTester - JNA");
+        setTitle("ManualTester - BridJ");
 
         updateData.setText("data");
         updateData.addActionListener(new java.awt.event.ActionListener() {
@@ -191,10 +189,10 @@ public class ManualTesterFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void initializeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_initializeActionPerformed
-		CharBuffer name = parseToCharBuffer(
+		Pointer<Character> name = parseToPointerChar(
 				LinkAPILibrary.LINKAPI_MAX_NAME_LENGTH, "name");
 
-		CharBuffer description = parseToCharBuffer(
+		Pointer<Character> description = parseToPointerChar(
 				LinkAPILibrary.LINKAPI_MAX_DESCRIPTION_LENGTH, "description");
 
 		int uiVersion;
@@ -204,45 +202,48 @@ public class ManualTesterFrame extends javax.swing.JFrame {
 			return;
 		}
 
-		link.initialize(name, description, uiVersion);
+		LinkAPILibrary.initialize(name, description, uiVersion);
     }//GEN-LAST:event_initializeActionPerformed
 
     private void updateNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateNameActionPerformed
-		CharBuffer name = parseToCharBuffer(
+		Pointer<Character> name = parseToPointerChar(
 				LinkAPILibrary.LINKAPI_MAX_NAME_LENGTH, "name");
-		link.commitName(name);
+		LinkAPILibrary.commitName(name);
     }//GEN-LAST:event_updateNameActionPerformed
 
     private void updateDescriptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateDescriptionActionPerformed
-		CharBuffer description = parseToCharBuffer(
+		Pointer<Character> description = parseToPointerChar(
 				LinkAPILibrary.LINKAPI_MAX_DESCRIPTION_LENGTH, "description");
-		link.commitDescription(description);
+		LinkAPILibrary.commitDescription(description);
     }//GEN-LAST:event_updateDescriptionActionPerformed
 
     private void updateIdentityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateIdentityActionPerformed
-		CharBuffer identity = parseToCharBuffer(
+		Pointer<Character> identity = parseToPointerChar(
 				LinkAPILibrary.LINKAPI_MAX_IDENTITY_LENGTH, "identity");
-		link.commitIdentity(identity);
+		LinkAPILibrary.commitIdentity(identity);
     }//GEN-LAST:event_updateIdentityActionPerformed
 
     private void updateContextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateContextActionPerformed
-		ByteBuffer context = parseToByteBuffer(
+		Pointer<Byte> context = parseToPointerByte(
 				LinkAPILibrary.LINKAPI_MAX_CONTEXT_LENGTH, "context");
 		int context_len = inputs.get("context").getValue().length();
-		link.commitContext(context, context_len);
+		LinkAPILibrary.commitContext(context, context_len);
     }//GEN-LAST:event_updateContextActionPerformed
 
     private void updateVectorsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateVectorsActionPerformed
 		try {
-			FloatBuffer fAvatarPosition = parseToFloatBuffer("fAvatarPosition");
-			FloatBuffer fAvatarFront = parseToFloatBuffer("fAvatarFront");
-			FloatBuffer fAvatarTop = parseToFloatBuffer("fAvatarTop");
+			Pointer<Float> fAvatarPosition = parseToFloatBuffer(
+					"fAvatarPosition");
+			Pointer<Float> fAvatarFront = parseToFloatBuffer("fAvatarFront");
+			Pointer<Float> fAvatarTop = parseToFloatBuffer("fAvatarTop");
 
-			FloatBuffer fCameraPosition = parseToFloatBuffer("fCameraPosition");
-			FloatBuffer fCameraFront = parseToFloatBuffer("fCameraFront");
-			FloatBuffer fCameraTop = parseToFloatBuffer("fCameraTop");
+			Pointer<Float> fCameraPosition = parseToFloatBuffer(
+					"fCameraPosition");
+			Pointer<Float> fCameraFront = parseToFloatBuffer("fCameraFront");
+			Pointer<Float> fCameraTop = parseToFloatBuffer("fCameraTop");
 
-			link.commitVectors(fAvatarPosition, fAvatarFront, fAvatarTop,
+			LinkAPILibrary.commitVectors(fAvatarPosition, fAvatarFront,
+					fAvatarTop,
 					fCameraPosition, fCameraFront, fCameraTop);
 		} catch (NumberFormatException e) {
 			return;
@@ -251,11 +252,13 @@ public class ManualTesterFrame extends javax.swing.JFrame {
 
     private void updateVectorsByAvatarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateVectorsByAvatarActionPerformed
 		try {
-			FloatBuffer fAvatarPosition = parseToFloatBuffer("fAvatarPosition");
-			FloatBuffer fAvatarFront = parseToFloatBuffer("fAvatarFront");
-			FloatBuffer fAvatarTop = parseToFloatBuffer("fAvatarTop");
+			Pointer<Float> fAvatarPosition = parseToFloatBuffer(
+					"fAvatarPosition");
+			Pointer<Float> fAvatarFront = parseToFloatBuffer("fAvatarFront");
+			Pointer<Float> fAvatarTop = parseToFloatBuffer("fAvatarTop");
 
-			link.commitVectorsAvatarAsCamera(fAvatarPosition, fAvatarFront,
+			LinkAPILibrary.commitVectorsAvatarAsCamera(fAvatarPosition,
+					fAvatarFront,
 					fAvatarTop);
 		} catch (NumberFormatException e) {
 			return;
@@ -263,46 +266,51 @@ public class ManualTesterFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_updateVectorsByAvatarActionPerformed
 
     private void updateDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateDataActionPerformed
+
 		LinkAPILibrary.LINKAPI_LINKED_MEMORY lm = new LinkAPILibrary.LINKAPI_LINKED_MEMORY();
 
-		lm.identity = parseToCharBuffer(
-				LinkAPILibrary.LINKAPI_MAX_IDENTITY_LENGTH, "identity").array();
-		lm.context = parseToByteBuffer(LinkAPILibrary.LINKAPI_MAX_CONTEXT_LENGTH,
-				"context").array();
-		lm.context_len = inputs.get("context").getValue().length();
+		parseToPointerChar(LinkAPILibrary.LINKAPI_MAX_IDENTITY_LENGTH,
+				"identity").setPointer(lm.identity());
 
-		lm.name = parseToCharBuffer(LinkAPILibrary.LINKAPI_MAX_NAME_LENGTH,
-				"name").array();
-		lm.description = parseToCharBuffer(
-				LinkAPILibrary.LINKAPI_MAX_DESCRIPTION_LENGTH, "description").
-				array();
+		parseToPointerByte(LinkAPILibrary.LINKAPI_MAX_IDENTITY_LENGTH,
+				"context").setPointer(lm.context());
+
+		lm.context_len(inputs.get("context").getValue().length());
+
+		parseToPointerChar(LinkAPILibrary.LINKAPI_MAX_IDENTITY_LENGTH,
+				"name").setPointer(lm.name());
+
+		parseToPointerChar(LinkAPILibrary.LINKAPI_MAX_IDENTITY_LENGTH,
+				"description").setPointer(lm.description());
 
 		try {
-			lm.uiTick = parseToInt("uiTick");
-			lm.uiVersion = parseToInt("uiVersion");
+			lm.uiTick(parseToInt("uiTick"));
+			lm.uiVersion(parseToInt("uiVersion"));
 
 
-			lm.fAvatarPosition = parseToFloatBuffer("fAvatarPosition").array();
-			lm.fAvatarFront = parseToFloatBuffer("fAvatarFront").array();
-			lm.fAvatarTop = parseToFloatBuffer("fAvatarTop").array();
+			parseToFloatBuffer("fAvatarPosition").setPointer(lm.
+					fAvatarPosition());
+			parseToFloatBuffer("fAvatarFront").setPointer(lm.fAvatarFront());
+			parseToFloatBuffer("fAvatarTop").setPointer(lm.fAvatarTop());
 
-			lm.fCameraPosition = parseToFloatBuffer("fCameraPosition").array();
-			lm.fCameraFront = parseToFloatBuffer("fCameraFront").array();
-			lm.fCameraTop = parseToFloatBuffer("fCameraTop").array();
+			parseToFloatBuffer("fCameraPosition").setPointer(lm.
+					fCameraPosition());
+			parseToFloatBuffer("fCameraFront").setPointer(lm.fCameraFront());
+			parseToFloatBuffer("fCameraTop").setPointer(lm.fCameraTop());
 		} catch (NumberFormatException e) {
 			return;
 		}
 
-		link.setData(lm);
+		LinkAPILibrary.setData(Pointer.pointerTo(lm));
     }//GEN-LAST:event_updateDataActionPerformed
 
     private void updateIdentityAndContextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateIdentityAndContextActionPerformed
-		CharBuffer identity = parseToCharBuffer(
+		Pointer<Character> identity = parseToPointerChar(
 				LinkAPILibrary.LINKAPI_MAX_IDENTITY_LENGTH, "identity");
-		ByteBuffer context = parseToByteBuffer(
+		Pointer<Byte> context = parseToPointerByte(
 				LinkAPILibrary.LINKAPI_MAX_CONTEXT_LENGTH, "context");
 		int context_len = inputs.get("context").getValue().length();
-		link.commitIdentityAndContext(identity, context, context_len);
+		LinkAPILibrary.commitIdentityAndContext(identity, context, context_len);
     }//GEN-LAST:event_updateIdentityAndContextActionPerformed
 
 	/**
@@ -378,7 +386,7 @@ public class ManualTesterFrame extends javax.swing.JFrame {
 		this.inputs.put("fCameraTop", new LabledInput("fCameraTop",
 				"6.0 6.1 6.2"));
 
-		this.inputs.put("name", new LabledInput("name", "ManualTester /w JNA"));
+		this.inputs.put("name", new LabledInput("name", "ManualTester w/ BridJ"));
 		this.inputs.put("description", new LabledInput("description",
 				"ManualTester tests the LinkAPI library"));
 
@@ -461,38 +469,34 @@ public class ManualTesterFrame extends javax.swing.JFrame {
 		return baseGroup;
 	}
 
-	private FloatBuffer parseToFloatBuffer(String labelName) throws
+	private Pointer<Float> parseToFloatBuffer(String labelName) throws
 			NumberFormatException {
 		LabledInput input = inputs.get(labelName);
-		FloatBuffer allocate = FloatBuffer.allocate(3);
+		Pointer<Float> pointer = Pointer.allocateFloats(
+				LinkAPILibrary.LINKAPI_VECTOR_LENGTH);
 		try {
 			String[] split = input.getValue().split(" ");
-			allocate.put(Float.valueOf(split[0]));
-			allocate.put(Float.valueOf(split[1]));
-			allocate.put(Float.valueOf(split[2]));
-		} catch (NumberFormatException e) {
+			for (int i = 0; i < split.length; i++) {
+				String string = split[i];
+				pointer.set(i, Float.parseFloat(string));
+			}
+		} catch (NumberFormatException | IndexOutOfBoundsException e) {
 			JLabel label = input.getLabel();
 			label.setForeground(Color.red);
-			throw e;
 		}
-		allocate.rewind();
-		return allocate;
+		return pointer;
 	}
 
-	private CharBuffer parseToCharBuffer(int capacity, String label) {
-		CharBuffer buffer = CharBuffer.allocate(capacity);
-		buffer.rewind();
-		buffer.put(inputs.get(label).getValue().toCharArray());
-		buffer.rewind();
-		return buffer;
+	private Pointer<Character> parseToPointerChar(int capacity, String label) {
+		Pointer<Character> pointer = Pointer.allocateChars(capacity);
+		pointer.setArray(inputs.get(label).getValue().toCharArray());
+		return pointer;
 	}
 
-	private ByteBuffer parseToByteBuffer(int capacity, String label) {
-		ByteBuffer buffer = ByteBuffer.allocate(capacity);
-		buffer.rewind();
-		buffer.put(inputs.get(label).getValue().getBytes());
-		buffer.rewind();
-		return buffer;
+	private Pointer<Byte> parseToPointerByte(int capacity, String label) {
+		Pointer<Byte> pointer = Pointer.allocateBytes(capacity);
+		pointer.setArray(inputs.get(label).getValue().getBytes());
+		return pointer;
 	}
 
 	private int parseToInt(String labelName) throws NumberFormatException {
