@@ -175,7 +175,7 @@ LINKAPI_ERROR_CODE setName(wchar_t name[LINKAPI_MAX_NAME_LENGTH]) {
 	return setAndBackupWCharTArray(lm->name, name, backupName, LINKAPI_MAX_NAME_LENGTH);
 }
 
-LINKAPI_ERROR_CODE updateName(wchar_t name[LINKAPI_MAX_NAME_LENGTH]) {
+LINKAPI_ERROR_CODE commitName(wchar_t name[LINKAPI_MAX_NAME_LENGTH]) {
 	return commitOnNoError(setName(name));
 }
 
@@ -187,7 +187,7 @@ LINKAPI_ERROR_CODE setDescription(wchar_t description[LINKAPI_MAX_DESCRIPTION_LE
 	return setAndBackupWCharTArray(lm->description, description, backupDescription, LINKAPI_MAX_DESCRIPTION_LENGTH);
 }
 
-LINKAPI_ERROR_CODE updateDescription(wchar_t description[LINKAPI_MAX_DESCRIPTION_LENGTH]) {
+LINKAPI_ERROR_CODE commitDescription(wchar_t description[LINKAPI_MAX_DESCRIPTION_LENGTH]) {
 	return commitOnNoError(setDescription(description));
 }
 
@@ -199,7 +199,7 @@ LINKAPI_ERROR_CODE setIdentity(wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH]) {
 	return setWCharTArray(lm->identity, identity, LINKAPI_MAX_IDENTITY_LENGTH);
 }
 
-LINKAPI_ERROR_CODE updateIdentity(wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH]) {
+LINKAPI_ERROR_CODE commitIdentity(wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH]) {
 	return commitOnNoError(setIdentity(identity));
 }
 
@@ -221,7 +221,7 @@ LINKAPI_ERROR_CODE setContext(unsigned char context[], LINKAPI_NATIVE_UINT32 con
 	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
-LINKAPI_ERROR_CODE updateContext(unsigned char context[], LINKAPI_NATIVE_UINT32 context_len) {
+LINKAPI_ERROR_CODE commitContext(unsigned char context[], LINKAPI_NATIVE_UINT32 context_len) {
 	return commitOnNoError(setContext(context, context_len));
 }
 
@@ -231,7 +231,7 @@ LINKAPI_ERROR_CODE setIdentityAndContext(wchar_t identity[], unsigned char conte
 	return setContext(context, context_len);
 }
 
-LINKAPI_ERROR_CODE updateIdentityAndContext(wchar_t identity[], unsigned char context[], LINKAPI_NATIVE_UINT32 context_len) {
+LINKAPI_ERROR_CODE commitIdentityAndContext(wchar_t identity[], unsigned char context[], LINKAPI_NATIVE_UINT32 context_len) {
 	return commitOnNoError(setIdentityAndContext(identity, context, context_len));
 }
 
@@ -328,7 +328,7 @@ LINKAPI_ERROR_CODE setVectors(
 	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
-LINKAPI_ERROR_CODE updateVectors(
+LINKAPI_ERROR_CODE commitVectors(
 		float fAvatarPosition[LINKAPI_VECTOR_LENGTH],
 		float fAvatarFront[LINKAPI_VECTOR_LENGTH],
 		float fAvatarTop[LINKAPI_VECTOR_LENGTH],
@@ -348,11 +348,11 @@ LINKAPI_ERROR_CODE setVectorsAvatarAsCamera(
 			fAvatarPosition, fAvatarFront, fAvatarTop);
 }
 
-LINKAPI_ERROR_CODE updateVectorsAvatarAsCamera(
+LINKAPI_ERROR_CODE commitVectorsAvatarAsCamera(
 		float fAvatarPosition[LINKAPI_VECTOR_LENGTH],
 		float fAvatarFront[LINKAPI_VECTOR_LENGTH],
 		float fAvatarTop[LINKAPI_VECTOR_LENGTH]) {
-	return updateVectors(fAvatarPosition, fAvatarFront, fAvatarTop,
+	return commitVectors(fAvatarPosition, fAvatarFront, fAvatarTop,
 			fAvatarPosition, fAvatarFront, fAvatarTop);
 }
 
@@ -366,7 +366,7 @@ LINKAPI_ERROR_CODE setUiTick(LINKAPI_NATIVE_DWORD tick) {
 	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
-LINKAPI_ERROR_CODE updateUiTick(LINKAPI_NATIVE_DWORD tick) {
+LINKAPI_ERROR_CODE commitUiTick(LINKAPI_NATIVE_DWORD tick) {
 	LINKAPI_ERROR_CODE err = setUiTick(tick);
 	LINKAPI_VERIFY_NO_ERROR;
 	/* cannot commit() as it would change the uiTick too! */
@@ -384,7 +384,7 @@ LINKAPI_ERROR_CODE setUiVersion(LINKAPI_NATIVE_UINT32 version) {
 	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
-LINKAPI_ERROR_CODE updateUiVersion(LINKAPI_NATIVE_UINT32 version) {
+LINKAPI_ERROR_CODE commitUiVersion(LINKAPI_NATIVE_UINT32 version) {
 	return commitOnNoError(setUiVersion(version));
 }
 

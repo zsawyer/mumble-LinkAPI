@@ -5,8 +5,8 @@
 #rm -R build
 mkdir build
 
-# g++ -dynamiclib -Wl,-headerpad_max_install_names,-undefined,dynamic_lookup,-compatibility_version,1.0,-current_version,1.0,-install_name,/usr/local/lib/libLinkAPI.dylib \
-    # -o build/libLinkAPI.dylib \
+# g++ -dynamiclib -Wl,-headerpad_max_install_names,-undefined,dynamic_lookup,-compatibility_version,1.0,-current_version,1.0,-install_name,/usr/local/lib/libLinkAPI32.dylib \
+    # -o build/libLinkAPI32.dylib \
     # -m32 \
     # ../../src/LinkAPI.cpp 
 
@@ -25,7 +25,7 @@ mkdir build
 
 # create universal build (merge)
 
-#lipo build/libLinkAPI.dylib build/libLinkAPI64.dylib -create -output build/libLinkAPI.dylib 
+#lipo -create -output build_osx_universal/libLinkAPI.dylib build/libLinkAPI32.dylib build/libLinkAPI64.dylib
 
 
 # create universal build (at once)

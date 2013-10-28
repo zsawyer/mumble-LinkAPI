@@ -7,13 +7,13 @@
    are met:
 
    - Redistributions of source code must retain the above copyright notice,
-   		this list of conditions and the following disclaimer.
+		this list of conditions and the following disclaimer.
    - Redistributions in binary form must reproduce the above copyright notice,
-   		this list of conditions and the following disclaimer in the documentation
-   		and/or other materials provided with the distribution.
+		this list of conditions and the following disclaimer in the documentation
+		and/or other materials provided with the distribution.
    - Neither the name of the Mumble Developers nor the names of its
-   		contributors may be used to endorse or promote products derived from this
-   		software without specific prior written permission.
+		contributors may be used to endorse or promote products derived from this
+		software without specific prior written permission.
 
    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
    ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -32,7 +32,7 @@
  * This header file specifies a generic interface to provide positional audio
  * information to mumble it depends on the "Mumble Link Plugin" ("Link") v1.2.0
  *
- * Note that all update...(...) methods will increment uiTick and reinitialize
+ * Note that all commit...(...) methods will increment uiTick and reinitialize
  * the memory structure if the lock was lost (unlinked).
  *
  * CONCURRENCY WARNING:
@@ -55,7 +55,7 @@
  * It should work with anything that is able to call native methods directly
  * (i.e. Scripts, AutoIt etc.), simply provide this library. 
  *
- * For more information about the different data that can be updated see
+ * For more information about the different data that can be commitd see
  * http://mumble.sourceforge.net/Link
  *
  *
@@ -101,6 +101,9 @@ extern "C" {
 
 #    define LINKAPI_UI_VERSION_UNLINK 0
 
+	/**
+	 * the structure of the shared memory as defined by mumble Link plugin v1.2.0
+	 */
 	typedef struct LINKAPI_LINKED_MEMORY {
 		LINKAPI_NATIVE_UINT32 uiVersion;
 		LINKAPI_NATIVE_DWORD uiTick;
@@ -149,7 +152,7 @@ extern "C" {
 	 * @param description	a text stating the purpose of this link
 	 * @param uiVersion	no description available (this should usually be set to 2)
 	 *
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE initialize(wchar_t name[LINKAPI_MAX_NAME_LENGTH],
@@ -161,19 +164,20 @@ extern "C" {
 	 *
 	 * this function directly circumvents the timeout wait of the link plugin
 	 *
-	 * this effect is undone when calling a setAndCommit...-method or <code>initialize(...)</code>
+	 * this effect is undone when calling a commit...(...)-function or
+	 * <code>initialize(...)</code>
 	 */
 	LINKAPI_API
 	void unlinkMumble();
 
 	/**
-	 * Notifies the plugin that the data is up-to-date. setAndCommit...-functions call
-	 * this method at the end.
+	 * Notifies the plugin that the data is up-to-date. commit...(...)-functions
+	 * call this method at the end.
 	 *
 	 * This is to prevent a timeout which causes the plugin to automatically unlink.
 	 * It will also re-link if the link has previously been lost ("relock").
 	 *
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE commit();
@@ -188,10 +192,10 @@ extern "C" {
 	 *
 	 * @param identity	unique id of the user in a given context
 	 *
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
-	LINKAPI_ERROR_CODE updateIdentity(wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH]);
+	LINKAPI_ERROR_CODE commitIdentity(wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH]);
 
 	/**
 	 * get the client's identity
@@ -220,7 +224,7 @@ extern "C" {
 	 *
 	 * @param identity	unique id of the user in a given context
 	 *
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE setIdentity(wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH]);
@@ -236,10 +240,10 @@ extern "C" {
 	 * @param context	a generic context
 	 * @param context_len	the length of the context (number of array elements)
 	 *
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
-	LINKAPI_ERROR_CODE updateContext(unsigned char context[LINKAPI_MAX_CONTEXT_LENGTH],
+	LINKAPI_ERROR_CODE commitContext(unsigned char context[LINKAPI_MAX_CONTEXT_LENGTH],
 			LINKAPI_NATIVE_UINT32 context_len);
 
 	/**
@@ -278,10 +282,10 @@ extern "C" {
 	 * including less. This gives more flexibility later on.
 	 *
 	 * @param context	a generic context
-	 * @param context_len	the length of the context (number of array elements)
+	 * @param context_len	the length of the context (number of active array elements)
 	 *                          LINKAPI_MAX_CONTEXT_LENGTH limits this number
 	 *
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE setContext(unsigned char context[], LINKAPI_NATIVE_UINT32 context_len);
@@ -297,13 +301,13 @@ extern "C" {
 	 *
 	 * @param identity	unique id of the user
 	 * @param context	a generic context
-	 * @param context_len	the length of the context (number of active array
-	 *		elements)
+	 * @param context_len	the length of the context (number of active array elements)
+	 *                          LINKAPI_MAX_CONTEXT_LENGTH limits this number
 	 *
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
-	LINKAPI_ERROR_CODE updateIdentityAndContext(
+	LINKAPI_ERROR_CODE commitIdentityAndContext(
 			wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH],
 			unsigned char context[LINKAPI_MAX_CONTEXT_LENGTH],
 			LINKAPI_NATIVE_UINT32 context_len);
@@ -319,16 +323,17 @@ extern "C" {
 	 *
 	 * @param identity	unique id of the user
 	 * @param context	a generic context
-	 * @param context_len	the length of the context (number of active array
-	 *		elements)
+	 * @param context_len	the length of the context (number of active array elements)
+	 *                          LINKAPI_MAX_CONTEXT_LENGTH limits this number
 	 *
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE setIdentityAndContext(wchar_t identity[], unsigned char context[], LINKAPI_NATIVE_UINT32 context_len);
 
 	/**
-	 * sets and commits the name
+	 * sets and commits the display name of the application currently linked
+	 * with mumble
 	 *
 	 * Notice: This does not need to be updated every single frame. It shouldn't
 	 * change at all during a game.
@@ -337,10 +342,10 @@ extern "C" {
 	 *
 	 * @param name	the display name of the application which links with mumble (i.e. L"TestLink")
 	 *
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
-	LINKAPI_ERROR_CODE updateName(wchar_t name[LINKAPI_MAX_NAME_LENGTH]);
+	LINKAPI_ERROR_CODE commitName(wchar_t name[LINKAPI_MAX_NAME_LENGTH]);
 
 	/**
 	 * the display name of the application currently linked with mumble
@@ -351,7 +356,7 @@ extern "C" {
 	wchar_t* getName();
 
 	/**
-	 * sets the name only
+	 * sets only the display name of the application currently linked with mumble
 	 *
 	 * Notice: This does not need to be updated every single frame. It shouldn't
 	 * change at all during a game.
@@ -362,13 +367,13 @@ extern "C" {
 	 *
 	 * @param name	the display name of the application which links with mumble (i.e. L"TestLink")
 	 *
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE setName(wchar_t name[LINKAPI_MAX_NAME_LENGTH]);
 
 	/**
-	 * sets and commits the description
+	 * sets and commits the application's description
 	 *
 	 * Notice: This does not need to be updated every single frame. It shouldn't
 	 * change at all during a game.
@@ -377,13 +382,13 @@ extern "C" {
 	 *
 	 * @param description	a text stating the purpose of this link
 	 *
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
-	LINKAPI_ERROR_CODE updateDescription(wchar_t description[LINKAPI_MAX_DESCRIPTION_LENGTH]);
+	LINKAPI_ERROR_CODE commitDescription(wchar_t description[LINKAPI_MAX_DESCRIPTION_LENGTH]);
 
 	/**
-	 * the linked applications description
+	 * the linked application's description
 	 *      see <code>setDescription(...)</code> for details
 	 * @return a text stating the purpose of this link
 	 */
@@ -391,7 +396,7 @@ extern "C" {
 	wchar_t* getDescription();
 
 	/**
-	 * sets the description only
+	 * sets only the application's description
 	 *
 	 * Notice: This does not need to be updated every single frame. It shouldn't
 	 * change at all during a game.
@@ -400,7 +405,7 @@ extern "C" {
 	 *
 	 * @param description	a text stating the purpose of this link
 	 *
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE setDescription(wchar_t description[LINKAPI_MAX_DESCRIPTION_LENGTH]);
@@ -418,10 +423,10 @@ extern "C" {
 	 * @param fCameraFront	Unit vector pointing out of the camera's lense.
 	 * @param fCameraTop	Unit vector pointing out of the camera's top.
 	 *
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
-	LINKAPI_ERROR_CODE updateVectors(
+	LINKAPI_ERROR_CODE commitVectors(
 			float fAvatarPosition[LINKAPI_VECTOR_LENGTH],
 			float fAvatarFront[LINKAPI_VECTOR_LENGTH],
 			float fAvatarTop[LINKAPI_VECTOR_LENGTH],
@@ -442,7 +447,7 @@ extern "C" {
 	 * @param fCameraFront	Unit vector pointing out of the camera's lense.
 	 * @param fCameraTop	Unit vector pointing out of the camera's top.
 	 *
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE setVectors(
@@ -459,16 +464,16 @@ extern "C" {
 	 * Notice: Mumble fetches these values 50 times a second, so please update
 	 * them every frame.
 	 *
-	 *      see <code>setVectorsByAvatar(...)</code> for details
+	 *      see <code>setVectorsAvatarAsCamera(...)</code> for details
 	 *
 	 * @param fAvatarPosition	Position of the avatar and camera.
 	 * @param fAvatarFront	Unit vector pointing out of the camera/avatar's eyes.
 	 * @param fAvatarTop	Unit vector pointing out of the top of the avatar's head/camera's top.
 	 *
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
-	LINKAPI_ERROR_CODE updateVectorsAvatarAsCamera(
+	LINKAPI_ERROR_CODE commitVectorsAvatarAsCamera(
 			float fAvatarPosition[LINKAPI_VECTOR_LENGTH],
 			float fAvatarFront[LINKAPI_VECTOR_LENGTH],
 			float fAvatarTop[LINKAPI_VECTOR_LENGTH]);
@@ -490,7 +495,7 @@ extern "C" {
 	 * @param fAvatarFront	Unit vector pointing out of the camera/avatar's eyes.
 	 * @param fAvatarTop	Unit vector pointing out of the top of the avatar's head/camera's top.
 	 *
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE setVectorsAvatarAsCamera(
@@ -509,7 +514,7 @@ extern "C" {
 	float* getAvatarPosition();
 
 	/**
-	 * The position of the avatar
+	 * sets the position of the avatar
 	 *
 	 * location of the avatar or avatar's head where it is located in the 3D game world
 	 *
@@ -521,7 +526,7 @@ extern "C" {
 	 * @param x the magnitude of the x basis vector
 	 * @param y the magnitude of the y basis vector
 	 * @param z the magnitude of the z basis vector
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE setAvatarPosition(float x, float y, float z);
@@ -546,7 +551,7 @@ extern "C" {
 	 * @param x the magnitude of the x basis vector
 	 * @param y the magnitude of the y basis vector
 	 * @param z the magnitude of the z basis vector
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE setAvatarFront(float x, float y, float z);
@@ -573,7 +578,7 @@ extern "C" {
 	 * @param x the magnitude of the x basis vector
 	 * @param y the magnitude of the y basis vector
 	 * @param z the magnitude of the z basis vector
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE setAvatarTop(float x, float y, float z);
@@ -596,7 +601,7 @@ extern "C" {
 	 * @param x the magnitude of the x basis vector
 	 * @param y the magnitude of the y basis vector
 	 * @param z the magnitude of the z basis vector
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE setCameraPosition(float x, float y, float z);
@@ -612,7 +617,7 @@ extern "C" {
 	float* getCameraFront();
 
 	/**
-	 * Unit vector pointing out of the front/lens of the camera
+	 * sets unit vector pointing out of the front/lens of the camera
 	 *
 	 * indicates the direction the camera is pointing at
 	 *
@@ -621,7 +626,7 @@ extern "C" {
 	 * @param x the magnitude of the x basis vector
 	 * @param y the magnitude of the y basis vector
 	 * @param z the magnitude of the z basis vector
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE setCameraFront(float x, float y, float z);
@@ -637,7 +642,7 @@ extern "C" {
 	float* getCameraTop();
 
 	/**
-	 * Unit vector pointing out of the top of the camera
+	 * sets unit vector pointing out of the top of the camera
 	 *
 	 * indicates the direction that the top of the camera is pointing at
 	 *
@@ -646,7 +651,7 @@ extern "C" {
 	 * @param x the magnitude of the x basis vector
 	 * @param y the magnitude of the y basis vector
 	 * @param z the magnitude of the z basis vector
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE setCameraTop(float x, float y, float z);
@@ -656,13 +661,13 @@ extern "C" {
 	LINKAPI_API
 	LINKAPI_ERROR_CODE setUiVersion(LINKAPI_NATIVE_UINT32 version);
 	LINKAPI_API
-	LINKAPI_ERROR_CODE updateUiVersion(LINKAPI_NATIVE_UINT32 version);
+	LINKAPI_ERROR_CODE commitUiVersion(LINKAPI_NATIVE_UINT32 version);
 
 	/**
-	 * tick counter which is used to tell if updates to the shared memory occur
+	 * tick counter which is used to tell if updates to the shared memory occured
 	 *
-	 * if this number stays the same the rest of the shared memory is not read
-	 * by the link plugin and it will unlink after a certain timeout
+	 * If this number stays the same the rest of the shared memory is not read
+	 * by the link plugin and it will unlink after a certain timeout.
 	 *
 	 * @return the last tick number
 	 */
@@ -670,33 +675,34 @@ extern "C" {
 	LINKAPI_NATIVE_DWORD getUiTick();
 
 	/**
-	 * tick counter which is used to tell if updates to the shared memory occur
+	 * sets the tick counter which is used to tell if updates to the shared memory occured
 	 *
-	 * if this number stays the same the rest of the shared memory is not read
-	 * by the link plugin and it will unlink after a certain timeout
+	 * If this number stays the same the rest of the shared memory is not read
+	 * by the link plugin and it will unlink after a certain timeout.
 	 *
-	 * if the plugin is already unlinked updating this value does not re-link,
-	 * for this to happen uiVersion needs to be updated too
-	 * use <code>updateUiTick(...)</code> to clean-up the linked memory and
-	 * enforce a re-link
+	 * If the plugin is already unlinked updating this value does not re-link,
+	 * for this to happen uiVersion needs to be updated too.
+	 * Use <code>commitUiTick(...)</code> to clean-up the linked memory and
+	 * enforce a re-link.
 	 *
 	 * @param tick the tick number to set
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE setUiTick(LINKAPI_NATIVE_DWORD tick);
 
 	/**
-	 * tick counter which is used to tell if updates to the shared memory occur
+	 * set and commit the tick counter which is used to tell if updates to the
+	 * shared memory occured
 	 *
-	 * if this number stays the same the rest of the shared memory is not read
-	 * by the link plugin and it will unlink after a certain timeout
+	 * If this number stays the same the rest of the shared memory is not read
+	 * by the link plugin and it will unlink after a certain timeout.
 	 *
 	 * @param tick the tick number to set
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
-	LINKAPI_ERROR_CODE updateUiTick(LINKAPI_NATIVE_DWORD tick);
+	LINKAPI_ERROR_CODE commitUiTick(LINKAPI_NATIVE_DWORD tick);
 
 	/**
 	 * directly manipulate the entire linked memory at once
@@ -707,11 +713,11 @@ extern "C" {
 	 * value.
 	 *
 	 * Notice: Parts of this does not need to be updated every single frame.
-	 * Please use the more directly appropriate update functions instead.
+	 * Please use the more directly appropriate commit...(...) functions instead.
 	 *
 	 * @param source data structure which is to be copied
 	 *
-	 * @return	an error code, see <code>enum ErrorCode</code>
+	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE setData(LINKAPI_LINKED_MEMORY *source);

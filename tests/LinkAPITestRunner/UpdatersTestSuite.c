@@ -8,30 +8,30 @@
  * ---------------- TEST CASES -------------------------------
  */
 
-void TestUpdaterSuite_updateUiTick(CuTest* tc) {
+void TestUpdaterSuite_commitUiTick(CuTest* tc) {
 	LINKAPI_NATIVE_DWORD tick = 123;
 	LINKAPI_NATIVE_DWORD tick2 = 125;
 
-	LINKAPI_ERROR_CODE err = updateUiTick(tick);
+	LINKAPI_ERROR_CODE err = commitUiTick(tick);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
 	LINKAPI_NATIVE_DWORD actual = getUiTick();
 	CuAssertIntEquals(tc, tick, actual);
 	CuAssertPtrNotEquals(tc, &tick, &actual);
 
-	err = updateUiTick(tick2);
+	err = commitUiTick(tick2);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
 	actual = getUiTick();
 	CuAssertIntEquals(tc, tick2, actual);
 	CuAssertPtrNotEquals(tc, &tick2, &actual);
 }
 
-void TestUpdaterSuite_updateUiVersion(CuTest* tc) {
+void TestUpdaterSuite_commitUiVersion(CuTest* tc) {
 	LINKAPI_NATIVE_DWORD startTick = getUiTick();
 
 	LINKAPI_NATIVE_UINT32 version = 321;
 	LINKAPI_NATIVE_UINT32 version2 = 2;
 
-	LINKAPI_ERROR_CODE err = updateUiVersion(version);
+	LINKAPI_ERROR_CODE err = commitUiVersion(version);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
 	LINKAPI_NATIVE_UINT32 actual = getUiVersion();
 	CuAssertIntEquals(tc, version, actual);
@@ -39,7 +39,7 @@ void TestUpdaterSuite_updateUiVersion(CuTest* tc) {
 	LINKAPI_NATIVE_DWORD actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 1, actualTick);
 
-	err = updateUiVersion(version2);
+	err = commitUiVersion(version2);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
 	actual = getUiVersion();
 	CuAssertIntEquals(tc, version2, actual);
@@ -48,13 +48,13 @@ void TestUpdaterSuite_updateUiVersion(CuTest* tc) {
 	CuAssertIntEquals(tc, startTick + 2, actualTick);
 }
 
-void TestUpdaterSuite_updateIdentity(CuTest* tc) {
+void TestUpdaterSuite_commitIdentity(CuTest* tc) {
 	LINKAPI_NATIVE_DWORD startTick = getUiTick();
 
 	wchar_t text[LINKAPI_MAX_IDENTITY_LENGTH] = L"TestIdentity\0";
 	wchar_t text2[LINKAPI_MAX_IDENTITY_LENGTH] = L"SomeTotallyDifferentID\0";
 
-	LINKAPI_ERROR_CODE err = updateIdentity(text);
+	LINKAPI_ERROR_CODE err = commitIdentity(text);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
 	wchar_t* actual = getIdentity();
 	CuAssertWCharTArrayEquals(tc, text, actual, LINKAPI_MAX_IDENTITY_LENGTH);
@@ -62,7 +62,7 @@ void TestUpdaterSuite_updateIdentity(CuTest* tc) {
 	LINKAPI_NATIVE_DWORD actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 1, actualTick);
 
-	err = updateIdentity(text2);
+	err = commitIdentity(text2);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
 	actual = getIdentity();
 	CuAssertWCharTArrayEquals(tc, text2, actual, LINKAPI_MAX_IDENTITY_LENGTH);
@@ -71,13 +71,13 @@ void TestUpdaterSuite_updateIdentity(CuTest* tc) {
 	CuAssertIntEquals(tc, startTick + 2, actualTick);
 }
 
-void TestUpdaterSuite_updateName(CuTest* tc) {
+void TestUpdaterSuite_commitName(CuTest* tc) {
 	LINKAPI_NATIVE_DWORD startTick = getUiTick();
 
 	wchar_t text[LINKAPI_MAX_NAME_LENGTH] = L"TestName\0";
 	wchar_t text2[LINKAPI_MAX_NAME_LENGTH] = L"SomeTotallyDifferentNm\0";
 
-	LINKAPI_ERROR_CODE err = updateName(text);
+	LINKAPI_ERROR_CODE err = commitName(text);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
 	wchar_t* actual = getName();
 	CuAssertWCharTArrayEquals(tc, text, actual, LINKAPI_MAX_NAME_LENGTH);
@@ -85,7 +85,7 @@ void TestUpdaterSuite_updateName(CuTest* tc) {
 	LINKAPI_NATIVE_DWORD actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 1, actualTick);
 
-	err = updateName(text2);
+	err = commitName(text2);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
 	actual = getName();
 	CuAssertWCharTArrayEquals(tc, text2, actual, LINKAPI_MAX_NAME_LENGTH);
@@ -94,13 +94,13 @@ void TestUpdaterSuite_updateName(CuTest* tc) {
 	CuAssertIntEquals(tc, startTick + 2, actualTick);
 }
 
-void TestUpdaterSuite_updateDescription(CuTest* tc) {
+void TestUpdaterSuite_commitDescription(CuTest* tc) {
 	LINKAPI_NATIVE_DWORD startTick = getUiTick();
 
 	wchar_t text[LINKAPI_MAX_DESCRIPTION_LENGTH] = L"TestDescription\0";
 	wchar_t text2[LINKAPI_MAX_DESCRIPTION_LENGTH] = L"SomeTotallyDifferentDSCRPTN\0";
 
-	LINKAPI_ERROR_CODE err = updateDescription(text);
+	LINKAPI_ERROR_CODE err = commitDescription(text);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
 	wchar_t* actual = getDescription();
 	CuAssertWCharTArrayEquals(tc, text, actual, LINKAPI_MAX_DESCRIPTION_LENGTH);
@@ -108,7 +108,7 @@ void TestUpdaterSuite_updateDescription(CuTest* tc) {
 	LINKAPI_NATIVE_DWORD actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 1, actualTick);
 
-	err = updateDescription(text2);
+	err = commitDescription(text2);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
 	actual = getDescription();
 	CuAssertWCharTArrayEquals(tc, text2, actual, LINKAPI_MAX_DESCRIPTION_LENGTH);
@@ -117,7 +117,7 @@ void TestUpdaterSuite_updateDescription(CuTest* tc) {
 	CuAssertIntEquals(tc, startTick + 2, actualTick);
 }
 
-void TestUpdaterSuite_updateContext(CuTest* tc) {
+void TestUpdaterSuite_commitContext(CuTest* tc) {
 	LINKAPI_NATIVE_DWORD startTick = getUiTick();
 
 	unsigned char text[LINKAPI_MAX_CONTEXT_LENGTH] = "TestContext\0";
@@ -129,7 +129,7 @@ void TestUpdaterSuite_updateContext(CuTest* tc) {
 	size_t len2 = strlen((char*) text2);
 	size_t len3Excerpt = strlen((char*) text3Excerpt);
 
-	LINKAPI_ERROR_CODE err = updateContext(text, len);
+	LINKAPI_ERROR_CODE err = commitContext(text, len);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
 	LINKAPI_NATIVE_UINT32 actualLen = getContextLen();
 	CuAssertIntEquals(tc, len, actualLen);
@@ -139,7 +139,7 @@ void TestUpdaterSuite_updateContext(CuTest* tc) {
 	LINKAPI_NATIVE_DWORD actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 1, actualTick);
 
-	err = updateContext(text2, len2);
+	err = commitContext(text2, len2);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
 	actualLen = getContextLen();
 	CuAssertIntEquals(tc, len2, actualLen);
@@ -149,7 +149,7 @@ void TestUpdaterSuite_updateContext(CuTest* tc) {
 	actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 2, actualTick);
 
-	err = updateContext(text3, len3Excerpt);
+	err = commitContext(text3, len3Excerpt);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
 	actualLen = getContextLen();
 	CuAssertIntEquals(tc, len3Excerpt, actualLen);
@@ -159,7 +159,7 @@ void TestUpdaterSuite_updateContext(CuTest* tc) {
 	actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 3, actualTick);
 
-	err = updateContext(text, LINKAPI_MAX_CONTEXT_LENGTH + 10);
+	err = commitContext(text, LINKAPI_MAX_CONTEXT_LENGTH + 10);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_CONTEXT_LENGTH_EXCEEDED, err);	
 	actualLen = getContextLen();
 	CuAssertIntEquals(tc, len3Excerpt, actualLen);
@@ -170,7 +170,7 @@ void TestUpdaterSuite_updateContext(CuTest* tc) {
 	CuAssertIntEquals(tc, startTick + 3, actualTick);
 }
 
-void TestUpdaterSuite_updateIdentityAndContext(CuTest* tc) {
+void TestUpdaterSuite_commitIdentityAndContext(CuTest* tc) {
 	LINKAPI_NATIVE_DWORD startTick = getUiTick();
 
 	wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH] = L"TestIdentity\0";
@@ -185,7 +185,7 @@ void TestUpdaterSuite_updateIdentityAndContext(CuTest* tc) {
 	size_t actualLen2 = strlen((char*) text2);
 	size_t actualLen3Excerpt = strlen((char*) text3Excerpt);
 
-	LINKAPI_ERROR_CODE err = updateIdentityAndContext(identity, text, actualLen);
+	LINKAPI_ERROR_CODE err = commitIdentityAndContext(identity, text, actualLen);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
 	unsigned char* actual = getContext();
 	CuAssertCharArrayEquals(tc, text, actual, actualLen);
@@ -196,7 +196,7 @@ void TestUpdaterSuite_updateIdentityAndContext(CuTest* tc) {
 	LINKAPI_NATIVE_DWORD actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 1, actualTick);
 
-	err = updateIdentityAndContext(identity2, text2, actualLen2);
+	err = commitIdentityAndContext(identity2, text2, actualLen2);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
 	actual = getContext();
 	CuAssertCharArrayEquals(tc, text2, actual, actualLen2);
@@ -207,7 +207,7 @@ void TestUpdaterSuite_updateIdentityAndContext(CuTest* tc) {
 	actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 2, actualTick);
 
-	err = updateIdentityAndContext(identity, text3, actualLen3Excerpt);
+	err = commitIdentityAndContext(identity, text3, actualLen3Excerpt);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
 	actual = getContext();
 	CuAssertCharArrayEquals(tc, text3Excerpt, actual, actualLen3Excerpt);
@@ -219,7 +219,7 @@ void TestUpdaterSuite_updateIdentityAndContext(CuTest* tc) {
 	CuAssertIntEquals(tc, startTick + 3, actualTick);
 }
 
-void TestUpdaterSuite_updateVectors(CuTest* tc) {
+void TestUpdaterSuite_commitVectors(CuTest* tc) {
 	LINKAPI_NATIVE_DWORD startTick = getUiTick();
 
 	float fAvatarFront[LINKAPI_VECTOR_LENGTH] = {1.1, 2.1, 3.1};
@@ -230,7 +230,7 @@ void TestUpdaterSuite_updateVectors(CuTest* tc) {
 	float fCameraTop [LINKAPI_VECTOR_LENGTH] = {16.1, 17.1, 18.1};
 
 
-	LINKAPI_ERROR_CODE err = updateVectors(fAvatarPosition, fAvatarFront, fAvatarTop, fCameraPosition, fCameraFront, fCameraTop);
+	LINKAPI_ERROR_CODE err = commitVectors(fAvatarPosition, fAvatarFront, fAvatarTop, fCameraPosition, fCameraFront, fCameraTop);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
 	LINKAPI_NATIVE_DWORD actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 1, actualTick);
@@ -261,7 +261,7 @@ void TestUpdaterSuite_updateVectors(CuTest* tc) {
 	CuAssertPtrNotEquals(tc, fCameraTop, actual);
 }
 
-void TestUpdaterSuite_updateVectorsByAvatar(CuTest* tc) {
+void TestUpdaterSuite_commitVectorsByAvatar(CuTest* tc) {
 	LINKAPI_NATIVE_DWORD startTick = getUiTick();
 
 	float fAvatarFront[LINKAPI_VECTOR_LENGTH] = {1.1, 2.1, 3.1};
@@ -269,7 +269,7 @@ void TestUpdaterSuite_updateVectorsByAvatar(CuTest* tc) {
 	float fAvatarTop [LINKAPI_VECTOR_LENGTH] = {7.1, 8.1, 9.1};
 
 
-	LINKAPI_ERROR_CODE err = updateVectorsAvatarAsCamera(fAvatarPosition, fAvatarFront, fAvatarTop);
+	LINKAPI_ERROR_CODE err = commitVectorsAvatarAsCamera(fAvatarPosition, fAvatarFront, fAvatarTop);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
 	LINKAPI_NATIVE_DWORD actualTick = getUiTick();
 	CuAssertIntEquals(tc, startTick + 1, actualTick);
@@ -314,15 +314,15 @@ CuSuite* UpdatersSuite(void) {
 	if (initError == LINKAPI_ERROR_CODE_NO_ERROR) {
 
 
-		SUITE_ADD_TEST(suite, TestUpdaterSuite_updateUiTick);
-		SUITE_ADD_TEST(suite, TestUpdaterSuite_updateUiVersion);
-		SUITE_ADD_TEST(suite, TestUpdaterSuite_updateIdentity);
-		SUITE_ADD_TEST(suite, TestUpdaterSuite_updateName);
-		SUITE_ADD_TEST(suite, TestUpdaterSuite_updateDescription);
-		SUITE_ADD_TEST(suite, TestUpdaterSuite_updateContext);
-		SUITE_ADD_TEST(suite, TestUpdaterSuite_updateIdentityAndContext);
-		SUITE_ADD_TEST(suite, TestUpdaterSuite_updateVectors);
-		SUITE_ADD_TEST(suite, TestUpdaterSuite_updateVectorsByAvatar);
+		SUITE_ADD_TEST(suite, TestUpdaterSuite_commitUiTick);
+		SUITE_ADD_TEST(suite, TestUpdaterSuite_commitUiVersion);
+		SUITE_ADD_TEST(suite, TestUpdaterSuite_commitIdentity);
+		SUITE_ADD_TEST(suite, TestUpdaterSuite_commitName);
+		SUITE_ADD_TEST(suite, TestUpdaterSuite_commitDescription);
+		SUITE_ADD_TEST(suite, TestUpdaterSuite_commitContext);
+		SUITE_ADD_TEST(suite, TestUpdaterSuite_commitIdentityAndContext);
+		SUITE_ADD_TEST(suite, TestUpdaterSuite_commitVectors);
+		SUITE_ADD_TEST(suite, TestUpdaterSuite_commitVectorsByAvatar);
 
 
 	} else {
