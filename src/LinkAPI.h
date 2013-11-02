@@ -55,7 +55,7 @@
  * It should work with anything that is able to call native methods directly
  * (i.e. Scripts, AutoIt etc.), simply provide this library. 
  *
- * For more information about the different data that can be commitd see
+ * For more information about the different data that can be committed see
  * http://mumble.sourceforge.net/Link
  *
  *

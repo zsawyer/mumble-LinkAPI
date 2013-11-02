@@ -65,7 +65,7 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT}: ${OBJECTF
 ${OBJECTDIR}/_ext/1445274692/LinkAPI.o: ../../src/LinkAPI.c 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1445274692
 	${RM} $@.d
-	$(COMPILE.c) -O2 -Wall -I. -I../../src -I. -std=c89 -pedantic -Werror  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1445274692/LinkAPI.o ../../src/LinkAPI.c
+	$(COMPILE.c) -O2 -Wall -I. -I../../src -I.  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1445274692/LinkAPI.o ../../src/LinkAPI.c
 
 # Subprojects
 .build-subprojects:

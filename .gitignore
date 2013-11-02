@@ -6,3 +6,4 @@
 /tests/LinkAPITestRunner/build
 /tests/LinkAPITestRunner/dist
 /tests/java/ManualTester/ide/netbeans/dist/lib
+/tests/LinkAPITestRunner/nbproject/private
