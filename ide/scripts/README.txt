@@ -19,10 +19,14 @@ HOW TO:
 9. check the output if all your imports are there
 10. include required DLLs (by default non are required)
 
+# testing (semi-automatically)
+11. compile and run LinkAPITestRunner (at tests/LinkAPITestRunner) (available as netbeans project)
+12. inspect the console output for test results
+
 # testing (manually) #
-11. use MumblePAHelper (http://mumble.dbclan.de/MumblePAHelper_VS2010.exe, https://github.com/mumble-voip/mumble-pahelper) to inspect the data written to LinkeMem
-12. update tests\java\src\zsawyer\mumble\jna\LinkAPILibrary.java (I used JNAerator [https://code.google.com/p/jnaerator/] but there was quite some cleaning up to do)
-13. upate and use ManualTester (tests/java/ManualTester) to load your library using JNA and have it submit data
+13. use MumblePAHelper (http://mumble.dbclan.de/MumblePAHelper_VS2010.exe, https://github.com/mumble-voip/mumble-pahelper) to inspect the data written to LinkeMem
+14. update tests/java/src/zsawyer/mumble/jna/LinkAPILibrary.java (I used JNAerator [https://code.google.com/p/jnaerator/] but there was quite some cleaning up to do)
+15. update and use ManualTester (tests/java/ManualTester) to load your library using JNA and have it submit data
 
 
 
@@ -43,10 +47,14 @@ HOW TO:
 6. run make.sh
 7. check the output if all your imports are there
 
+# testing (semi-automatically)
+8. compile and run LinkAPITestRunner (at tests/LinkAPITestRunner) (available as netbeans project)
+9. inspect the console output for test results
+
 # testing (manually) #
-11. use MumblePAHelper (https://github.com/mumble-voip/mumble-pahelper) to inspect the data written to LinkeMem
-12. update tests\java\src\zsawyer\mumble\jna\LinkAPILibrary.java (I used JNAerator [https://code.google.com/p/jnaerator/] but there was quite some cleaning up to do)
-13. upate and use ManualTester (tests/java/ManualTester) to load your library using JNA and have it submit data
+10. use MumblePAHelper (https://github.com/mumble-voip/mumble-pahelper) to inspect the data written to LinkeMem
+11. update tests/java/src/zsawyer/mumble/jna/LinkAPILibrary.java (I used JNAerator [https://code.google.com/p/jnaerator/] but there was quite some cleaning up to do)
+12. upate and use ManualTester (tests/java/ManualTester) to load your library using JNA and have it submit data
 
 
 
@@ -57,15 +65,19 @@ HOW TO:
 2. install g++ compiler
 
 # editing #
-4. do not modify the "LinkedMem" struct unless you want to use a different mumble-Link-plugin other than 1.2.0
+3. do not modify the "LinkedMem" struct unless you want to use a different mumble-Link-plugin other than 1.2.0
 4. do edit LinkAPI.cpp and LinkAPI.h
 
 # compiling #
-5.1 by default a dynamic library is compiled
+5.1 by default a universal dynamic library is compiled
 5.2 (optional) to compile as static library:  add   -DLINKAPI_NO_DLL   to the g++ calls and change the command line appropriately
-5. run make_osx.sh
+6. run make_osx.sh
+
+# testing (semi-automatically)
+7. compile and run LinkAPITestRunner (at tests/LinkAPITestRunner) (available as netbeans project)
+8. inspect the console output for test results
 
 # testing (manually) #
-11. use MumblePAHelper (https://github.com/mumble-voip/mumble-pahelper) to inspect the data written to LinkeMem
-12. update tests\java\src\zsawyer\mumble\jna\LinkAPILibrary.java (I used JNAerator [https://code.google.com/p/jnaerator/] but there was quite some cleaning up to do)
-13. upate and use ManualTester (tests/java/ManualTester) to load your library using JNA and have it submit data
+9. use MumblePAHelper (https://github.com/mumble-voip/mumble-pahelper) to inspect the data written to LinkeMem
+10. update tests/java/src/zsawyer/mumble/jna/LinkAPILibrary.java (I used JNAerator [https://code.google.com/p/jnaerator/] but there was quite some cleaning up to do)
+11. upate and use ManualTester (tests/java/ManualTester) to load your library using JNA and have it submit data
