@@ -14,14 +14,14 @@ GREP=grep
 NM=nm
 CCADMIN=CCadmin
 RANLIB=ranlib
-CC=x86_64-w64-mingw32-gcc
-CCC=x86_64-w64-mingw32-g++
-CXX=x86_64-w64-mingw32-g++
+CC=gcc
+CCC=g++
+CXX=g++
 FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=Cygwin_4.x_1_+_mingw-Windows
+CND_PLATFORM=Cygwin64_4.x-Windows
 CND_DLIB_EXT=dll
 CND_CONF=Debug
 CND_DISTDIR=dist
@@ -58,13 +58,13 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../../ide/netbeans/dist/Release_x64/Cygwin_4.x_1_+_mingw-Windows/libLinkAPI.dll
+LDLIBSOPTIONS=../../ide/netbeans/dist/Release_x64/Cygwin64_4.x-Windows/libLinkAPI.dll
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/linkapitestrunner.exe
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/linkapitestrunner.exe: ../../ide/netbeans/dist/Release_x64/Cygwin_4.x_1_+_mingw-Windows/libLinkAPI.dll
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/linkapitestrunner.exe: ../../ide/netbeans/dist/Release_x64/Cygwin64_4.x-Windows/libLinkAPI.dll
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/linkapitestrunner.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
@@ -72,38 +72,38 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/linkapitestrunner.exe: ${OBJECTFILES}
 
 ${OBJECTDIR}/AllTests.o: AllTests.c 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -g -Wall -Icutest-1.5 -I../../src -MMD -MP -MF $@.d -o ${OBJECTDIR}/AllTests.o AllTests.c
+	${RM} "$@.d"
+	$(COMPILE.c) -g -Wall -Icutest-1.5 -I../../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/AllTests.o AllTests.c
 
 ${OBJECTDIR}/CustomCuTest.o: CustomCuTest.c 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -g -Wall -Icutest-1.5 -I../../src -MMD -MP -MF $@.d -o ${OBJECTDIR}/CustomCuTest.o CustomCuTest.c
+	${RM} "$@.d"
+	$(COMPILE.c) -g -Wall -Icutest-1.5 -I../../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/CustomCuTest.o CustomCuTest.c
 
 ${OBJECTDIR}/CustomHelperFunctions.o: CustomHelperFunctions.c 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -g -Wall -Icutest-1.5 -I../../src -MMD -MP -MF $@.d -o ${OBJECTDIR}/CustomHelperFunctions.o CustomHelperFunctions.c
+	${RM} "$@.d"
+	$(COMPILE.c) -g -Wall -Icutest-1.5 -I../../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/CustomHelperFunctions.o CustomHelperFunctions.c
 
 ${OBJECTDIR}/MiscTestSuite.o: MiscTestSuite.c 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -g -Wall -Icutest-1.5 -I../../src -MMD -MP -MF $@.d -o ${OBJECTDIR}/MiscTestSuite.o MiscTestSuite.c
+	${RM} "$@.d"
+	$(COMPILE.c) -g -Wall -Icutest-1.5 -I../../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/MiscTestSuite.o MiscTestSuite.c
 
 ${OBJECTDIR}/SettersTestSuite.o: SettersTestSuite.c 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -g -Wall -Icutest-1.5 -I../../src -MMD -MP -MF $@.d -o ${OBJECTDIR}/SettersTestSuite.o SettersTestSuite.c
+	${RM} "$@.d"
+	$(COMPILE.c) -g -Wall -Icutest-1.5 -I../../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/SettersTestSuite.o SettersTestSuite.c
 
 ${OBJECTDIR}/UpdatersTestSuite.o: UpdatersTestSuite.c 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -g -Wall -Icutest-1.5 -I../../src -MMD -MP -MF $@.d -o ${OBJECTDIR}/UpdatersTestSuite.o UpdatersTestSuite.c
+	${RM} "$@.d"
+	$(COMPILE.c) -g -Wall -Icutest-1.5 -I../../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/UpdatersTestSuite.o UpdatersTestSuite.c
 
 ${OBJECTDIR}/cutest-1.5/CuTest.o: cutest-1.5/CuTest.c 
 	${MKDIR} -p ${OBJECTDIR}/cutest-1.5
-	${RM} $@.d
-	$(COMPILE.c) -g -Wall -Icutest-1.5 -I../../src -MMD -MP -MF $@.d -o ${OBJECTDIR}/cutest-1.5/CuTest.o cutest-1.5/CuTest.c
+	${RM} "$@.d"
+	$(COMPILE.c) -g -Wall -Icutest-1.5 -I../../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/cutest-1.5/CuTest.o cutest-1.5/CuTest.c
 
 # Subprojects
 .build-subprojects:

@@ -2,7 +2,7 @@
 #include "CustomCuTest.h"
 #include "CustomHelperFunctions.h"
 
-#include "linkAPI.h"
+#include "LinkAPI.h"
 
 /*
  * ---------------------------- TEST CASES -------------------------------
@@ -16,44 +16,44 @@ void TestMiscSuite_frameworkSetupLM(CuTest* tc) {
 }
 
 void TestMiscSuite_doUnlink(CuTest* tc) {
-	LINKAPI_NATIVE_UINT32 startVersion = getUiVersion();
-	CuAssertIntEquals(tc, startVersion, lm->uiVersion);
+	LINKAPI_NATIVE_UINT32 startVersion = getVersion();
+	CuAssertIntEquals(tc, startVersion, lm->version);
 
 	unlinkMumble();
-	LINKAPI_NATIVE_UINT32 actual = getUiVersion();
-	CuAssertIntEquals(tc, actual, lm->uiVersion);
+	LINKAPI_NATIVE_UINT32 actual = getVersion();
+	CuAssertIntEquals(tc, actual, lm->version);
 	CuAssertIntEquals(tc, LINKAPI_UI_VERSION_UNLINK, actual);
 }
 
 void TestMiscSuite_commit(CuTest* tc) {
-	LINKAPI_ERROR_CODE err = setUiVersion(7);
+	LINKAPI_ERROR_CODE err = setVersion(7);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
-	LINKAPI_NATIVE_UINT32 startVersion = getUiVersion();
-	CuAssertIntEquals(tc, startVersion, lm->uiVersion);
-	LINKAPI_NATIVE_DWORD startTick = getUiTick();
-	CuAssertIntEquals(tc, startTick, lm->uiTick);
+	LINKAPI_NATIVE_UINT32 startVersion = getVersion();
+	CuAssertIntEquals(tc, startVersion, lm->version);
+	LINKAPI_NATIVE_DWORD startTick = getTick();
+	CuAssertIntEquals(tc, startTick, lm->tick);
 
 	err = commit();
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
-	LINKAPI_NATIVE_UINT32 actualVersion = getUiVersion();
-	CuAssertIntEquals(tc, actualVersion, lm->uiVersion);
+	LINKAPI_NATIVE_UINT32 actualVersion = getVersion();
+	CuAssertIntEquals(tc, actualVersion, lm->version);
 	CuAssertIntEquals(tc, startVersion, actualVersion);
-	LINKAPI_NATIVE_UINT32 actualTick = getUiTick();
-	CuAssertIntEquals(tc, actualTick, lm->uiTick);
+	LINKAPI_NATIVE_UINT32 actualTick = getTick();
+	CuAssertIntEquals(tc, actualTick, lm->tick);
 	CuAssertIntEquals(tc, startTick + 1, actualTick);
 
 
 	unlinkMumble();
-	actualVersion = getUiVersion();
-	CuAssertIntEquals(tc, actualVersion, lm->uiVersion);
+	actualVersion = getVersion();
+	CuAssertIntEquals(tc, actualVersion, lm->version);
 	CuAssertIntEquals(tc, LINKAPI_UI_VERSION_UNLINK, actualVersion);
 
 
 	err = commit();
-	actualVersion = getUiVersion();
-	CuAssertIntEquals(tc, actualVersion, lm->uiVersion);
-	actualTick = getUiTick();
-	CuAssertIntEquals(tc, actualTick, lm->uiTick);
+	actualVersion = getVersion();
+	CuAssertIntEquals(tc, actualVersion, lm->version);
+	actualTick = getTick();
+	CuAssertIntEquals(tc, actualTick, lm->tick);
 	CuAssertIntEquals(tc, startTick + 2, actualTick);
 	CuAssertIntEquals(tc, startVersion, actualVersion);
 }
@@ -73,14 +73,14 @@ void TestMiscSuite_initializeMultipleTimes(CuTest* tc) {
 	CuAssertWCharTArrayEquals(tc, actualDescription, lm->description, LINKAPI_MAX_DESCRIPTION_LENGTH);
 	CuAssertWCharTArrayEquals(tc, description, actualDescription, LINKAPI_MAX_DESCRIPTION_LENGTH);
 	CuAssertPtrNotEquals(tc, description, actualDescription);
-	LINKAPI_NATIVE_UINT32 actualVersion = getUiVersion();
-	CuAssertIntEquals(tc, actualVersion, lm->uiVersion);
+	LINKAPI_NATIVE_UINT32 actualVersion = getVersion();
+	CuAssertIntEquals(tc, actualVersion, lm->version);
 	CuAssertIntEquals(tc, version, actualVersion);
 
 
 	unlinkMumble();
-	actualVersion = getUiVersion();
-	CuAssertIntEquals(tc, actualVersion, lm->uiVersion);
+	actualVersion = getVersion();
+	CuAssertIntEquals(tc, actualVersion, lm->version);
 	CuAssertIntEquals(tc, LINKAPI_UI_VERSION_UNLINK, actualVersion);
 
 
@@ -98,8 +98,8 @@ void TestMiscSuite_initializeMultipleTimes(CuTest* tc) {
 	CuAssertWCharTArrayEquals(tc, lm->description, actualDescription, LINKAPI_MAX_DESCRIPTION_LENGTH);
 	CuAssertWCharTArrayEquals(tc, description2, actualDescription, LINKAPI_MAX_DESCRIPTION_LENGTH);
 	CuAssertPtrNotEquals(tc, description2, actualDescription);
-	actualVersion = getUiVersion();
-	CuAssertIntEquals(tc, actualVersion, lm->uiVersion);
+	actualVersion = getVersion();
+	CuAssertIntEquals(tc, actualVersion, lm->version);
 	CuAssertIntEquals(tc, version, actualVersion);
 }
 

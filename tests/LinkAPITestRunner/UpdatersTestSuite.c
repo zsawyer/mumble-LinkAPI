@@ -4,6 +4,8 @@
 
 #include "linkAPI.h"
 
+#include <string.h>
+
 /*
  * ---------------- TEST CASES -------------------------------
  */
@@ -12,44 +14,44 @@ void TestUpdaterSuite_commitUiTick(CuTest* tc) {
 	LINKAPI_NATIVE_DWORD tick = 123;
 	LINKAPI_NATIVE_DWORD tick2 = 125;
 
-	LINKAPI_ERROR_CODE err = commitUiTick(tick);
+	LINKAPI_ERROR_CODE err = commitTick(tick);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
-	LINKAPI_NATIVE_DWORD actual = getUiTick();
+	LINKAPI_NATIVE_DWORD actual = getTick();
 	CuAssertIntEquals(tc, tick, actual);
 	CuAssertPtrNotEquals(tc, &tick, &actual);
 
-	err = commitUiTick(tick2);
+	err = commitTick(tick2);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
-	actual = getUiTick();
+	actual = getTick();
 	CuAssertIntEquals(tc, tick2, actual);
 	CuAssertPtrNotEquals(tc, &tick2, &actual);
 }
 
 void TestUpdaterSuite_commitUiVersion(CuTest* tc) {
-	LINKAPI_NATIVE_DWORD startTick = getUiTick();
+	LINKAPI_NATIVE_DWORD startTick = getTick();
 
 	LINKAPI_NATIVE_UINT32 version = 321;
 	LINKAPI_NATIVE_UINT32 version2 = 2;
 
-	LINKAPI_ERROR_CODE err = commitUiVersion(version);
+	LINKAPI_ERROR_CODE err = commitVersion(version);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
-	LINKAPI_NATIVE_UINT32 actual = getUiVersion();
+	LINKAPI_NATIVE_UINT32 actual = getVersion();
 	CuAssertIntEquals(tc, version, actual);
 	CuAssertPtrNotEquals(tc, &version, &actual);
-	LINKAPI_NATIVE_DWORD actualTick = getUiTick();
+	LINKAPI_NATIVE_DWORD actualTick = getTick();
 	CuAssertIntEquals(tc, startTick + 1, actualTick);
 
-	err = commitUiVersion(version2);
+	err = commitVersion(version2);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
-	actual = getUiVersion();
+	actual = getVersion();
 	CuAssertIntEquals(tc, version2, actual);
 	CuAssertPtrNotEquals(tc, &version2, &actual);
-	actualTick = getUiTick();
+	actualTick = getTick();
 	CuAssertIntEquals(tc, startTick + 2, actualTick);
 }
 
 void TestUpdaterSuite_commitIdentity(CuTest* tc) {
-	LINKAPI_NATIVE_DWORD startTick = getUiTick();
+	LINKAPI_NATIVE_DWORD startTick = getTick();
 
 	wchar_t text[LINKAPI_MAX_IDENTITY_LENGTH] = L"TestIdentity\0";
 	wchar_t text2[LINKAPI_MAX_IDENTITY_LENGTH] = L"SomeTotallyDifferentID\0";
@@ -59,7 +61,7 @@ void TestUpdaterSuite_commitIdentity(CuTest* tc) {
 	wchar_t* actual = getIdentity();
 	CuAssertWCharTArrayEquals(tc, text, actual, LINKAPI_MAX_IDENTITY_LENGTH);
 	CuAssertPtrNotEquals(tc, text, actual);
-	LINKAPI_NATIVE_DWORD actualTick = getUiTick();
+	LINKAPI_NATIVE_DWORD actualTick = getTick();
 	CuAssertIntEquals(tc, startTick + 1, actualTick);
 
 	err = commitIdentity(text2);
@@ -67,12 +69,12 @@ void TestUpdaterSuite_commitIdentity(CuTest* tc) {
 	actual = getIdentity();
 	CuAssertWCharTArrayEquals(tc, text2, actual, LINKAPI_MAX_IDENTITY_LENGTH);
 	CuAssertPtrNotEquals(tc, text2, actual);
-	actualTick = getUiTick();
+	actualTick = getTick();
 	CuAssertIntEquals(tc, startTick + 2, actualTick);
 }
 
 void TestUpdaterSuite_commitName(CuTest* tc) {
-	LINKAPI_NATIVE_DWORD startTick = getUiTick();
+	LINKAPI_NATIVE_DWORD startTick = getTick();
 
 	wchar_t text[LINKAPI_MAX_NAME_LENGTH] = L"TestName\0";
 	wchar_t text2[LINKAPI_MAX_NAME_LENGTH] = L"SomeTotallyDifferentNm\0";
@@ -82,7 +84,7 @@ void TestUpdaterSuite_commitName(CuTest* tc) {
 	wchar_t* actual = getName();
 	CuAssertWCharTArrayEquals(tc, text, actual, LINKAPI_MAX_NAME_LENGTH);
 	CuAssertPtrNotEquals(tc, text, actual);
-	LINKAPI_NATIVE_DWORD actualTick = getUiTick();
+	LINKAPI_NATIVE_DWORD actualTick = getTick();
 	CuAssertIntEquals(tc, startTick + 1, actualTick);
 
 	err = commitName(text2);
@@ -90,12 +92,12 @@ void TestUpdaterSuite_commitName(CuTest* tc) {
 	actual = getName();
 	CuAssertWCharTArrayEquals(tc, text2, actual, LINKAPI_MAX_NAME_LENGTH);
 	CuAssertPtrNotEquals(tc, text2, actual);
-	actualTick = getUiTick();
+	actualTick = getTick();
 	CuAssertIntEquals(tc, startTick + 2, actualTick);
 }
 
 void TestUpdaterSuite_commitDescription(CuTest* tc) {
-	LINKAPI_NATIVE_DWORD startTick = getUiTick();
+	LINKAPI_NATIVE_DWORD startTick = getTick();
 
 	wchar_t text[LINKAPI_MAX_DESCRIPTION_LENGTH] = L"TestDescription\0";
 	wchar_t text2[LINKAPI_MAX_DESCRIPTION_LENGTH] = L"SomeTotallyDifferentDSCRPTN\0";
@@ -105,7 +107,7 @@ void TestUpdaterSuite_commitDescription(CuTest* tc) {
 	wchar_t* actual = getDescription();
 	CuAssertWCharTArrayEquals(tc, text, actual, LINKAPI_MAX_DESCRIPTION_LENGTH);
 	CuAssertPtrNotEquals(tc, text, actual);
-	LINKAPI_NATIVE_DWORD actualTick = getUiTick();
+	LINKAPI_NATIVE_DWORD actualTick = getTick();
 	CuAssertIntEquals(tc, startTick + 1, actualTick);
 
 	err = commitDescription(text2);
@@ -113,12 +115,12 @@ void TestUpdaterSuite_commitDescription(CuTest* tc) {
 	actual = getDescription();
 	CuAssertWCharTArrayEquals(tc, text2, actual, LINKAPI_MAX_DESCRIPTION_LENGTH);
 	CuAssertPtrNotEquals(tc, text2, actual);
-	actualTick = getUiTick();
+	actualTick = getTick();
 	CuAssertIntEquals(tc, startTick + 2, actualTick);
 }
 
 void TestUpdaterSuite_commitContext(CuTest* tc) {
-	LINKAPI_NATIVE_DWORD startTick = getUiTick();
+	LINKAPI_NATIVE_DWORD startTick = getTick();
 
 	unsigned char text[LINKAPI_MAX_CONTEXT_LENGTH] = "TestContext\0";
 	unsigned char text2[LINKAPI_MAX_CONTEXT_LENGTH] = "SomeTotallyDifferentCNTX\0";
@@ -136,7 +138,7 @@ void TestUpdaterSuite_commitContext(CuTest* tc) {
 	unsigned char* actual = getContext();
 	CuAssertCharArrayEquals(tc, text, actual, len);
 	CuAssertPtrNotEquals(tc, text, actual);
-	LINKAPI_NATIVE_DWORD actualTick = getUiTick();
+	LINKAPI_NATIVE_DWORD actualTick = getTick();
 	CuAssertIntEquals(tc, startTick + 1, actualTick);
 
 	err = commitContext(text2, len2);
@@ -146,7 +148,7 @@ void TestUpdaterSuite_commitContext(CuTest* tc) {
 	actual = getContext();
 	CuAssertCharArrayEquals(tc, text2, actual, len2);
 	CuAssertPtrNotEquals(tc, text2, actual);
-	actualTick = getUiTick();
+	actualTick = getTick();
 	CuAssertIntEquals(tc, startTick + 2, actualTick);
 
 	err = commitContext(text3, len3Excerpt);
@@ -156,22 +158,22 @@ void TestUpdaterSuite_commitContext(CuTest* tc) {
 	actual = getContext();
 	CuAssertCharArrayEquals(tc, text3Excerpt, actual, len3Excerpt);
 	CuAssertPtrNotEquals(tc, text3, actual);
-	actualTick = getUiTick();
+	actualTick = getTick();
 	CuAssertIntEquals(tc, startTick + 3, actualTick);
 
 	err = commitContext(text, LINKAPI_MAX_CONTEXT_LENGTH + 10);
-	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_CONTEXT_LENGTH_EXCEEDED, err);	
+	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_CONTEXT_LENGTH_EXCEEDED, err);
 	actualLen = getContextLen();
 	CuAssertIntEquals(tc, len3Excerpt, actualLen);
 	actual = getContext();
 	CuAssertCharArrayEquals(tc, text3Excerpt, actual, len3Excerpt);
 	CuAssertPtrNotEquals(tc, text3, actual);
-	actualTick = getUiTick();
+	actualTick = getTick();
 	CuAssertIntEquals(tc, startTick + 3, actualTick);
 }
 
 void TestUpdaterSuite_commitIdentityAndContext(CuTest* tc) {
-	LINKAPI_NATIVE_DWORD startTick = getUiTick();
+	LINKAPI_NATIVE_DWORD startTick = getTick();
 
 	wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH] = L"TestIdentity\0";
 	wchar_t identity2[LINKAPI_MAX_IDENTITY_LENGTH] = L"SomeTotallyDifferentID\0";
@@ -193,7 +195,7 @@ void TestUpdaterSuite_commitIdentityAndContext(CuTest* tc) {
 	wchar_t* actualId = getIdentity();
 	CuAssertWCharTArrayEquals(tc, identity, actualId, LINKAPI_MAX_IDENTITY_LENGTH);
 	CuAssertPtrNotEquals(tc, identity, actualId);
-	LINKAPI_NATIVE_DWORD actualTick = getUiTick();
+	LINKAPI_NATIVE_DWORD actualTick = getTick();
 	CuAssertIntEquals(tc, startTick + 1, actualTick);
 
 	err = commitIdentityAndContext(identity2, text2, actualLen2);
@@ -204,7 +206,7 @@ void TestUpdaterSuite_commitIdentityAndContext(CuTest* tc) {
 	actualId = getIdentity();
 	CuAssertWCharTArrayEquals(tc, identity2, actualId, LINKAPI_MAX_IDENTITY_LENGTH);
 	CuAssertPtrNotEquals(tc, identity2, actualId);
-	actualTick = getUiTick();
+	actualTick = getTick();
 	CuAssertIntEquals(tc, startTick + 2, actualTick);
 
 	err = commitIdentityAndContext(identity, text3, actualLen3Excerpt);
@@ -215,89 +217,89 @@ void TestUpdaterSuite_commitIdentityAndContext(CuTest* tc) {
 	actualId = getIdentity();
 	CuAssertWCharTArrayEquals(tc, identity, actualId, LINKAPI_MAX_IDENTITY_LENGTH);
 	CuAssertPtrNotEquals(tc, identity, actualId);
-	actualTick = getUiTick();
+	actualTick = getTick();
 	CuAssertIntEquals(tc, startTick + 3, actualTick);
 }
 
 void TestUpdaterSuite_commitVectors(CuTest* tc) {
-	LINKAPI_NATIVE_DWORD startTick = getUiTick();
+	LINKAPI_NATIVE_DWORD startTick = getTick();
 
-	float fAvatarFront[LINKAPI_VECTOR_LENGTH] = {1.1, 2.1, 3.1};
-	float fAvatarPosition[LINKAPI_VECTOR_LENGTH] = {4.1, 5.1, 6.1};
-	float fAvatarTop [LINKAPI_VECTOR_LENGTH] = {7.1, 8.1, 9.1};
-	float fCameraFront [LINKAPI_VECTOR_LENGTH] = {10.1, 11.1, 12.1};
-	float fCameraPosition [LINKAPI_VECTOR_LENGTH] = {13.1, 14.1, 15.1};
-	float fCameraTop [LINKAPI_VECTOR_LENGTH] = {16.1, 17.1, 18.1};
+	float avatarFront[3] = {1.1, 2.1, 3.1};
+	float avatarPosition[3] = {4.1, 5.1, 6.1};
+	float avatarTop [3] = {7.1, 8.1, 9.1};
+	float fCameraFront [3] = {10.1, 11.1, 12.1};
+	float fCameraPosition [3] = {13.1, 14.1, 15.1};
+	float fCameraTop [3] = {16.1, 17.1, 18.1};
 
 
-	LINKAPI_ERROR_CODE err = commitVectors(fAvatarPosition, fAvatarFront, fAvatarTop, fCameraPosition, fCameraFront, fCameraTop);
+	LINKAPI_ERROR_CODE err = commitVectors(avatarPosition, avatarFront, avatarTop, fCameraPosition, fCameraFront, fCameraTop);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
-	LINKAPI_NATIVE_DWORD actualTick = getUiTick();
+	LINKAPI_NATIVE_DWORD actualTick = getTick();
 	CuAssertIntEquals(tc, startTick + 1, actualTick);
 
-	float* actual = getAvatarFront();
-	CuAssertVecEquals(tc, fAvatarFront, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertPtrNotEquals(tc, fAvatarFront, actual);
+	LINKAPI_VECTOR_3D* actual = getAvatarFront();
+	CuAssertArrayEqualsVec(tc, avatarFront, actual);
+	CuAssertPtrNotEquals(tc, avatarFront, actual);
 
 	actual = getAvatarPosition();
-	CuAssertVecEquals(tc, fAvatarPosition, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertPtrNotEquals(tc, fAvatarPosition, actual);
+	CuAssertArrayEqualsVec(tc, avatarPosition, actual);
+	CuAssertPtrNotEquals(tc, avatarPosition, actual);
 
 	actual = getAvatarTop();
-	CuAssertVecEquals(tc, fAvatarTop, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertPtrNotEquals(tc, fAvatarTop, actual);
+	CuAssertArrayEqualsVec(tc, avatarTop, actual);
+	CuAssertPtrNotEquals(tc, avatarTop, actual);
 
 
 	actual = getCameraFront();
-	CuAssertVecEquals(tc, fCameraFront, actual, LINKAPI_VECTOR_LENGTH);
+	CuAssertArrayEqualsVec(tc, fCameraFront, actual);
 	CuAssertPtrNotEquals(tc, fCameraFront, actual);
 
 	actual = getCameraPosition();
-	CuAssertVecEquals(tc, fCameraPosition, actual, LINKAPI_VECTOR_LENGTH);
+	CuAssertArrayEqualsVec(tc, fCameraPosition, actual);
 	CuAssertPtrNotEquals(tc, fCameraPosition, actual);
 
 	actual = getCameraTop();
-	CuAssertVecEquals(tc, fCameraTop, actual, LINKAPI_VECTOR_LENGTH);
+	CuAssertArrayEqualsVec(tc, fCameraTop, actual);
 	CuAssertPtrNotEquals(tc, fCameraTop, actual);
 }
 
 void TestUpdaterSuite_commitVectorsByAvatar(CuTest* tc) {
-	LINKAPI_NATIVE_DWORD startTick = getUiTick();
+	LINKAPI_NATIVE_DWORD startTick = getTick();
 
-	float fAvatarFront[LINKAPI_VECTOR_LENGTH] = {1.1, 2.1, 3.1};
-	float fAvatarPosition[LINKAPI_VECTOR_LENGTH] = {4.1, 5.1, 6.1};
-	float fAvatarTop [LINKAPI_VECTOR_LENGTH] = {7.1, 8.1, 9.1};
+	float avatarFront[3] = {1.1, 2.1, 3.1};
+	float avatarPosition[3] = {4.1, 5.1, 6.1};
+	float avatarTop [3] = {7.1, 8.1, 9.1};
 
 
-	LINKAPI_ERROR_CODE err = commitVectorsAvatarAsCamera(fAvatarPosition, fAvatarFront, fAvatarTop);
+	LINKAPI_ERROR_CODE err = commitVectorsAvatarAsCamera(avatarPosition, avatarFront, avatarTop);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
-	LINKAPI_NATIVE_DWORD actualTick = getUiTick();
+	LINKAPI_NATIVE_DWORD actualTick = getTick();
 	CuAssertIntEquals(tc, startTick + 1, actualTick);
 
-	float* actual = getAvatarFront();
-	CuAssertVecEquals(tc, fAvatarFront, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertPtrNotEquals(tc, fAvatarFront, actual);
+	LINKAPI_VECTOR_3D* actual = getAvatarFront();
+	CuAssertArrayEqualsVec(tc, avatarFront, actual);
+	CuAssertPtrNotEquals(tc, avatarFront, actual);
 
 	actual = getAvatarPosition();
-	CuAssertVecEquals(tc, fAvatarPosition, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertPtrNotEquals(tc, fAvatarPosition, actual);
+	CuAssertArrayEqualsVec(tc, avatarPosition, actual);
+	CuAssertPtrNotEquals(tc, avatarPosition, actual);
 
 	actual = getAvatarTop();
-	CuAssertVecEquals(tc, fAvatarTop, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertPtrNotEquals(tc, fAvatarTop, actual);
+	CuAssertArrayEqualsVec(tc, avatarTop, actual);
+	CuAssertPtrNotEquals(tc, avatarTop, actual);
 
 
 	actual = getCameraFront();
-	CuAssertVecEquals(tc, fAvatarFront, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertPtrNotEquals(tc, fAvatarFront, actual);
+	CuAssertArrayEqualsVec(tc, avatarFront, actual);
+	CuAssertPtrNotEquals(tc, avatarFront, actual);
 
 	actual = getCameraPosition();
-	CuAssertVecEquals(tc, fAvatarPosition, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertPtrNotEquals(tc, fAvatarPosition, actual);
+	CuAssertArrayEqualsVec(tc, avatarPosition, actual);
+	CuAssertPtrNotEquals(tc, avatarPosition, actual);
 
 	actual = getCameraTop();
-	CuAssertVecEquals(tc, fAvatarTop, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertPtrNotEquals(tc, fAvatarTop, actual);
+	CuAssertArrayEqualsVec(tc, avatarTop, actual);
+	CuAssertPtrNotEquals(tc, avatarTop, actual);
 }
 
 /*

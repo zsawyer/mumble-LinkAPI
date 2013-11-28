@@ -9,6 +9,7 @@
 #    include <unistd.h> // getuid
 #    include <sys/stat.h> // S_IRUSR, S_IWUSR
 #    include <fcntl.h> // O_RDWR
+#    include <string.h> // memset
 
 #    include <sys/mman.h> // shm_open, PROT_READ, PROT_WRITE, MAP_SHARED mmap
 #else
@@ -83,11 +84,13 @@ int setup(void) {
 	if (bCreated)
 		memset(lm, 0, sizeof (LINKAPI_LINKED_MEMORY));
 #else
+	int shmfd;
+	char memname[256];
 	snprintf(memname, 256, "/MumbleLink.%d", getuid());
 
 	shmfd = shm_open(memname, O_RDWR, S_IRUSR | S_IWUSR);
 	if (shmfd < 0) {
-		bCreated = true;
+		bCreated = 1;
 		shmfd = shm_open(memname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
 	}
 
@@ -108,7 +111,7 @@ int setup(void) {
 	lm = (LINKAPI_LINKED_MEMORY*) (
 			mmap(NULL, sizeof (struct LINKAPI_LINKED_MEMORY), PROT_READ | PROT_WRITE, MAP_SHARED, shmfd, 0));
 
-	if ((lm != lm_invalid) && bCreated)
+	if ((lm != (void *) (-1)) && bCreated)
 		memset(lm, 0, sizeof (struct LINKAPI_LINKED_MEMORY));
 #endif
 

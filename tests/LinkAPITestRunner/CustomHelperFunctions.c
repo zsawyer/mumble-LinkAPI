@@ -9,8 +9,7 @@ LINKAPI_ERROR_CODE initError;
 void initializationFailed(CuTest* tc) {
 	char msg[1024];
 	sprintf(msg, "initialization failed! code: %d", initError);
-	if (initError == LINKAPI_ERROR_CODE_WIN32_NO_HANDLE ||
-			initError == LINKAPI_ERROR_CODE_UNIX_NO_HANDLE) {
+	if (initError == LINKAPI_ERROR_CODE_NO_HANDLE) {
 
 		sprintf(msg, "initialization failed! code: %d - START MUMBLE (or MumblePAHelper)!", initError);
 	}
@@ -31,7 +30,7 @@ void CuStringAppendByteArray(CuString* string, char* format, const void* src, si
 			} else if (asWCharT) {
 				CuStringAppendFormat(tmpString, format, ((wchar_t*) src)[i]);
 			} else {
-				CuStringAppendFormat(tmpString, format, (unsigned char) ((byte*) src)[i]);
+				CuStringAppendFormat(tmpString, format, (unsigned char) ((unsigned char*) src)[i]);
 			}
 		}
 	}

@@ -70,38 +70,38 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/linkapitestrunner.exe: ${OBJECTFILES}
 
 ${OBJECTDIR}/AllTests.o: AllTests.c 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/AllTests.o AllTests.c
+	${RM} "$@.d"
+	$(COMPILE.c) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/AllTests.o AllTests.c
 
 ${OBJECTDIR}/CustomCuTest.o: CustomCuTest.c 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/CustomCuTest.o CustomCuTest.c
+	${RM} "$@.d"
+	$(COMPILE.c) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/CustomCuTest.o CustomCuTest.c
 
 ${OBJECTDIR}/CustomHelperFunctions.o: CustomHelperFunctions.c 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/CustomHelperFunctions.o CustomHelperFunctions.c
+	${RM} "$@.d"
+	$(COMPILE.c) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/CustomHelperFunctions.o CustomHelperFunctions.c
 
 ${OBJECTDIR}/MiscTestSuite.o: MiscTestSuite.c 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/MiscTestSuite.o MiscTestSuite.c
+	${RM} "$@.d"
+	$(COMPILE.c) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/MiscTestSuite.o MiscTestSuite.c
 
 ${OBJECTDIR}/SettersTestSuite.o: SettersTestSuite.c 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/SettersTestSuite.o SettersTestSuite.c
+	${RM} "$@.d"
+	$(COMPILE.c) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/SettersTestSuite.o SettersTestSuite.c
 
 ${OBJECTDIR}/UpdatersTestSuite.o: UpdatersTestSuite.c 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/UpdatersTestSuite.o UpdatersTestSuite.c
+	${RM} "$@.d"
+	$(COMPILE.c) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/UpdatersTestSuite.o UpdatersTestSuite.c
 
 ${OBJECTDIR}/cutest-1.5/CuTest.o: cutest-1.5/CuTest.c 
 	${MKDIR} -p ${OBJECTDIR}/cutest-1.5
-	${RM} $@.d
-	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/cutest-1.5/CuTest.o cutest-1.5/CuTest.c
+	${RM} "$@.d"
+	$(COMPILE.c) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/cutest-1.5/CuTest.o cutest-1.5/CuTest.c
 
 # Subprojects
 .build-subprojects:

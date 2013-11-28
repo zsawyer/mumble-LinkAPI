@@ -1,6 +1,7 @@
 #include "CustomCuTest.h"
 #include "CustomHelperFunctions.h"
 #include <stdio.h>
+#include <string.h>
 
 void CuAssertPtrNotEquals_LineMsg(CuTest* tc, const char* file, int line, const char* message,
 		void* expected, void* actual) {
@@ -10,8 +11,8 @@ void CuAssertPtrNotEquals_LineMsg(CuTest* tc, const char* file, int line, const 
 	CuFail_Line(tc, file, line, message, buf);
 }
 
-void CuAssertVecEquals_LineMsg(CuTest* tc, const char* file, int line, const char* message,
-		float expected[LINKAPI_VECTOR_LENGTH], float actual[LINKAPI_VECTOR_LENGTH], int size) {
+void CuAssertFloatArrayEquals_LineMsg(CuTest* tc, const char* file, int line, const char* message,
+		float* expected, float* actual, int size) {
 	char buf[STRING_MAX];
 
 	int i;
@@ -21,6 +22,21 @@ void CuAssertVecEquals_LineMsg(CuTest* tc, const char* file, int line, const cha
 			CuFail_Line(tc, file, line, message, buf);
 		}
 	}
+}
+
+void CuAssertVecEquals_LineMsg(CuTest* tc, const char* file, int line, const char* message,
+		LINKAPI_VECTOR_3D* expected, LINKAPI_VECTOR_3D * actual) {
+
+	CuAssertDblEquals_LineMsg(tc, file, line, "expected vector x mismatch", expected->x, actual->x, 0);
+	CuAssertDblEquals_LineMsg(tc, file, line, "expected vector y mismatch", expected->y, actual->y, 0);
+	CuAssertDblEquals_LineMsg(tc, file, line, "expected vector z mismatch", expected->z, actual->z, 0);
+}
+
+void CuAssertArrayEqualsVec_LineMsg(CuTest* tc, const char* file, int line, const char* message,
+		float* array, LINKAPI_VECTOR_3D * vector) {
+	CuAssertDblEquals_LineMsg(tc, file, line, "array entry [0] mismatch", array[0], vector->x, 0);
+	CuAssertDblEquals_LineMsg(tc, file, line, "array entry [1] mismatch", array[1], vector->y, 0);
+	CuAssertDblEquals_LineMsg(tc, file, line, "array entry [2] mismatch", array[2], vector->z, 0);
 }
 
 void CuAssertByteArrayEquals_LineMsg(CuTest* tc, const char* file, int line, const char* message,

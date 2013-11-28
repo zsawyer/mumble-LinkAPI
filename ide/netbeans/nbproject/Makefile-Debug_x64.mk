@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=Cygwin_4.x-Windows
+CND_PLATFORM=Cygwin64_4.x-Windows
 CND_DLIB_EXT=dll
 CND_CONF=Debug_x64
 CND_DISTDIR=dist
@@ -68,8 +68,8 @@ ${TESTDIR}/TestFiles/f1: ${OBJECTFILES}
 
 ${OBJECTDIR}/_ext/1445274692/LinkAPI.o: ../../src/LinkAPI.c 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1445274692
-	${RM} $@.d
-	$(COMPILE.c) -g -I. -I.  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1445274692/LinkAPI.o ../../src/LinkAPI.c
+	${RM} "$@.d"
+	$(COMPILE.c) -g -I. -I.  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445274692/LinkAPI.o ../../src/LinkAPI.c
 
 # Subprojects
 .build-subprojects:

@@ -32,14 +32,14 @@
  * This header file specifies a generic interface to provide positional audio
  * information to mumble it depends on the "Mumble Link Plugin" ("Link") v1.2.0
  *
- * Note that all commit...(...) methods will increment uiTick and reinitialize
+ * Note that all commit...(...) methods will increment tick and reinitialize
  * the memory structure if the lock was lost (unlinked).
  *
  * CONCURRENCY WARNING:
  * All methods are non-synchronized! Race conditions are likely to happen.
  * Especially when calling getters in sequence, data writes to the shared memory
  * can happen in between the read sequence.
- * DO NOT rely upon a sequence of functions to work on the same "uiTick".
+ * DO NOT rely upon a sequence of functions to work on the same "tick".
  * Currently the memory does not provide the means to synchronize and ensure
  * that all data are coherently relating to the same tick/each other.
  * The context_len is not guaranteed to belong to the context retrieved
@@ -91,9 +91,6 @@ extern "C" {
 #    endif
 
 
-
-#    define LINKAPI_VECTOR_LENGTH 3
-
 #    define LINKAPI_MAX_IDENTITY_LENGTH 256
 #    define LINKAPI_MAX_CONTEXT_LENGTH 256
 #    define LINKAPI_MAX_NAME_LENGTH 256
@@ -105,15 +102,15 @@ extern "C" {
 	 * the structure of the shared memory as defined by mumble Link plugin v1.2.0
 	 */
 	typedef struct LINKAPI_LINKED_MEMORY {
-		LINKAPI_NATIVE_UINT32 uiVersion;
-		LINKAPI_NATIVE_DWORD uiTick;
-		float fAvatarPosition[LINKAPI_VECTOR_LENGTH];
-		float fAvatarFront[LINKAPI_VECTOR_LENGTH];
-		float fAvatarTop[LINKAPI_VECTOR_LENGTH];
+		LINKAPI_NATIVE_UINT32 version;
+		LINKAPI_NATIVE_DWORD tick;
+		float avatarPosition[3];
+		float avatarFront[3];
+		float avatarTop[3];
 		wchar_t name[LINKAPI_MAX_NAME_LENGTH];
-		float fCameraPosition[LINKAPI_VECTOR_LENGTH];
-		float fCameraFront[LINKAPI_VECTOR_LENGTH];
-		float fCameraTop[LINKAPI_VECTOR_LENGTH];
+		float cameraPosition[3];
+		float cameraFront[3];
+		float cameraTop[3];
 		wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH];
 		LINKAPI_NATIVE_UINT32 context_len;
 		unsigned char context[LINKAPI_MAX_CONTEXT_LENGTH];
@@ -121,23 +118,28 @@ extern "C" {
 	} LINKAPI_LINKED_MEMORY;
 
 	/**
+	 * a 3D vector structure
+	 */
+	typedef struct LINKAPI_VECTOR_3D {
+		float x;
+		float y;
+		float z;
+	} LINKAPI_VECTOR_3D;
+
+	/**
 	 * error codes hinting at the root cause of a failure
 	 */
 	typedef enum LINKAPI_ERROR_CODE {
 		/** no error */
 		LINKAPI_ERROR_CODE_NO_ERROR = 0,
-		/** win32 specific: OpenFileMappingW failed to return a handle */
-		LINKAPI_ERROR_CODE_WIN32_NO_HANDLE = 1,
-		/** win32 specific: MapViewOfFile failed to return a structure */
-		LINKAPI_ERROR_CODE_WIN32_NO_STRUCTURE = 2,
-		/** unix specific: shm_open returned a negative integer */
-		LINKAPI_ERROR_CODE_UNIX_NO_HANDLE = 3,
-		/** unix specific: mmap failed to return a structure */
-		LINKAPI_ERROR_CODE_UNIX_NO_STRUCTURE = 4,
-		/** shared memory was not initialized */
-		LINKAPI_ERROR_CODE_NO_MEMORY_WAS_INITIALIZED = 5,
+		/** no handle to the shared memory structure was received */
+		LINKAPI_ERROR_CODE_NO_HANDLE = 1,
+		/** no structure could be initialized */
+		LINKAPI_ERROR_CODE_NO_STRUCTURE = 2,
+		/** the shared memory was not initialized */
+		LINKAPI_ERROR_CODE_NO_MEMORY_WAS_INITIALIZED = 3,
 		/** the provided context length was out of bounds */
-		LINKAPI_ERROR_CODE_CONTEXT_LENGTH_EXCEEDED = 6
+		LINKAPI_ERROR_CODE_CONTEXT_LENGTH_EXCEEDED = 4
 	} LINKAPI_ERROR_CODE;
 
 	/**
@@ -150,7 +152,7 @@ extern "C" {
 	 *
 	 * @param name	the display name of the application which links with mumble (i.e. L"TestLink")
 	 * @param description	a text stating the purpose of this link
-	 * @param uiVersion	no description available (this should usually be set to 2)
+	 * @param version	no description available (this should usually be set to 2)
 	 *
 	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
@@ -243,7 +245,8 @@ extern "C" {
 	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
-	LINKAPI_ERROR_CODE commitContext(unsigned char context[LINKAPI_MAX_CONTEXT_LENGTH],
+	LINKAPI_ERROR_CODE commitContext(
+			unsigned char context[LINKAPI_MAX_CONTEXT_LENGTH],
 			LINKAPI_NATIVE_UINT32 context_len);
 
 	/**
@@ -288,7 +291,9 @@ extern "C" {
 	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
-	LINKAPI_ERROR_CODE setContext(unsigned char context[], LINKAPI_NATIVE_UINT32 context_len);
+	LINKAPI_ERROR_CODE setContext(
+			unsigned char context[],
+			LINKAPI_NATIVE_UINT32 context_len);
 
 	/**
 	 * sets and commits the identity AND context
@@ -329,7 +334,10 @@ extern "C" {
 	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
-	LINKAPI_ERROR_CODE setIdentityAndContext(wchar_t identity[], unsigned char context[], LINKAPI_NATIVE_UINT32 context_len);
+	LINKAPI_ERROR_CODE setIdentityAndContext(
+			wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH],
+			unsigned char context[LINKAPI_MAX_CONTEXT_LENGTH],
+			LINKAPI_NATIVE_UINT32 context_len);
 
 	/**
 	 * sets and commits the display name of the application currently linked
@@ -416,23 +424,23 @@ extern "C" {
 	 * Notice: Mumble fetches these values 50 times a second, so please update
 	 * them every frame.
 	 *
-	 * @param fAvatarPosition	Position of the avatar.
-	 * @param fAvatarFront	Unit vector pointing out of the avatar's eyes.
-	 * @param fAvatarTop	Unit vector pointing out of the top of the avatar's head.
-	 * @param fCameraPosition	Position of the camera.
-	 * @param fCameraFront	Unit vector pointing out of the camera's lense.
-	 * @param fCameraTop	Unit vector pointing out of the camera's top.
+	 * @param avatarPosition	Position of the avatar.
+	 * @param avatarFront	Unit vector pointing out of the avatar's eyes.
+	 * @param avatarTop	Unit vector pointing out of the top of the avatar's head.
+	 * @param cameraPosition	Position of the camera.
+	 * @param cameraFront	Unit vector pointing out of the camera's lense.
+	 * @param cameraTop	Unit vector pointing out of the camera's top.
 	 *
 	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE commitVectors(
-			float fAvatarPosition[LINKAPI_VECTOR_LENGTH],
-			float fAvatarFront[LINKAPI_VECTOR_LENGTH],
-			float fAvatarTop[LINKAPI_VECTOR_LENGTH],
-			float fCameraPosition[LINKAPI_VECTOR_LENGTH],
-			float fCameraFront[LINKAPI_VECTOR_LENGTH],
-			float fCameraTop[LINKAPI_VECTOR_LENGTH]);
+			float avatarPosition[3],
+			float avatarFront[3],
+			float avatarTop[3],
+			float cameraPosition[3],
+			float cameraFront[3],
+			float cameraTop[3]);
 
 	/**
 	 * sets avatar and camera vectors
@@ -440,23 +448,23 @@ extern "C" {
 	 * Notice: Mumble fetches these values 50 times a second, so please update
 	 * them every frame.
 	 *
-	 * @param fAvatarPosition	Position of the avatar.
-	 * @param fAvatarFront	Unit vector pointing out of the avatar's eyes.
-	 * @param fAvatarTop	Unit vector pointing out of the top of the avatar's head.
-	 * @param fCameraPosition	Position of the camera.
-	 * @param fCameraFront	Unit vector pointing out of the camera's lense.
-	 * @param fCameraTop	Unit vector pointing out of the camera's top.
+	 * @param avatarPosition	Position of the avatar.
+	 * @param avatarFront	Unit vector pointing out of the avatar's eyes.
+	 * @param avatarTop	Unit vector pointing out of the top of the avatar's head.
+	 * @param cameraPosition	Position of the camera.
+	 * @param cameraFront	Unit vector pointing out of the camera's lense.
+	 * @param cameraTop	Unit vector pointing out of the camera's top.
 	 *
 	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE setVectors(
-			float fAvatarPosition[LINKAPI_VECTOR_LENGTH],
-			float fAvatarFront[LINKAPI_VECTOR_LENGTH],
-			float fAvatarTop[LINKAPI_VECTOR_LENGTH],
-			float fCameraPosition[LINKAPI_VECTOR_LENGTH],
-			float fCameraFront[LINKAPI_VECTOR_LENGTH],
-			float fCameraTop[LINKAPI_VECTOR_LENGTH]);
+			float avatarPosition[3],
+			float avatarFront[3],
+			float avatarTop[3],
+			float cameraPosition[3],
+			float cameraFront[3],
+			float cameraTop[3]);
 
 	/**
 	 * updates and commits avatar AND camera vectors with the same values
@@ -466,17 +474,17 @@ extern "C" {
 	 *
 	 *      see <code>setVectorsAvatarAsCamera(...)</code> for details
 	 *
-	 * @param fAvatarPosition	Position of the avatar and camera.
-	 * @param fAvatarFront	Unit vector pointing out of the camera/avatar's eyes.
-	 * @param fAvatarTop	Unit vector pointing out of the top of the avatar's head/camera's top.
+	 * @param avatarPosition	Position of the avatar and camera.
+	 * @param avatarFront	Unit vector pointing out of the camera/avatar's eyes.
+	 * @param avatarTop	Unit vector pointing out of the top of the avatar's head/camera's top.
 	 *
 	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE commitVectorsAvatarAsCamera(
-			float fAvatarPosition[LINKAPI_VECTOR_LENGTH],
-			float fAvatarFront[LINKAPI_VECTOR_LENGTH],
-			float fAvatarTop[LINKAPI_VECTOR_LENGTH]);
+			float avatarPosition[3],
+			float avatarFront[3],
+			float avatarTop[3]);
 
 	/**
 	 * sets avatar AND camera vectors with the same values
@@ -491,17 +499,17 @@ extern "C" {
 	 *
 	 *      see the respective single vector setters for details
 	 *
-	 * @param fAvatarPosition	Position of the avatar and camera.
-	 * @param fAvatarFront	Unit vector pointing out of the camera/avatar's eyes.
-	 * @param fAvatarTop	Unit vector pointing out of the top of the avatar's head/camera's top.
+	 * @param avatarPosition	Position of the avatar and camera.
+	 * @param avatarFront	Unit vector pointing out of the camera/avatar's eyes.
+	 * @param avatarTop	Unit vector pointing out of the top of the avatar's head/camera's top.
 	 *
 	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE setVectorsAvatarAsCamera(
-			float fAvatarPosition[LINKAPI_VECTOR_LENGTH],
-			float fAvatarFront[LINKAPI_VECTOR_LENGTH],
-			float fAvatarTop[LINKAPI_VECTOR_LENGTH]);
+			float avatarPosition[3],
+			float avatarFront[3],
+			float avatarTop[3]);
 
 	/**
 	 * The position of the avatar
@@ -511,7 +519,7 @@ extern "C" {
 	 * @return a 3D vector
 	 */
 	LINKAPI_API
-	float* getAvatarPosition();
+	LINKAPI_VECTOR_3D* getAvatarPosition();
 
 	/**
 	 * sets the position of the avatar
@@ -539,7 +547,7 @@ extern "C" {
 	 * @return a 3D vector (look vector)
 	 */
 	LINKAPI_API
-	float* getAvatarFront();
+	LINKAPI_VECTOR_3D* getAvatarFront();
 
 	/**
 	 * sets unit vector pointing out of the avatar's eyes
@@ -565,7 +573,7 @@ extern "C" {
 	 * @return a 3D vector (the avatar's up vector)
 	 */
 	LINKAPI_API
-	float* getAvatarTop();
+	LINKAPI_VECTOR_3D* getAvatarTop();
 
 	/**
 	 * sets unit vector pointing out of the top of the avatar's head
@@ -591,7 +599,7 @@ extern "C" {
 	 * @return a 3D vector
 	 */
 	LINKAPI_API
-	float* getCameraPosition();
+	LINKAPI_VECTOR_3D* getCameraPosition();
 
 	/**
 	 * sets the position of the camera
@@ -614,7 +622,7 @@ extern "C" {
 	 * @return a 3D vector (look vector)
 	 */
 	LINKAPI_API
-	float* getCameraFront();
+	LINKAPI_VECTOR_3D* getCameraFront();
 
 	/**
 	 * sets unit vector pointing out of the front/lens of the camera
@@ -639,7 +647,7 @@ extern "C" {
 	 * @return a 3D vector (the camera's up vector)
 	 */
 	LINKAPI_API
-	float* getCameraTop();
+	LINKAPI_VECTOR_3D* getCameraTop();
 
 	/**
 	 * sets unit vector pointing out of the top of the camera
@@ -657,14 +665,16 @@ extern "C" {
 	LINKAPI_ERROR_CODE setCameraTop(float x, float y, float z);
 
 	LINKAPI_API
-	LINKAPI_NATIVE_UINT32 getUiVersion();
+	LINKAPI_NATIVE_UINT32 getVersion();
+
 	LINKAPI_API
-	LINKAPI_ERROR_CODE setUiVersion(LINKAPI_NATIVE_UINT32 version);
+	LINKAPI_ERROR_CODE setVersion(LINKAPI_NATIVE_UINT32 version);
+
 	LINKAPI_API
-	LINKAPI_ERROR_CODE commitUiVersion(LINKAPI_NATIVE_UINT32 version);
+	LINKAPI_ERROR_CODE commitVersion(LINKAPI_NATIVE_UINT32 version);
 
 	/**
-	 * tick counter which is used to tell if updates to the shared memory occured
+	 * tick counter which is used to tell if updates to the shared memory occurred
 	 *
 	 * If this number stays the same the rest of the shared memory is not read
 	 * by the link plugin and it will unlink after a certain timeout.
@@ -672,24 +682,24 @@ extern "C" {
 	 * @return the last tick number
 	 */
 	LINKAPI_API
-	LINKAPI_NATIVE_DWORD getUiTick();
+	LINKAPI_NATIVE_DWORD getTick();
 
 	/**
-	 * sets the tick counter which is used to tell if updates to the shared memory occured
+	 * sets the tick counter which is used to tell if updates to the shared memory occurred
 	 *
 	 * If this number stays the same the rest of the shared memory is not read
 	 * by the link plugin and it will unlink after a certain timeout.
 	 *
 	 * If the plugin is already unlinked updating this value does not re-link,
-	 * for this to happen uiVersion needs to be updated too.
-	 * Use <code>commitUiTick(...)</code> to clean-up the linked memory and
+	 * for this to happen version needs to be updated too.
+	 * Use <code>commitTick(...)</code> to clean-up the linked memory and
 	 * enforce a re-link.
 	 *
 	 * @param tick the tick number to set
 	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
-	LINKAPI_ERROR_CODE setUiTick(LINKAPI_NATIVE_DWORD tick);
+	LINKAPI_ERROR_CODE setTick(LINKAPI_NATIVE_DWORD tick);
 
 	/**
 	 * set and commit the tick counter which is used to tell if updates to the
@@ -702,14 +712,14 @@ extern "C" {
 	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
-	LINKAPI_ERROR_CODE commitUiTick(LINKAPI_NATIVE_DWORD tick);
+	LINKAPI_ERROR_CODE commitTick(LINKAPI_NATIVE_DWORD tick);
 
 	/**
 	 * directly manipulate the entire linked memory at once
 	 *
-	 * IMPORTANT: Note that you should also update uiTick yourself, else a timeout
+	 * IMPORTANT: Note that you should also update tick yourself, else a timeout
 	 * will occur and your data will not be read. Subsequently calling the
-	 * commit()-function once will not help when uiTick is always set to the same
+	 * commit()-function once will not help when tick is always set to the same
 	 * value.
 	 *
 	 * Notice: Parts of this does not need to be updated every single frame.

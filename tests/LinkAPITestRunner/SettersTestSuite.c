@@ -5,30 +5,31 @@
 #include "linkAPI.h"
 
 #include <stdio.h>
+#include <string.h>
 
 /*
  * ---------------- TEST CASES -------------------------------
  */
 
 void TestSettersSuite_setUiTick(CuTest* tc) {
-	lm->uiTick = 0;
+	lm->tick = 0;
 	LINKAPI_NATIVE_DWORD tick = 123;
 	LINKAPI_NATIVE_DWORD tickb = 123;
 	LINKAPI_NATIVE_DWORD tick2 = 125;
 	LINKAPI_NATIVE_DWORD tick2b = 125;
 
-	LINKAPI_ERROR_CODE err = setUiTick(tick);
+	LINKAPI_ERROR_CODE err = setTick(tick);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
-	CuAssertIntEquals(tc, tick, lm->uiTick);
-	LINKAPI_NATIVE_DWORD actual = getUiTick();
-	CuAssertIntEquals(tc, lm->uiTick, actual);
+	CuAssertIntEquals(tc, tick, lm->tick);
+	LINKAPI_NATIVE_DWORD actual = getTick();
+	CuAssertIntEquals(tc, lm->tick, actual);
 	CuAssertIntEquals(tc, tick, actual);
 
-	err = setUiTick(tick2);
+	err = setTick(tick2);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
-	CuAssertIntEquals(tc, tick2, lm->uiTick);
-	actual = getUiTick();
-	CuAssertIntEquals(tc, lm->uiTick, actual);
+	CuAssertIntEquals(tc, tick2, lm->tick);
+	actual = getTick();
+	CuAssertIntEquals(tc, lm->tick, actual);
 	CuAssertIntEquals(tc, tick2, actual);
 
 	// verify that it is unmodified
@@ -37,25 +38,25 @@ void TestSettersSuite_setUiTick(CuTest* tc) {
 }
 
 void TestSettersSuite_setUiVersion(CuTest* tc) {
-	lm->uiVersion = 0;
+	lm->version = 0;
 	LINKAPI_NATIVE_UINT32 version = 321;
 	LINKAPI_NATIVE_UINT32 versionB = 321;
 	LINKAPI_NATIVE_UINT32 version2 = 2;
 	LINKAPI_NATIVE_UINT32 version2B = 2;
 
-	LINKAPI_ERROR_CODE err = setUiVersion(version);
+	LINKAPI_ERROR_CODE err = setVersion(version);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
-	CuAssertIntEquals(tc, version, lm->uiVersion);
-	LINKAPI_NATIVE_UINT32 actual = getUiVersion();
-	CuAssertIntEquals(tc, lm->uiVersion, actual);
+	CuAssertIntEquals(tc, version, lm->version);
+	LINKAPI_NATIVE_UINT32 actual = getVersion();
+	CuAssertIntEquals(tc, lm->version, actual);
 	CuAssertIntEquals(tc, version, actual);
 
-	err = setUiVersion(version2);
+	err = setVersion(version2);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
-	CuAssertIntEquals(tc, version2, lm->uiVersion);
-	actual = getUiVersion();
+	CuAssertIntEquals(tc, version2, lm->version);
+	actual = getVersion();
 	CuAssertIntEquals(tc, version2, actual);
-	CuAssertIntEquals(tc, lm->uiVersion, actual);
+	CuAssertIntEquals(tc, lm->version, actual);
 
 	// verify that it is unmodified
 	CuAssertIntEquals(tc, versionB, version);
@@ -294,44 +295,44 @@ void TestSettersSuite_setData(CuTest* tc) {
 		.context = "Context From setData\0",
 		.context_len = LINKAPI_MAX_CONTEXT_LENGTH,
 		.description = L"Description From setData\0",
-		.fAvatarFront =
+		.avatarFront =
 		{1.1, 2.1, 3.1},
-		.fAvatarPosition =
+		.avatarPosition =
 		{4.1, 5.1, 6.1},
-		.fAvatarTop =
+		.avatarTop =
 		{7.1, 8.1, 9.1},
-		.fCameraFront =
+		.cameraFront =
 		{10.1, 11.1, 12.1},
-		.fCameraPosition =
+		.cameraPosition =
 		{13.1, 14.1, 15.1},
-		.fCameraTop =
+		.cameraTop =
 		{16.1, 17.1, 18.1},
 		.identity = L"Identity From setData\0",
 		.name = L"Name From setData\0",
-		.uiTick = 5000,
-		.uiVersion = 2
+		.tick = 5000,
+		.version = 2
 	};
 
 	LINKAPI_LINKED_MEMORY data2b = {
 		.context = "Context From setData\0",
 		.context_len = LINKAPI_MAX_CONTEXT_LENGTH,
 		.description = L"Description From setData\0",
-		.fAvatarFront =
+		.avatarFront =
 		{1.1, 2.1, 3.1},
-		.fAvatarPosition =
+		.avatarPosition =
 		{4.1, 5.1, 6.1},
-		.fAvatarTop =
+		.avatarTop =
 		{7.1, 8.1, 9.1},
-		.fCameraFront =
+		.cameraFront =
 		{10.1, 11.1, 12.1},
-		.fCameraPosition =
+		.cameraPosition =
 		{13.1, 14.1, 15.1},
-		.fCameraTop =
+		.cameraTop =
 		{16.1, 17.1, 18.1},
 		.identity = L"Identity From setData\0",
 		.name = L"Name From setData\0",
-		.uiTick = 5000,
-		.uiVersion = 2
+		.tick = 5000,
+		.version = 2
 	};
 
 	LINKAPI_ERROR_CODE err = setData(&data);
@@ -350,12 +351,12 @@ void TestSettersSuite_setData(CuTest* tc) {
 	CuAssertByteArrayEquals(tc, &data2, actual, lmSize);
 	CuAssertPtrNotEquals(tc, &data2, actual);
 
-	float expAF[LINKAPI_VECTOR_LENGTH] = {1.1, 2.1, 3.1};
-	CuAssertVecEquals(tc, expAF, getAvatarFront(), LINKAPI_VECTOR_LENGTH);
-	float expAP[LINKAPI_VECTOR_LENGTH] = {4.1, 5.1, 6.1};
-	CuAssertVecEquals(tc, expAP, getAvatarPosition(), LINKAPI_VECTOR_LENGTH);
-	float expAT[LINKAPI_VECTOR_LENGTH] = {7.1, 8.1, 9.1};
-	CuAssertVecEquals(tc, expAT, getAvatarTop(), LINKAPI_VECTOR_LENGTH);
+	LINKAPI_VECTOR_3D expAF = {.x = 1.1, .y = 2.1, .z = 3.1};
+	CuAssertVecEquals(tc, &expAF, getAvatarFront());
+	LINKAPI_VECTOR_3D expAP = {.x = 4.1, .y = 5.1, .z = 6.1};
+	CuAssertVecEquals(tc, &expAP, getAvatarPosition());
+	LINKAPI_VECTOR_3D expAT = {.x = 7.1, .y = 8.1, .z = 9.1};
+	CuAssertVecEquals(tc, &expAT, getAvatarTop());
 
 	// verify that it is unmodified
 	CuAssertByteArrayEquals(tc, &dataB, &data, lmSize);
@@ -363,124 +364,124 @@ void TestSettersSuite_setData(CuTest* tc) {
 }
 
 void TestSettersSuite_setVectors(CuTest* tc) {
-	float fAvatarFront [LINKAPI_VECTOR_LENGTH] = {1.1, 2.1, 3.1};
-	float fAvatarFrontB[LINKAPI_VECTOR_LENGTH] = {1.1, 2.1, 3.1};
-	float fAvatarPosition [LINKAPI_VECTOR_LENGTH] = {4.1, 5.1, 6.1};
-	float fAvatarPositionB[LINKAPI_VECTOR_LENGTH] = {4.1, 5.1, 6.1};
-	float fAvatarTop [LINKAPI_VECTOR_LENGTH] = {7.1, 8.1, 9.1};
-	float fAvatarTopB[LINKAPI_VECTOR_LENGTH] = {7.1, 8.1, 9.1};
-	float fCameraFront [LINKAPI_VECTOR_LENGTH] = {10.1, 11.1, 12.1};
-	float fCameraFrontB[LINKAPI_VECTOR_LENGTH] = {10.1, 11.1, 12.1};
-	float fCameraPosition [LINKAPI_VECTOR_LENGTH] = {13.1, 14.1, 15.1};
-	float fCameraPositionB[LINKAPI_VECTOR_LENGTH] = {13.1, 14.1, 15.1};
-	float fCameraTop [LINKAPI_VECTOR_LENGTH] = {16.1, 17.1, 18.1};
-	float fCameraTopB[LINKAPI_VECTOR_LENGTH] = {16.1, 17.1, 18.1};
+	float avatarFront [3] = {1.1, 2.1, 3.1};
+	float avatarFrontB[3] = {1.1, 2.1, 3.1};
+	float avatarPosition [3] = {4.1, 5.1, 6.1};
+	float avatarPositionB[3] = {4.1, 5.1, 6.1};
+	float avatarTop [3] = {7.1, 8.1, 9.1};
+	float avatarTopB[3] = {7.1, 8.1, 9.1};
+	float cameraFront [3] = {10.1, 11.1, 12.1};
+	float cameraFrontB[3] = {10.1, 11.1, 12.1};
+	float cameraPosition [3] = {13.1, 14.1, 15.1};
+	float cameraPositionB[3] = {13.1, 14.1, 15.1};
+	float cameraTop [3] = {16.1, 17.1, 18.1};
+	float cameraTopB[3] = {16.1, 17.1, 18.1};
 
 
-	LINKAPI_ERROR_CODE err = setVectors(fAvatarPosition, fAvatarFront, fAvatarTop, fCameraPosition, fCameraFront, fCameraTop);
-	CuAssertVecEqualsDefault(tc, fAvatarPosition, lm->fAvatarPosition);
-	CuAssertVecEqualsDefault(tc, fAvatarFront, lm->fAvatarFront);
-	CuAssertVecEqualsDefault(tc, fAvatarTop, lm->fAvatarTop);
+	LINKAPI_ERROR_CODE err = setVectors(avatarPosition, avatarFront, avatarTop, cameraPosition, cameraFront, cameraTop);
+	CuAssertFloatArrayEquals(tc, avatarPosition, lm->avatarPosition, 3);
+	CuAssertFloatArrayEquals(tc, avatarFront, lm->avatarFront, 3);
+	CuAssertFloatArrayEquals(tc, avatarTop, lm->avatarTop, 3);
 
-	CuAssertVecEqualsDefault(tc, fCameraPosition, lm->fCameraPosition);
-	CuAssertVecEqualsDefault(tc, fCameraFront, lm->fCameraFront);
-	CuAssertVecEqualsDefault(tc, fCameraTop, lm->fCameraTop);
+	CuAssertFloatArrayEquals(tc, cameraPosition, lm->cameraPosition, 3);
+	CuAssertFloatArrayEquals(tc, cameraFront, lm->cameraFront, 3);
+	CuAssertFloatArrayEquals(tc, cameraTop, lm->cameraTop, 3);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
 
-	float* actual = getAvatarFront();
-	CuAssertVecEquals(tc, lm->fAvatarFront, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertVecEquals(tc, fAvatarFront, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertPtrNotEquals(tc, fAvatarFront, actual);
+	LINKAPI_VECTOR_3D* actual = getAvatarFront();
+	CuAssertArrayEqualsVec(tc, lm->avatarFront, actual);
+	CuAssertArrayEqualsVec(tc, avatarFront, actual);
+	CuAssertPtrNotEquals(tc, avatarFront, actual);
 
 	actual = getAvatarPosition();
-	CuAssertVecEquals(tc, lm->fAvatarPosition, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertVecEquals(tc, fAvatarPosition, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertPtrNotEquals(tc, fAvatarPosition, actual);
+	CuAssertArrayEqualsVec(tc, lm->avatarPosition, actual);
+	CuAssertArrayEqualsVec(tc, avatarPosition, actual);
+	CuAssertPtrNotEquals(tc, avatarPosition, actual);
 
 	actual = getAvatarTop();
-	CuAssertVecEquals(tc, lm->fAvatarTop, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertVecEquals(tc, fAvatarTop, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertPtrNotEquals(tc, fAvatarTop, actual);
+	CuAssertArrayEqualsVec(tc, lm->avatarTop, actual);
+	CuAssertArrayEqualsVec(tc, avatarTop, actual);
+	CuAssertPtrNotEquals(tc, avatarTop, actual);
 
 
 	actual = getCameraFront();
-	CuAssertVecEquals(tc, lm->fCameraFront, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertVecEquals(tc, fCameraFront, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertPtrNotEquals(tc, fCameraFront, actual);
+	CuAssertArrayEqualsVec(tc, lm->cameraFront, actual);
+	CuAssertArrayEqualsVec(tc, cameraFront, actual);
+	CuAssertPtrNotEquals(tc, cameraFront, actual);
 
 	actual = getCameraPosition();
-	CuAssertVecEquals(tc, lm->fCameraPosition, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertVecEquals(tc, fCameraPosition, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertPtrNotEquals(tc, fCameraPosition, actual);
+	CuAssertArrayEqualsVec(tc, lm->cameraPosition, actual);
+	CuAssertArrayEqualsVec(tc, cameraPosition, actual);
+	CuAssertPtrNotEquals(tc, cameraPosition, actual);
 
 	actual = getCameraTop();
-	CuAssertVecEquals(tc, lm->fCameraTop, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertVecEquals(tc, fCameraTop, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertPtrNotEquals(tc, fCameraTop, actual);
+	CuAssertArrayEqualsVec(tc, lm->cameraTop, actual);
+	CuAssertArrayEqualsVec(tc, cameraTop, actual);
+	CuAssertPtrNotEquals(tc, cameraTop, actual);
 
 	// verify that it is unmodified
-	CuAssertVecEqualsDefault(tc, fAvatarFrontB, fAvatarFront);
-	CuAssertVecEqualsDefault(tc, fAvatarPositionB, fAvatarPosition);
-	CuAssertVecEqualsDefault(tc, fAvatarTopB, fAvatarTop);
-	CuAssertVecEqualsDefault(tc, fCameraFrontB, fCameraFront);
-	CuAssertVecEqualsDefault(tc, fCameraPositionB, fCameraPosition);
-	CuAssertVecEqualsDefault(tc, fCameraTopB, fCameraTop);
+	CuAssertFloatArrayEquals(tc, avatarFrontB, avatarFront, 3);
+	CuAssertFloatArrayEquals(tc, avatarPositionB, avatarPosition, 3);
+	CuAssertFloatArrayEquals(tc, avatarTopB, avatarTop, 3);
+	CuAssertFloatArrayEquals(tc, cameraFrontB, cameraFront, 3);
+	CuAssertFloatArrayEquals(tc, cameraPositionB, cameraPosition, 3);
+	CuAssertFloatArrayEquals(tc, cameraTopB, cameraTop, 3);
 }
 
 void TestSettersSuite_setVectorsByAvatar(CuTest* tc) {
-	float fAvatarFront [LINKAPI_VECTOR_LENGTH] = {1.1, 2.1, 3.1};
-	float fAvatarFrontB[LINKAPI_VECTOR_LENGTH] = {1.1, 2.1, 3.1};
-	float fAvatarPosition [LINKAPI_VECTOR_LENGTH] = {4.1, 5.1, 6.1};
-	float fAvatarPositionB[LINKAPI_VECTOR_LENGTH] = {4.1, 5.1, 6.1};
-	float fAvatarTop [LINKAPI_VECTOR_LENGTH] = {7.1, 8.1, 9.1};
-	float fAvatarTopB[LINKAPI_VECTOR_LENGTH] = {7.1, 8.1, 9.1};
+	float avatarFront [3] = {1.1, 2.1, 3.1};
+	float avatarFrontB[3] = {1.1, 2.1, 3.1};
+	float avatarPosition [3] = {4.1, 5.1, 6.1};
+	float avatarPositionB[3] = {4.1, 5.1, 6.1};
+	float avatarTop [3] = {7.1, 8.1, 9.1};
+	float avatarTopB[3] = {7.1, 8.1, 9.1};
 
 
-	LINKAPI_ERROR_CODE err = setVectorsAvatarAsCamera(fAvatarPosition, fAvatarFront, fAvatarTop);
+	LINKAPI_ERROR_CODE err = setVectorsAvatarAsCamera(avatarPosition, avatarFront, avatarTop);
 	CuAssertIntEquals(tc, LINKAPI_ERROR_CODE_NO_ERROR, err);
 
-	float* actual = getAvatarFront();
-	CuAssertVecEquals(tc, lm->fAvatarFront, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertVecEquals(tc, fAvatarFront, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertPtrNotEquals(tc, fAvatarFront, actual);
+	LINKAPI_VECTOR_3D* actual = getAvatarFront();
+	CuAssertArrayEqualsVec(tc, lm->avatarFront, actual);
+	CuAssertArrayEqualsVec(tc, avatarFront, actual);
+	CuAssertPtrNotEquals(tc, avatarFront, actual);
 
 	actual = getAvatarPosition();
-	CuAssertVecEquals(tc, lm->fAvatarPosition, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertVecEquals(tc, fAvatarPosition, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertPtrNotEquals(tc, fAvatarPosition, actual);
+	CuAssertArrayEqualsVec(tc, lm->avatarPosition, actual);
+	CuAssertArrayEqualsVec(tc, avatarPosition, actual);
+	CuAssertPtrNotEquals(tc, avatarPosition, actual);
 
 	actual = getAvatarTop();
-	CuAssertVecEquals(tc, lm->fAvatarTop, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertVecEquals(tc, fAvatarTop, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertPtrNotEquals(tc, fAvatarTop, actual);
+	CuAssertArrayEqualsVec(tc, lm->avatarTop, actual);
+	CuAssertArrayEqualsVec(tc, avatarTop, actual);
+	CuAssertPtrNotEquals(tc, avatarTop, actual);
 
 
 	actual = getCameraFront();
-	CuAssertVecEquals(tc, lm->fAvatarFront, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertVecEquals(tc, fAvatarFront, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertPtrNotEquals(tc, fAvatarFront, actual);
+	CuAssertArrayEqualsVec(tc, lm->avatarFront, actual);
+	CuAssertArrayEqualsVec(tc, avatarFront, actual);
+	CuAssertPtrNotEquals(tc, avatarFront, actual);
 
 	actual = getCameraPosition();
-	CuAssertVecEquals(tc, lm->fAvatarPosition, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertVecEquals(tc, fAvatarPosition, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertPtrNotEquals(tc, fAvatarPosition, actual);
+	CuAssertArrayEqualsVec(tc, lm->avatarPosition, actual);
+	CuAssertArrayEqualsVec(tc, avatarPosition, actual);
+	CuAssertPtrNotEquals(tc, avatarPosition, actual);
 
 	actual = getCameraTop();
-	CuAssertVecEquals(tc, lm->fAvatarTop, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertVecEquals(tc, fAvatarTop, actual, LINKAPI_VECTOR_LENGTH);
-	CuAssertPtrNotEquals(tc, fAvatarTop, actual);
+	CuAssertArrayEqualsVec(tc, lm->avatarTop, actual);
+	CuAssertArrayEqualsVec(tc, avatarTop, actual);
+	CuAssertPtrNotEquals(tc, avatarTop, actual);
 
 	// verify that it is unmodified
-	CuAssertVecEqualsDefault(tc, fAvatarFrontB, fAvatarFront);
-	CuAssertVecEqualsDefault(tc, fAvatarPositionB, fAvatarPosition);
-	CuAssertVecEqualsDefault(tc, fAvatarTopB, fAvatarTop);
+	CuAssertFloatArrayEquals(tc, avatarFrontB, avatarFront, 3);
+	CuAssertFloatArrayEquals(tc, avatarPositionB, avatarPosition, 3);
+	CuAssertFloatArrayEquals(tc, avatarTopB, avatarTop, 3);
 }
 
 /*
  * --------------------------- HELPER FUNCTIONS --------------------------------
  */
 typedef LINKAPI_ERROR_CODE(*SetterFunction)(float x, float y, float z);
-typedef float* (*GetterFunction)();
+typedef LINKAPI_VECTOR_3D* (*GetterFunction)();
 
 void TestSettersSuite_Helper_set(CuTest* tc, const char* name, SetterFunction setter, GetterFunction getter) {
 	float x = 1.0;
@@ -501,17 +502,17 @@ void TestSettersSuite_Helper_set(CuTest* tc, const char* name, SetterFunction se
 
 	LINKAPI_ERROR_CODE err = (setter) (x, y, z);
 	CuAssertIntEquals_Msg(tc, name, err, LINKAPI_ERROR_CODE_NO_ERROR);
-	float* actual = getter();
-	CuAssertDblEquals_Msg(tc, name, x, actual[0], delta);
-	CuAssertDblEquals_Msg(tc, name, y, actual[1], delta);
-	CuAssertDblEquals_Msg(tc, name, z, actual[2], delta);
+	LINKAPI_VECTOR_3D* actual = getter();
+	CuAssertDblEquals_Msg(tc, name, x, actual->x, delta);
+	CuAssertDblEquals_Msg(tc, name, y, actual->y, delta);
+	CuAssertDblEquals_Msg(tc, name, z, actual->z, delta);
 
 	err = setter(x2, y2, z2);
 	CuAssertIntEquals_Msg(tc, name, err, LINKAPI_ERROR_CODE_NO_ERROR);
 	actual = getter();
-	CuAssertDblEquals_Msg(tc, name, x2, actual[0], delta);
-	CuAssertDblEquals_Msg(tc, name, y2, actual[1], delta);
-	CuAssertDblEquals_Msg(tc, name, z2, actual[2], delta);
+	CuAssertDblEquals_Msg(tc, name, x2, actual->x, delta);
+	CuAssertDblEquals_Msg(tc, name, y2, actual->y, delta);
+	CuAssertDblEquals_Msg(tc, name, z2, actual->z, delta);
 
 	// verify that it is unmodified
 	CuAssertDblEquals_Msg(tc, name, xB, x, delta);
