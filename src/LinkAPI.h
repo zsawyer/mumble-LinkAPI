@@ -157,8 +157,9 @@ extern "C" {
 	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
-	LINKAPI_ERROR_CODE initialize(wchar_t name[LINKAPI_MAX_NAME_LENGTH],
-			wchar_t description[LINKAPI_MAX_DESCRIPTION_LENGTH],
+	LINKAPI_ERROR_CODE initialize(
+			const wchar_t name[LINKAPI_MAX_NAME_LENGTH],
+			const wchar_t description[LINKAPI_MAX_DESCRIPTION_LENGTH],
 			LINKAPI_NATIVE_UINT32 uiVersion);
 
 	/**
@@ -197,7 +198,7 @@ extern "C" {
 	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
-	LINKAPI_ERROR_CODE commitIdentity(wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH]);
+	LINKAPI_ERROR_CODE commitIdentity(const wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH]);
 
 	/**
 	 * get the client's identity
@@ -229,7 +230,7 @@ extern "C" {
 	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
-	LINKAPI_ERROR_CODE setIdentity(wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH]);
+	LINKAPI_ERROR_CODE setIdentity(const wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH]);
 
 	/**
 	 * sets and commits the context
@@ -246,7 +247,7 @@ extern "C" {
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE commitContext(
-			unsigned char context[LINKAPI_MAX_CONTEXT_LENGTH],
+			const unsigned char * context,
 			LINKAPI_NATIVE_UINT32 context_len);
 
 	/**
@@ -292,7 +293,7 @@ extern "C" {
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE setContext(
-			unsigned char context[],
+			const unsigned char * context,
 			LINKAPI_NATIVE_UINT32 context_len);
 
 	/**
@@ -313,8 +314,8 @@ extern "C" {
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE commitIdentityAndContext(
-			wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH],
-			unsigned char context[LINKAPI_MAX_CONTEXT_LENGTH],
+			const wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH],
+			const unsigned char * context,
 			LINKAPI_NATIVE_UINT32 context_len);
 
 	/**
@@ -335,8 +336,8 @@ extern "C" {
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE setIdentityAndContext(
-			wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH],
-			unsigned char context[LINKAPI_MAX_CONTEXT_LENGTH],
+			const wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH],
+			const unsigned char * context,
 			LINKAPI_NATIVE_UINT32 context_len);
 
 	/**
@@ -353,7 +354,7 @@ extern "C" {
 	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
-	LINKAPI_ERROR_CODE commitName(wchar_t name[LINKAPI_MAX_NAME_LENGTH]);
+	LINKAPI_ERROR_CODE commitName(const wchar_t name[LINKAPI_MAX_NAME_LENGTH]);
 
 	/**
 	 * the display name of the application currently linked with mumble
@@ -378,7 +379,7 @@ extern "C" {
 	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
-	LINKAPI_ERROR_CODE setName(wchar_t name[LINKAPI_MAX_NAME_LENGTH]);
+	LINKAPI_ERROR_CODE setName(const wchar_t name[LINKAPI_MAX_NAME_LENGTH]);
 
 	/**
 	 * sets and commits the application's description
@@ -393,7 +394,8 @@ extern "C" {
 	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
-	LINKAPI_ERROR_CODE commitDescription(wchar_t description[LINKAPI_MAX_DESCRIPTION_LENGTH]);
+	LINKAPI_ERROR_CODE commitDescription(
+			const wchar_t description[LINKAPI_MAX_DESCRIPTION_LENGTH]);
 
 	/**
 	 * the linked application's description
@@ -416,7 +418,8 @@ extern "C" {
 	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
-	LINKAPI_ERROR_CODE setDescription(wchar_t description[LINKAPI_MAX_DESCRIPTION_LENGTH]);
+	LINKAPI_ERROR_CODE setDescription(
+			const wchar_t description[LINKAPI_MAX_DESCRIPTION_LENGTH]);
 
 	/**
 	 * updates and commits the avatar and camera vectors
@@ -435,12 +438,12 @@ extern "C" {
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE commitVectors(
-			float avatarPosition[3],
-			float avatarFront[3],
-			float avatarTop[3],
-			float cameraPosition[3],
-			float cameraFront[3],
-			float cameraTop[3]);
+			const float avatarPosition[3],
+			const float avatarFront[3],
+			const float avatarTop[3],
+			const float cameraPosition[3],
+			const float cameraFront[3],
+			const float cameraTop[3]);
 
 	/**
 	 * sets avatar and camera vectors
@@ -459,12 +462,12 @@ extern "C" {
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE setVectors(
-			float avatarPosition[3],
-			float avatarFront[3],
-			float avatarTop[3],
-			float cameraPosition[3],
-			float cameraFront[3],
-			float cameraTop[3]);
+			const float avatarPosition[3],
+			const float avatarFront[3],
+			const float avatarTop[3],
+			const float cameraPosition[3],
+			const float cameraFront[3],
+			const float cameraTop[3]);
 
 	/**
 	 * updates and commits avatar AND camera vectors with the same values
@@ -482,9 +485,9 @@ extern "C" {
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE commitVectorsAvatarAsCamera(
-			float avatarPosition[3],
-			float avatarFront[3],
-			float avatarTop[3]);
+			const float avatarPosition[3],
+			const float avatarFront[3],
+			const float avatarTop[3]);
 
 	/**
 	 * sets avatar AND camera vectors with the same values
@@ -507,9 +510,9 @@ extern "C" {
 	 */
 	LINKAPI_API
 	LINKAPI_ERROR_CODE setVectorsAvatarAsCamera(
-			float avatarPosition[3],
-			float avatarFront[3],
-			float avatarTop[3]);
+			const float avatarPosition[3],
+			const float avatarFront[3],
+			const float avatarTop[3]);
 
 	/**
 	 * The position of the avatar
@@ -730,7 +733,7 @@ extern "C" {
 	 * @return	an error code, see <code>enum LINKAPI_ERROR_CODE</code>
 	 */
 	LINKAPI_API
-	LINKAPI_ERROR_CODE setData(LINKAPI_LINKED_MEMORY *source);
+	LINKAPI_ERROR_CODE setData(const LINKAPI_LINKED_MEMORY *source);
 
 	/**
 	 * the entire shared memory for direct access

@@ -199,7 +199,7 @@
             <pElem>.</pElem>
           </incDir>
           <commandLine>-pedantic -Werror</commandLine>
-          <warningLevel>2</warningLevel>
+          <warningLevel>3</warningLevel>
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
