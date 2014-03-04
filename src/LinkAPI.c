@@ -135,8 +135,10 @@ LINKAPI_ERROR_CODE relock() {
 	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
-void unlinkMumble() {
-	lm->version = LINKAPI_UI_VERSION_UNLINK;
+LINKAPI_ERROR_CODE unlinkMumble() {
+	LINKAPI_VERIFY_LM;
+	lm->version = LINKAPI_VERSION_UNLINK;
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
 /**
@@ -179,8 +181,8 @@ LINKAPI_ERROR_CODE setAndBackupWCharTArray(
 	return err;
 }
 
-wchar_t* getName() {
-	return lm->name;
+LINKAPI_ERROR_CODE getName(wchar_t destination[LINKAPI_MAX_NAME_LENGTH]) {
+	return setWCharTArray(destination, lm->name, LINKAPI_MAX_NAME_LENGTH);
 }
 
 LINKAPI_ERROR_CODE setName(const wchar_t name[LINKAPI_MAX_NAME_LENGTH]) {
@@ -191,8 +193,8 @@ LINKAPI_ERROR_CODE commitName(const wchar_t name[LINKAPI_MAX_NAME_LENGTH]) {
 	return commitOnNoError(setName(name));
 }
 
-wchar_t* getDescription() {
-	return lm->description;
+LINKAPI_ERROR_CODE getDescription(wchar_t destination[LINKAPI_MAX_DESCRIPTION_LENGTH]) {
+	return setWCharTArray(destination, lm->description, LINKAPI_MAX_DESCRIPTION_LENGTH);
 }
 
 LINKAPI_ERROR_CODE setDescription(
@@ -208,8 +210,8 @@ LINKAPI_ERROR_CODE commitDescription(
 	return commitOnNoError(setDescription(description));
 }
 
-wchar_t* getIdentity() {
-	return lm->identity;
+LINKAPI_ERROR_CODE getIdentity(wchar_t destination[LINKAPI_MAX_IDENTITY_LENGTH]) {
+	return setWCharTArray(destination, lm->identity, LINKAPI_MAX_IDENTITY_LENGTH);
 }
 
 LINKAPI_ERROR_CODE setIdentity(const wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH]) {
@@ -220,66 +222,101 @@ LINKAPI_ERROR_CODE commitIdentity(const wchar_t identity[LINKAPI_MAX_IDENTITY_LE
 	return commitOnNoError(setIdentity(identity));
 }
 
-LINKAPI_NATIVE_UINT32 getContextLen() {
-	return lm->context_len;
+LINKAPI_ERROR_CODE getContextLen(LINKAPI_NATIVE_UINT32* destination) {
+	LINKAPI_VERIFY_LM;
+	*destination = lm->contextLength;
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
-unsigned char * getContext() {
-	return lm->context;
+LINKAPI_ERROR_CODE getContext(
+		unsigned char * destinationForContext,
+		LINKAPI_NATIVE_UINT32* destinationForActualLength,
+		LINKAPI_NATIVE_UINT32 maxContextLength) {
+	LINKAPI_VERIFY_LM;
+	if (destinationForActualLength != NULL) {
+		*destinationForActualLength = lm->contextLength;
+	}
+	if (maxContextLength > LINKAPI_MAX_CONTEXT_LENGTH) {
+		maxContextLength = LINKAPI_MAX_CONTEXT_LENGTH;
+	}
+	memcpy(destinationForContext, lm->context, (maxContextLength) * sizeof (unsigned char));
+
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
 LINKAPI_ERROR_CODE setContext(
 		const unsigned char * context,
-		LINKAPI_NATIVE_UINT32 context_len) {
+		LINKAPI_NATIVE_UINT32 contextLength) {
 	LINKAPI_VERIFY_LM;
-	if (context_len > LINKAPI_MAX_CONTEXT_LENGTH) {
+	if (contextLength > LINKAPI_MAX_CONTEXT_LENGTH) {
 		return LINKAPI_ERROR_CODE_CONTEXT_LENGTH_EXCEEDED;
 	}
-	memcpy(lm->context, context, context_len);
-	lm->context_len = context_len;
+	lm->contextLength = contextLength;
+	memcpy(lm->context, context, contextLength * sizeof (unsigned char));
+
 	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
 LINKAPI_ERROR_CODE commitContext(
 		const unsigned char * context,
-		LINKAPI_NATIVE_UINT32 context_len) {
-	return commitOnNoError(setContext(context, context_len));
+		LINKAPI_NATIVE_UINT32 contextLength) {
+	return commitOnNoError(setContext(context, contextLength));
 }
 
 LINKAPI_ERROR_CODE setIdentityAndContext(
 		const wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH],
 		const unsigned char * context,
-		LINKAPI_NATIVE_UINT32 context_len) {
+		LINKAPI_NATIVE_UINT32 contextLength) {
 	LINKAPI_ERROR_CODE err = setIdentity(identity);
 	LINKAPI_VERIFY_NO_ERROR;
-	return setContext(context, context_len);
+	return setContext(context, contextLength);
 }
 
 LINKAPI_ERROR_CODE commitIdentityAndContext(
 		const wchar_t identity[LINKAPI_MAX_IDENTITY_LENGTH],
 		const unsigned char * context,
-		LINKAPI_NATIVE_UINT32 context_len) {
-	return commitOnNoError(setIdentityAndContext(identity, context, context_len));
+		LINKAPI_NATIVE_UINT32 contextLength) {
+	return commitOnNoError(setIdentityAndContext(identity, context, contextLength));
 }
 
-void setVector(float target[3], float x, float y, float z) {
-	target[0] = x;
-	target[1] = y;
-	target[2] = z;
+/**
+ * overrides the coordinates of a given vector
+ * 
+ * @param destination the vector to write to
+ * @param x the magnitude of the x basis vector
+ * @param y the magnitude of the y basis vector
+ * @param z the magnitude of the z basis vector
+ *
+ * @return destination
+ */
+float* setVector(float destination[3], float x, float y, float z) {
+	destination[0] = x;
+	destination[1] = y;
+	destination[2] = z;
+
+	return destination;
 }
 
-LINKAPI_VECTOR_3D* getVector(float source[3]) {
-	LINKAPI_VECTOR_3D* vector = malloc(sizeof (LINKAPI_VECTOR_3D));
+/**
+ * copies the values of the source vector into the destination vector
+ *
+ * @param destination vector to be written to
+ * @param source vector to be read from
+ * @return destination
+ */
+float* copyVector(float destination[3], const float source[3]) {
+	setVector(destination,
+			source[0],
+			source[1],
+			source[2]);
 
-	vector->x = source[0];
-	vector->y = source[1];
-	vector->z = source[2];
-
-	return vector;
+	return destination;
 }
 
-LINKAPI_VECTOR_3D* getAvatarPosition() {
-	return getVector(lm->avatarPosition);
+LINKAPI_ERROR_CODE getAvatarPosition(float destination[3]) {
+	LINKAPI_VERIFY_LM;
+	copyVector(destination, lm->avatarPosition);
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
 LINKAPI_ERROR_CODE setAvatarPosition(float x, float y, float z) {
@@ -288,8 +325,10 @@ LINKAPI_ERROR_CODE setAvatarPosition(float x, float y, float z) {
 	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
-LINKAPI_VECTOR_3D* getAvatarFront() {
-	return getVector(lm->avatarFront);
+LINKAPI_ERROR_CODE getAvatarFront(float destination[3]) {
+	LINKAPI_VERIFY_LM;
+	copyVector(destination, lm->avatarFront);
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
 LINKAPI_ERROR_CODE setAvatarFront(float x, float y, float z) {
@@ -298,8 +337,10 @@ LINKAPI_ERROR_CODE setAvatarFront(float x, float y, float z) {
 	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
-LINKAPI_VECTOR_3D* getAvatarTop() {
-	return getVector(lm->avatarTop);
+LINKAPI_ERROR_CODE getAvatarTop(float destination[3]) {
+	LINKAPI_VERIFY_LM;
+	copyVector(destination, lm->avatarTop);
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
 LINKAPI_ERROR_CODE setAvatarTop(float x, float y, float z) {
@@ -308,8 +349,10 @@ LINKAPI_ERROR_CODE setAvatarTop(float x, float y, float z) {
 	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
-LINKAPI_VECTOR_3D* getCameraPosition() {
-	return getVector(lm->cameraPosition);
+LINKAPI_ERROR_CODE getCameraPosition(float destination[3]) {
+	LINKAPI_VERIFY_LM;
+	copyVector(destination, lm->cameraPosition);
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
 LINKAPI_ERROR_CODE setCameraPosition(float x, float y, float z) {
@@ -318,8 +361,10 @@ LINKAPI_ERROR_CODE setCameraPosition(float x, float y, float z) {
 	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
-LINKAPI_VECTOR_3D* getCameraFront() {
-	return getVector(lm->cameraFront);
+LINKAPI_ERROR_CODE getCameraFront(float destination[3]) {
+	LINKAPI_VERIFY_LM;
+	copyVector(destination, lm->cameraFront);
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
 LINKAPI_ERROR_CODE setCameraFront(float x, float y, float z) {
@@ -328,21 +373,16 @@ LINKAPI_ERROR_CODE setCameraFront(float x, float y, float z) {
 	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
-LINKAPI_VECTOR_3D* getCameraTop() {
-	return getVector(lm->cameraTop);
+LINKAPI_ERROR_CODE getCameraTop(float destination[3]) {
+	LINKAPI_VERIFY_LM;
+	copyVector(destination, lm->cameraTop);
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
 LINKAPI_ERROR_CODE setCameraTop(float x, float y, float z) {
 	LINKAPI_VERIFY_LM;
 	setVector(lm->cameraTop, x, y, z);
 	return LINKAPI_ERROR_CODE_NO_ERROR;
-}
-
-void copyVector(float target[3], const float source[3]) {
-	int i;
-	for (i = 0; i < 3; i++) {
-		target[i] = source[i];
-	}
 }
 
 LINKAPI_ERROR_CODE setVectors(
@@ -393,8 +433,10 @@ LINKAPI_ERROR_CODE commitVectorsAvatarAsCamera(
 			avatarPosition, avatarFront, avatarTop);
 }
 
-LINKAPI_NATIVE_DWORD getTick() {
-	return lm->tick;
+LINKAPI_ERROR_CODE getTick(LINKAPI_NATIVE_DWORD* destination) {
+	LINKAPI_VERIFY_LM;
+	*destination = lm->tick;
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
 LINKAPI_ERROR_CODE setTick(LINKAPI_NATIVE_DWORD tick) {
@@ -410,8 +452,10 @@ LINKAPI_ERROR_CODE commitTick(LINKAPI_NATIVE_DWORD tick) {
 	return relock();
 }
 
-LINKAPI_NATIVE_UINT32 getVersion() {
-	return lm->version;
+LINKAPI_ERROR_CODE getVersion(LINKAPI_NATIVE_UINT32* destination) {
+	LINKAPI_VERIFY_LM;
+	*destination = lm->version;
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
 LINKAPI_ERROR_CODE setVersion(LINKAPI_NATIVE_UINT32 version) {
@@ -425,12 +469,19 @@ LINKAPI_ERROR_CODE commitVersion(LINKAPI_NATIVE_UINT32 version) {
 	return commitOnNoError(setVersion(version));
 }
 
-LINKAPI_LINKED_MEMORY* getData() {
-	return lm;
+LINKAPI_ERROR_CODE getData(LINKAPI_LINKED_MEMORY* destination) {
+	LINKAPI_VERIFY_LM;
+	memcpy(destination, lm, sizeof (LINKAPI_LINKED_MEMORY));
+	return LINKAPI_ERROR_CODE_NO_ERROR;
 }
 
 LINKAPI_ERROR_CODE setData(const LINKAPI_LINKED_MEMORY* source) {
 	LINKAPI_VERIFY_LM;
+
+	wcsncpy(backupName, source->name, LINKAPI_MAX_NAME_LENGTH);
+	wcsncpy(backupDescription, source->description, LINKAPI_MAX_DESCRIPTION_LENGTH);
+	backupUiVersion = source->version;
+
 	memcpy(lm, source, sizeof (LINKAPI_LINKED_MEMORY));
 	return LINKAPI_ERROR_CODE_NO_ERROR;
 }

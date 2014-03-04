@@ -7,3 +7,6 @@
 /tests/LinkAPITestRunner/dist
 /tests/java/ManualTester/ide/netbeans/dist/lib
 /tests/LinkAPITestRunner/nbproject/private
+/tests/java/ManualTester/ide/netbeans/libLinkAPI.dll
+/ide/netbeans/dist
+*.stackdump

@@ -21,7 +21,7 @@ CuSuite* UpdatersSuite();
 CuSuite* MiscSuite();
 void initializationFailed(CuTest* tc);
 
-void TestSettersSuite_setName(CuTest* tc);
+void TestMiscSuite_getContextNullAndExtendedMaxLengthTolerance(CuTest* tc);
 
 /**
  * based on CuTest 1.5
@@ -50,7 +50,7 @@ void RunSelectedTest(void) {
 	if (initError == LINKAPI_ERROR_CODE_NO_ERROR) {
 
 		// selected test
-		SUITE_ADD_TEST(suite, TestSettersSuite_setName);
+		SUITE_ADD_TEST(suite, TestMiscSuite_getContextNullAndExtendedMaxLengthTolerance);
 
 	} else {
 		SUITE_ADD_TEST(suite, initializationFailed);

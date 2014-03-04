@@ -53,12 +53,36 @@
           </incDir>
           <warningLevel>2</warningLevel>
         </cTool>
+        <ccTool>
+          <warningLevel>2</warningLevel>
+        </ccTool>
         <linkerTool>
           <linkerLibItems>
-            <linkerLibFileItem>../../ide/netbeans/dist/Release_x64/Cygwin64_4.x-Windows/libLinkAPI.dll</linkerLibFileItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../ide/netbeans"
+                            CT="2"
+                            CN="Debug_x64"
+                            AC="false"
+                            BL="true"
+                            WD="../../ide/netbeans"
+                            BC="${MAKE}  -f Makefile CONF=Debug_x64"
+                            CC="${MAKE}  -f Makefile CONF=Debug_x64 clean"
+                            OP="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT}">
+              </makeArtifact>
+            </linkerLibProjectItem>
           </linkerLibItems>
         </linkerTool>
         <requiredProjects>
+          <makeArtifact PL="../../ide/netbeans"
+                        CT="2"
+                        CN="Debug_x64"
+                        AC="false"
+                        BL="true"
+                        WD="../../ide/netbeans"
+                        BC="${MAKE}  -f Makefile CONF=Debug_x64"
+                        CC="${MAKE}  -f Makefile CONF=Debug_x64 clean"
+                        OP="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT}">
+          </makeArtifact>
           <makeArtifact PL="../../ide/netbeans"
                         CT="2"
                         CN="Release_x64"
@@ -115,6 +139,23 @@
         <asmTool>
           <developmentMode>5</developmentMode>
         </asmTool>
+        <linkerTool>
+          <commandlineTool>gcc</commandlineTool>
+          <linkerLibItems>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../ide/netbeans"
+                            CT="2"
+                            CN="Release_x64"
+                            AC="true"
+                            BL="true"
+                            WD="../../ide/netbeans"
+                            BC="${MAKE}  -f Makefile CONF=Release_x64"
+                            CC="${MAKE}  -f Makefile CONF=Release_x64 clean"
+                            OP="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT}">
+              </makeArtifact>
+            </linkerLibProjectItem>
+          </linkerLibItems>
+        </linkerTool>
       </compileType>
       <item path="../../src/LinkAPI.h" ex="false" tool="3" flavor2="0">
       </item>

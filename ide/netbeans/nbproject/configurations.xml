@@ -60,7 +60,7 @@
           <commandLine>-mno-cygwin</commandLine>
         </ccTool>
         <linkerTool>
-          <output>${TESTDIR}/TestFiles/f1</output>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT}</output>
           <commandlineTool>g++.exe</commandlineTool>
           <linkerLibItems>
             <linkerOptionItem>-lstdc++</linkerOptionItem>
@@ -112,24 +112,14 @@
           <commandLine>-mno-cygwin</commandLine>
         </ccTool>
         <linkerTool>
-          <output>${TESTDIR}/TestFiles/f1</output>
-          <commandlineTool>x86_64-w64-mingw32-g++</commandlineTool>
-          <linkerLibItems>
-            <linkerLibFileItem>C:/cygwin/lib/gcc/x86_64-w64-mingw32/4.5.3/libstdc++.a</linkerLibFileItem>
-            <linkerLibFileItem>C:/cygwin/lib/gcc/x86_64-w64-mingw32/4.5.3/libgcc.a</linkerLibFileItem>
-          </linkerLibItems>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT}</output>
+          <commandlineTool>g++</commandlineTool>
         </linkerTool>
       </compileType>
       <packaging>
         <packType>Tar</packType>
         <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/libLinkAPI.dll.tar</output>
         <packFileList>
-          <packFileListElem type="File"
-                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
-                            from="${OUTPUT_PATH}"
-                            perm="644"
-                            owner="root"
-                            group="bin"/>
         </packFileList>
       </packaging>
       <item path="../../src/LinkAPI.c" ex="false" tool="0" flavor2="0">
@@ -155,6 +145,7 @@
             <pElem>.</pElem>
             <pElem>.</pElem>
           </incDir>
+          <warningLevel>2</warningLevel>
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
@@ -162,6 +153,7 @@
             <pElem>.</pElem>
             <pElem>.</pElem>
           </incDir>
+          <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
@@ -170,7 +162,7 @@
           <developmentMode>5</developmentMode>
         </asmTool>
         <linkerTool>
-          <output>${TESTDIR}/TestFiles/f1</output>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT}</output>
         </linkerTool>
       </compileType>
       <item path="../../src/LinkAPI.c" ex="false" tool="0" flavor2="0">

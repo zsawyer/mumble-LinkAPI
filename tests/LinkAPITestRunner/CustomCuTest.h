@@ -18,13 +18,13 @@ extern "C" {
 	extern LINKAPI_LINKED_MEMORY* lm;
 
 #    define CuAssertPtrNotEquals(tc,ex,ac)          CuAssertPtrNotEquals_LineMsg((tc),__FILE__,__LINE__,NULL,(ex),(ac))
-#    define CuAssertArrayEqualsVec(tc,ar,vec)       CuAssertArrayEqualsVec_LineMsg((tc),__FILE__,__LINE__,NULL,(ar),(vec))
-#    define CuAssertArrayEqualsVec_Msg(tc,ms,ar,vec)       CuAssertArrayEqualsVec_LineMsg((tc),__FILE__,__LINE__,(ms),(ar),(vec))
 #    define CuAssertFloatArrayEquals(tc,ex,ac,sz)   CuAssertFloatArrayEquals_LineMsg((tc),__FILE__,__LINE__,NULL,(ex),(ac),(sz))
 #    define CuAssertVecEquals(tc,ex,ac)				CuAssertVecEquals_LineMsg((tc),__FILE__,__LINE__,NULL,(ex),(ac))
-#    define CuAssertByteArrayEquals(tc,ex,ac,sz)	CuAssertByteArrayEquals_LineMsg((tc),__FILE__,__LINE__,NULL,(ex),(ac),(sz),0,0)
-#    define CuAssertCharArrayEquals(tc,ex,ac,sz)    CuAssertByteArrayEquals_LineMsg((tc),__FILE__,__LINE__,NULL,(ex),(ac),(sz),1,0)
-#    define CuAssertWCharTArrayEquals(tc,ex,ac,sz)  CuAssertByteArrayEquals_LineMsg((tc),__FILE__,__LINE__,NULL,(ex),(ac),(sz),0,1)
+#    define CuAssertByteArrayEquals(tc,ex,ac,sz)	CuAssertByteArrayEquals_LineMsg((tc),__FILE__,__LINE__,NULL,(ex),(ac),(sz),0,0,1)
+#    define CuAssertCharArrayEquals(tc,ex,ac,sz)    CuAssertByteArrayEquals_LineMsg((tc),__FILE__,__LINE__,NULL,(ex),(ac),(sz),1,0,1)
+#    define CuAssertCharArrayNotEquals(tc,ex,ac,sz)    CuAssertByteArrayEquals_LineMsg((tc),__FILE__,__LINE__,NULL,(ex),(ac),(sz),1,0,0)
+#    define CuAssertWCharTArrayEquals(tc,ex,ac,sz)  CuAssertByteArrayEquals_LineMsg((tc),__FILE__,__LINE__,NULL,(ex),(ac),(sz),0,1,1)
+#    define CuAssertWCharTArrayNotEquals(tc,ex,ac,sz)  CuAssertByteArrayEquals_LineMsg((tc),__FILE__,__LINE__,NULL,(ex),(ac),(sz),0,1,0)
 
 
 	void CuAssertPtrNotEquals_LineMsg(CuTest* tc, const char* file, int line, const char* message,
@@ -33,14 +33,8 @@ extern "C" {
 	void CuAssertFloatArrayEquals_LineMsg(CuTest* tc, const char* file, int line, const char* message,
 			float* expected, float* actual, int size);
 
-	void CuAssertArrayEqualsVec_LineMsg(CuTest* tc, const char* file, int line, const char* message,
-			float* array, LINKAPI_VECTOR_3D* vector);
-
-	void CuAssertVecEquals_LineMsg(CuTest* tc, const char* file, int line, const char* message,
-			LINKAPI_VECTOR_3D* expected, LINKAPI_VECTOR_3D* actual);
-
 	void CuAssertByteArrayEquals_LineMsg(CuTest* tc, const char* file, int line, const char* message,
-			const void* expected, const void* actual, size_t size, int asChar, int asWCharT);
+			const void* expected, const void* actual, size_t size, int asChar, int asWCharT, int asEquals);
 
 #    ifdef	__cplusplus
 }

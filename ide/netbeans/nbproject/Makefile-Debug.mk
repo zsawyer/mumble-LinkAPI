@@ -56,11 +56,11 @@ LDLIBSOPTIONS=-lstdc++ -lrt
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${TESTDIR}/TestFiles/f1
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT}
 
-${TESTDIR}/TestFiles/f1: ${OBJECTFILES}
-	${MKDIR} -p ${TESTDIR}/TestFiles
-	g++.exe -o ${TESTDIR}/TestFiles/f1 ${OBJECTFILES} ${LDLIBSOPTIONS} -shared
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT}: ${OBJECTFILES}
+	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
+	g++.exe -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT} ${OBJECTFILES} ${LDLIBSOPTIONS} -shared
 
 ${OBJECTDIR}/_ext/1445274692/LinkAPI.o: ../../src/LinkAPI.c 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1445274692
@@ -73,7 +73,7 @@ ${OBJECTDIR}/_ext/1445274692/LinkAPI.o: ../../src/LinkAPI.c
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${TESTDIR}/TestFiles/f1
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT}
 
 # Subprojects
 .clean-subprojects:

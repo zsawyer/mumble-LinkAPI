@@ -36,6 +36,7 @@ import com.sun.jna.Structure;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.Arrays;
 import java.util.List;
 
@@ -94,90 +95,77 @@ public interface LinkAPILibrary extends Library {
 		 */
 		public static final int LINKAPI_ERROR_CODE_NO_ERROR = 0;
 		/**
-		 * win32 specific: OpenFileMappingW failed to return a handle<br>
+		 * no handle to the shared memory structure was received<br>
 		 * <i>native declaration : line 128</i>
 		 */
-		public static final int LINKAPI_ERROR_CODE_WIN32_NO_HANDLE = 1;
+		public static final int LINKAPI_ERROR_CODE_NO_HANDLE = 1;
 		/**
-		 * win32 specific: MapViewOfFile failed to return a structure<br>
+		 * no structure could be initialized<br>
 		 * <i>native declaration : line 130</i>
 		 */
-		public static final int LINKAPI_ERROR_CODE_WIN32_NO_STRUCTURE = 2;
+		public static final int LINKAPI_ERROR_CODE_NO_STRUCTURE = 2;
 		/**
-		 * unix specific: shm_open returned a negative integer<br>
+		 * the shared memory was not initialized<br>
 		 * <i>native declaration : line 132</i>
 		 */
-		public static final int LINKAPI_ERROR_CODE_UNIX_NO_HANDLE = 3;
-		/**
-		 * unix specific: mmap failed to return a structure<br>
-		 * <i>native declaration : line 134</i>
-		 */
-		public static final int LINKAPI_ERROR_CODE_UNIX_NO_STRUCTURE = 4;
-		/**
-		 * shared memory was not initialized<br>
-		 * <i>native declaration : line 136</i>
-		 */
-		public static final int LINKAPI_ERROR_CODE_NO_MEMORY_WAS_INITIALIZED = 5;
+		public static final int LINKAPI_ERROR_CODE_NO_MEMORY_WAS_INITIALIZED = 3;
 		/**
 		 * the provided context length was out of bounds<br>
-		 * <i>native declaration : line 138</i>
+		 * <i>native declaration : line 134</i>
 		 */
-		public static final int LINKAPI_ERROR_CODE_CONTEXT_LENGTH_EXCEEDED = 6;
+		public static final int LINKAPI_ERROR_CODE_CONTEXT_LENGTH_EXCEEDED = 4;
 	};
-	public static final int LINKAPI_VECTOR_LENGTH = 3;
 	public static final int LINKAPI_MAX_IDENTITY_LENGTH = 256;
 	public static final int LINKAPI_MAX_NAME_LENGTH = 256;
 	public static final int LINKAPI_MAX_CONTEXT_LENGTH = 256;
+	public static final int LINKAPI_VERSION_UNLINK = 0;
 	public static final int LINKAPI_MAX_DESCRIPTION_LENGTH = 2048;
-	public static final int LINKAPI_UI_VERSION_UNLINK = 0;
 
-	/**
-	 * the structure of the shared memory as defined by mumble Link plugin
-	 * v1.2.0
-	 */
 	public static class LINKAPI_LINKED_MEMORY extends Structure {
 
-		public int uiVersion;
-		public int uiTick;
+		public int version;
+		public int tick;
 		/** C type : float[3] */
-		public float[] fAvatarPosition = new float[LINKAPI_VECTOR_LENGTH];
+		public float[] avatarPosition = new float[3];
 		/** C type : float[3] */
-		public float[] fAvatarFront = new float[LINKAPI_VECTOR_LENGTH];
+		public float[] avatarFront = new float[3];
 		/** C type : float[3] */
-		public float[] fAvatarTop = new float[LINKAPI_VECTOR_LENGTH];
+		public float[] avatarTop = new float[3];
 		/** C type : wchar_t[256] */
-		public char[] name = new char[LINKAPI_MAX_NAME_LENGTH];
+		public char[] name = new char[256];
 		/** C type : float[3] */
-		public float[] fCameraPosition = new float[LINKAPI_VECTOR_LENGTH];
+		public float[] cameraPosition = new float[3];
 		/** C type : float[3] */
-		public float[] fCameraFront = new float[LINKAPI_VECTOR_LENGTH];
+		public float[] cameraFront = new float[3];
 		/** C type : float[3] */
-		public float[] fCameraTop = new float[LINKAPI_VECTOR_LENGTH];
+		public float[] cameraTop = new float[3];
 		/** C type : wchar_t[256] */
-		public char[] identity = new char[LINKAPI_MAX_IDENTITY_LENGTH];
-		public int context_len;
+		public char[] identity = new char[256];
+		public int contextLength;
 		/** C type : unsigned char[256] */
-		public byte[] context = new byte[LINKAPI_MAX_CONTEXT_LENGTH];
+		public byte[] context = new byte[256];
 		/** C type : wchar_t[2048] */
-		public char[] description = new char[LINKAPI_MAX_DESCRIPTION_LENGTH];
+		public char[] description = new char[2048];
 
 		public LINKAPI_LINKED_MEMORY() {
 			super();
 		}
 
 		protected List<?> getFieldOrder() {
-			return Arrays.asList("uiVersion", "uiTick", "fAvatarPosition",
-					"fAvatarFront", "fAvatarTop", "name", "fCameraPosition",
-					"fCameraFront", "fCameraTop", "identity", "context_len",
+			return Arrays.asList("version", "tick", "avatarPosition",
+					"avatarFront", "avatarTop", "name", "cameraPosition",
+					"cameraFront", "cameraTop", "identity", "contextLength",
 					"context", "description");
 		}
 
 		public static class ByReference extends LINKAPI_LINKED_MEMORY implements
 				Structure.ByReference {
+
 		};
 
 		public static class ByValue extends LINKAPI_LINKED_MEMORY implements
 				Structure.ByValue {
+
 		};
 	};
 
@@ -185,54 +173,49 @@ public interface LinkAPILibrary extends Library {
 	 * initialize the linked memory
 	 * and set the name and description
 	 *
-	 * it corresponds to initMumble() defined here:
-	 * http://mumble.sourceforge.net/Link
+	 * it corresponds to initMumble() defined here: http://mumble.sourceforge.net/Link
 	 * but also sets the name and description as this should only needed to be
 	 * set once
 	 *
-	 * @param name	       the display name of the application which links with
-	 *                       mumble (i.e. L"TestLink")
+	 * @param name	       the display name of the application which links with mumble (i.e. L"TestLink")
 	 * @param description	a text stating the purpose of this link
-	 * @param uiVersion	  no description available (this should usually be set
-	 *                       to 2)
+	 * @param version	    no description available (this should usually be set to 2)
 	 *
 	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE initialize(wchar_t[256], wchar_t[2048], int)</code><br>
-	 * <i>native declaration : line 156</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE initialize(const wchar_t[256], const wchar_t[2048], int)</code><br>
+	 * <i>native declaration : line 152</i>
 	 */
-	int initialize(CharBuffer name, CharBuffer description, int uiVersion);
+	int initialize(char name[], char description[], int version);
 
 	/**
 	 * forcefully unlinks the plugin instantly
 	 *
 	 * this function directly circumvents the timeout wait of the link plugin
 	 *
-	 * this effect is undone when calling a commit...(...)-method or
-	 * {@link #initialize(java.nio.CharBuffer, java.nio.CharBuffer, int)}
+	 * this effect is undone when calling a commit...(...)-function or
+	 * {@link #initialize(char[], char[], int) }
+	 *
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>void unlinkMumble()</code><br>
+	 * Original signature : <code>LINKAPI_ERROR_CODE unlinkMumble()</code><br>
 	 * <i>native declaration : line 168</i>
 	 */
-	void unlinkMumble();
+	int unlinkMumble();
 
 	/**
 	 * Notifies the plugin that the data is up-to-date. commit...(...)-functions
 	 * call this method at the end.
 	 *
-	 * This is to prevent a timeout which causes the plugin to automatically
-	 * unlink.
+	 * This is to prevent a timeout which causes the plugin to automatically unlink.
 	 * It will also re-link if the link has previously been lost ("relock").
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
+	 * @return	an error code, see {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE commit()</code><br>
+	 * Original signature : <code>LINKAPI_ERROR_CODE commit()</code><br>
 	 * <i>native declaration : line 180</i>
 	 */
 	int commit();
@@ -241,43 +224,40 @@ public interface LinkAPILibrary extends Library {
 	 * sets and commits the identity
 	 *
 	 * Notice: The identity does not need to be updated every single frame. It
-	 * shouldn't change more than a few times per second if at all during a
-	 * game.
+	 * shouldn't change more than a few times per second if at all during a game.
 	 *
-	 * see {@link #setIdentity(java.nio.CharBuffer)} for details
+	 * see {@link #setIdentity(char[]) } for details
 	 *
 	 * @param identity	unique id of the user in a given context
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
-	 *
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE commitIdentity(wchar_t[256])</code><br>
+	 * Original signature : <code>LINKAPI_ERROR_CODE commitIdentity(const wchar_t[256])</code><br>
 	 * <i>native declaration : line 195</i>
 	 */
-	int commitIdentity(CharBuffer identity);
+	int commitIdentity(char identity[]);
 
 	/**
 	 * get the client's identity
 	 *
-	 * see {@link #setIdentity(java.nio.CharBuffer)} for details
+	 * see {@link #setIdentity(char[]) } for details
 	 *
-	 * @return the client's identity
+	 * @param destination the client's identity
+	 *
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>wchar_t* getIdentity()</code><br>
-	 * <i>native declaration : line 203</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE getIdentity(wchar_t[256])</code><br>
+	 * <i>native declaration : line 206</i>
 	 */
-	CharBuffer getIdentity();
+	int getIdentity(CharBuffer destination);
 
 	/**
 	 * set the identity only
 	 *
 	 * Notice: The identity does not need to be updated every single frame. It
-	 * shouldn't change more than a few times per second if at all during a
-	 * game.
+	 * shouldn't change more than a few times per second if at all during a game.
 	 *
 	 * Identity should contain a string which uniquely identifies the player in
 	 * the given context. This is usually satisfied by the in-game player name
@@ -295,67 +275,68 @@ public interface LinkAPILibrary extends Library {
 	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE setIdentity(wchar_t[256])</code><br>
-	 * <i>native declaration : line 227</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE setIdentity(const wchar_t[256])</code><br>
+	 * <i>native declaration : line 230</i>
 	 */
-	int setIdentity(CharBuffer identity);
+	int setIdentity(char identity[]);
 
 	/**
 	 * sets and commits the context
 	 *
 	 * Notice: The context does not need to be updated every single frame. It
-	 * shouldn't change more than a few times per second if at all during a
-	 * game.
+	 * shouldn't change more than a few times per second if at all during a game.
 	 *
-	 * see {@link #setContext(java.nio.ByteBuffer, int)} for details
+	 * see {@link #setContext(byte[], int) } for details
 	 *
-	 * @param context	    a generic context
-	 * @param context_len	the length of the context (number of array elements)
+	 * @param context	      a generic context
+	 * @param contextLength	the length of the context (number of array elements)
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE commitContext(unsigned char[256], int)</code><br>
-	 * <i>native declaration : line 243</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE commitContext(const unsigned char*, int)</code><br>
+	 * <i>native declaration : line 246</i>
 	 */
-	int commitContext(ByteBuffer context, int context_len);
+	int commitContext(byte context[], int contextLength);
 
 	/**
 	 * the length of the context (number of valid array elements retrieved).
 	 *
 	 * This cannot exceed {@link #LINKAPI_MAX_CONTEXT_LENGTH}.
 	 *
-	 * @return the length of the current context
+	 * @param destination the length of the current context
+	 *
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>int getContextLen()</code><br>
-	 * <i>native declaration : line 254</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE getContextLen(int*)</code><br>
+	 * <i>native declaration : line 260</i>
 	 */
-	int getContextLen();
+	int getContextLen(IntBuffer destination);
 
 	/**
 	 * getter for the client's context
 	 *
-	 * see {@link #setContext(java.nio.ByteBuffer, int) } for details
+	 * see {@link #setContext(byte[], int) } for details
 	 *
-	 * @return the client's context
+	 * @param destinationForContext      the client's context
+	 * @param destinationForActualLength the length of the usable context
+	 * @param maxContextLength           the maximum length to write to at the destination
+	 *
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>char* getContext()</code><br>
-	 * <i>native declaration : line 263</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE getContext(unsigned char*, int*, int)</code><br>
+	 * <i>native declaration : line 273</i>
 	 */
-	ByteBuffer getContext();
+	int getContext(ByteBuffer destinationForContext,
+			IntBuffer destinationForActualLength, int maxContextLength);
 
 	/**
 	 * sets the context
 	 *
 	 * Notice: The context does not need to be updated every single frame. It
-	 * shouldn't change more than a few times per second if at all during a
-	 * game.
+	 * shouldn't change more than a few times per second if at all during a game.
 	 *
 	 * The context string is used to determine which users on a Mumble server
 	 * should hear each other positionally. If context between two mumble user
@@ -367,18 +348,17 @@ public interface LinkAPILibrary extends Library {
 	 * this string depends on the game itself. When in doubt err on the side of
 	 * including less. This gives more flexibility later on.
 	 *
-	 * @param context	    a generic context
-	 * @param context_len	the length of the context (number of array elements)
-	 *                       {@link #LINKAPI_MAX_CONTEXT_LENGTH} limits this number
+	 * @param context	      a generic context
+	 * @param contextLength	the length of the context (number of array elements)
+	 *                      {@link #LINKAPI_MAX_CONTEXT_LENGTH} limits this number
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE setContext(unsigned char[], int)</code><br>
-	 * <i>native declaration : line 288</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE setContext(const unsigned char*, int)</code><br>
+	 * <i>native declaration : line 301</i>
 	 */
-	int setContext(ByteBuffer context, int context_len);
+	int setContext(byte context[], int contextLength);
 
 	/**
 	 * sets and commits the identity AND context
@@ -387,23 +367,21 @@ public interface LinkAPILibrary extends Library {
 	 * single frame. It shouldn't change more than a few times per second if at
 	 * all during a game.
 	 *
-	 * see {@link #setIdentity(java.nio.CharBuffer)} and
-	 * {@link #setContext(java.nio.ByteBuffer, int)} for detailed information
+	 * see {@link #setIdentity(char[]) } and {@link #setContext(byte[], int) } for detailed information
 	 *
-	 * @param identity	   unique id of the user
-	 * @param context	    a generic context
-	 * @param context_len	the length of the context (number of array elements)
-	 *                       {@link #LINKAPI_MAX_CONTEXT_LENGTH} limits this number
+	 * @param identity	     unique id of the user
+	 * @param context	      a generic context
+	 * @param contextLength	the length of the context (number of array elements)
+	 *                      {@link #LINKAPI_MAX_CONTEXT_LENGTH} limits this number
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE commitIdentityAndContext(wchar_t[256], unsigned char[256], int)</code><br>
-	 * <i>native declaration : line 307</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE commitIdentityAndContext(const wchar_t[256], const unsigned char*, int)</code><br>
+	 * <i>native declaration : line 322</i>
 	 */
-	int commitIdentityAndContext(CharBuffer identity, ByteBuffer context,
-			int context_len);
+	int commitIdentityAndContext(char identity[], byte context[],
+			int contextLength);
 
 	/**
 	 * sets the identity AND context
@@ -412,23 +390,20 @@ public interface LinkAPILibrary extends Library {
 	 * single frame. It shouldn't change more than a few times per second if at
 	 * all during a game.
 	 *
-	 * see {@link #setIdentity(java.nio.CharBuffer)} and
-	 * {@link #setContext(java.nio.ByteBuffer, int)} for detailed informations
+	 * see {@link #setIdentity(char[]) } and {@link #setContext(byte[], int) } for detailed informations
 	 *
-	 * @param identity	   unique id of the user
-	 * @param context	    a generic context
-	 * @param context_len	the length of the context (number of array elements)
-	 *                       {@link #LINKAPI_MAX_CONTEXT_LENGTH} limits this number
+	 * @param identity	     unique id of the user
+	 * @param context	      a generic context
+	 * @param contextLength	the length of the context (number of array elements)
+	 *                      {@link #LINKAPI_MAX_CONTEXT_LENGTH} limits this number
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE setIdentityAndContext(wchar_t[], unsigned char[], int)</code><br>
-	 * <i>native declaration : line 329</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE setIdentityAndContext(const wchar_t[256], const unsigned char*, int)</code><br>
+	 * <i>native declaration : line 344</i>
 	 */
-	int setIdentityAndContext(CharBuffer identity, ByteBuffer context,
-			int context_len);
+	int setIdentityAndContext(char identity[], byte context[], int contextLength);
 
 	/**
 	 * sets and commits the display name of the application currently linked
@@ -437,37 +412,35 @@ public interface LinkAPILibrary extends Library {
 	 * Notice: This does not need to be updated every single frame. It shouldn't
 	 * change at all during a game.
 	 *
-	 * see {@link #setName(java.nio.CharBuffer)} for details
+	 * see {@link #setName(char[]) } for details
 	 *
-	 * @param name	the display name of the application which links with mumble
-	 *                (i.e. L"TestLink")
+	 * @param name	the display name of the application which links with mumble (i.e. L"TestLink")
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE commitName(wchar_t[256])</code><br>
-	 * <i>native declaration : line 344</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE commitName(const wchar_t[256])</code><br>
+	 * <i>native declaration : line 363</i>
 	 */
-	int commitName(CharBuffer name);
+	int commitName(char name[]);
 
 	/**
 	 * the display name of the application currently linked with mumble
 	 *
-	 * see {@link #setName(java.nio.CharBuffer)} for details
+	 * see {@link #setName(char[]) } for details
 	 *
-	 * @return application name
+	 * @param destination for the application name
+	 *
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>wchar_t* getName()</code><br>
-	 * <i>native declaration : line 352</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE getName(wchar_t[256])</code><br>
+	 * <i>native declaration : line 374</i>
 	 */
-	CharBuffer getName();
+	int getName(CharBuffer destination);
 
 	/**
-	 * sets only the display name of the application currently linked with
-	 * mumble
+	 * sets only the display name of the application currently linked with mumble
 	 *
 	 * Notice: This does not need to be updated every single frame. It shouldn't
 	 * change at all during a game.
@@ -476,17 +449,15 @@ public interface LinkAPILibrary extends Library {
 	 * positional audio is being used (i.e. used for the "XXX linked." message
 	 * in the mumble log)
 	 *
-	 * @param name	the display name of the application which links with mumble
-	 *                (i.e. L"TestLink")
+	 * @param name	the display name of the application which links with mumble (i.e. L"TestLink")
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE setName(wchar_t[256])</code><br>
-	 * <i>native declaration : line 369</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE setName(const wchar_t[256])</code><br>
+	 * <i>native declaration : line 391</i>
 	 */
-	int setName(CharBuffer name);
+	int setName(char name[]);
 
 	/**
 	 * sets and commits the application's description
@@ -494,32 +465,32 @@ public interface LinkAPILibrary extends Library {
 	 * Notice: This does not need to be updated every single frame. It shouldn't
 	 * change at all during a game.
 	 *
-	 * see {@link #setDescription(java.nio.CharBuffer)} for details
+	 * see {@link #setDescription(char[]) } for details
 	 *
 	 * @param description	a text stating the purpose of this link
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE commitDescription(wchar_t[2048])</code><br>
-	 * <i>native declaration : line 384</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE commitDescription(const wchar_t[2048])</code><br>
+	 * <i>native declaration : line 406</i>
 	 */
-	int commitDescription(CharBuffer description);
+	int commitDescription(char description[]);
 
 	/**
 	 * the linked application's description
 	 *
-	 * see {@link #setDescription(java.nio.CharBuffer)} for details
+	 * see {@link #setDescription(char[]) } for details
 	 *
-	 * @return a text stating the purpose of this link
+	 * @param destination a text stating the purpose of this link
+	 *
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>wchar_t* getDescription()</code><br>
-	 * <i>native declaration : line 392</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE getDescription(wchar_t[2048])</code><br>
+	 * <i>native declaration : line 417</i>
 	 */
-	CharBuffer getDescription();
+	int getDescription(CharBuffer destination);
 
 	/**
 	 * sets only the application's description
@@ -531,15 +502,13 @@ public interface LinkAPILibrary extends Library {
 	 *
 	 * @param description	a text stating the purpose of this link
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
-	 *
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE setDescription(wchar_t[2048])</code><br>
-	 * <i>native declaration : line 407</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE setDescription(const wchar_t[2048])</code><br>
+	 * <i>native declaration : line 432</i>
 	 */
-	int setDescription(CharBuffer description);
+	int setDescription(char description[]);
 
 	/**
 	 * updates and commits the avatar and camera vectors
@@ -547,24 +516,22 @@ public interface LinkAPILibrary extends Library {
 	 * Notice: Mumble fetches these values 50 times a second, so please update
 	 * them every frame.
 	 *
-	 * @param fAvatarPosition	Position of the avatar.
-	 * @param fAvatarFront	   Unit vector pointing out of the avatar's eyes.
-	 * @param fAvatarTop	     Unit vector pointing out of the top of the
-	 *                           avatar's head.
-	 * @param fCameraPosition	Position of the camera.
-	 * @param fCameraFront	   Unit vector pointing out of the camera's lense.
-	 * @param fCameraTop	     Unit vector pointing out of the camera's top.
+	 * @param avatarPosition	Position of the avatar.
+	 * @param avatarFront	   Unit vector pointing out of the avatar's eyes.
+	 * @param avatarTop	     Unit vector pointing out of the top of the avatar's head.
+	 * @param cameraPosition	Position of the camera.
+	 * @param cameraFront	   Unit vector pointing out of the camera's lense.
+	 * @param cameraTop	     Unit vector pointing out of the camera's top.
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE commitVectors(float[3], float[3], float[3], float[3], float[3], float[3])</code><br>
-	 * <i>native declaration : line 425</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE commitVectors(const float[3], const float[3], const float[3], const float[3], const float[3], const float[3])</code><br>
+	 * <i>native declaration : line 451</i>
 	 */
-	int commitVectors(FloatBuffer fAvatarPosition, FloatBuffer fAvatarFront,
-			FloatBuffer fAvatarTop, FloatBuffer fCameraPosition,
-			FloatBuffer fCameraFront, FloatBuffer fCameraTop);
+	int commitVectors(float avatarPosition[], float avatarFront[],
+			float avatarTop[], float cameraPosition[], float cameraFront[],
+			float cameraTop[]);
 
 	/**
 	 * sets avatar and camera vectors
@@ -572,24 +539,22 @@ public interface LinkAPILibrary extends Library {
 	 * Notice: Mumble fetches these values 50 times a second, so please update
 	 * them every frame.
 	 *
-	 * @param fAvatarPosition	Position of the avatar.
-	 * @param fAvatarFront	   Unit vector pointing out of the avatar's eyes.
-	 * @param fAvatarTop	     Unit vector pointing out of the top of the
-	 *                           avatar's head.
-	 * @param fCameraPosition	Position of the camera.
-	 * @param fCameraFront	   Unit vector pointing out of the camera's lense.
-	 * @param fCameraTop	     Unit vector pointing out of the camera's top.
+	 * @param avatarPosition	Position of the avatar.
+	 * @param avatarFront	   Unit vector pointing out of the avatar's eyes.
+	 * @param avatarTop	     Unit vector pointing out of the top of the avatar's head.
+	 * @param cameraPosition	Position of the camera.
+	 * @param cameraFront	   Unit vector pointing out of the camera's lense.
+	 * @param cameraTop	     Unit vector pointing out of the camera's top.
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE setVectors(float[3], float[3], float[3], float[3], float[3], float[3])</code><br>
-	 * <i>native declaration : line 449</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE setVectors(const float[3], const float[3], const float[3], const float[3], const float[3], const float[3])</code><br>
+	 * <i>native declaration : line 475</i>
 	 */
-	int setVectors(FloatBuffer fAvatarPosition, FloatBuffer fAvatarFront,
-			FloatBuffer fAvatarTop, FloatBuffer fCameraPosition,
-			FloatBuffer fCameraFront, FloatBuffer fCameraTop);
+	int setVectors(float avatarPosition[], float avatarFront[],
+			float avatarTop[], float cameraPosition[], float cameraFront[],
+			float cameraTop[]);
 
 	/**
 	 * updates and commits avatar AND camera vectors with the same values
@@ -597,25 +562,20 @@ public interface LinkAPILibrary extends Library {
 	 * Notice: Mumble fetches these values 50 times a second, so please update
 	 * them every frame.
 	 *
-	 * see
-	 * {@link #setVectorsAvatarAsCamera(java.nio.FloatBuffer, java.nio.FloatBuffer, java.nio.FloatBuffer)}
-	 * for details
+	 * see {@link #setVectorsAvatarAsCamera(float[], float[], float[]) } for details
 	 *
-	 * @param fAvatarPosition	Position of the avatar and camera.
-	 * @param fAvatarFront	   Unit vector pointing out of the camera/avatar's
-	 *                           eyes.
-	 * @param fAvatarTop	     Unit vector pointing out of the top of the
-	 *                           avatar's head/camera's top.
+	 * @param avatarPosition	Position of the avatar and camera.
+	 * @param avatarFront	   Unit vector pointing out of the camera/avatar's eyes.
+	 * @param avatarTop	     Unit vector pointing out of the top of the avatar's head/camera's top.
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE commitVectorsAvatarAsCamera(float[3], float[3], float[3])</code><br>
-	 * <i>native declaration : line 472</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE commitVectorsAvatarAsCamera(const float[3], const float[3], const float[3])</code><br>
+	 * <i>native declaration : line 498</i>
 	 */
-	int commitVectorsAvatarAsCamera(FloatBuffer fAvatarPosition,
-			FloatBuffer fAvatarFront, FloatBuffer fAvatarTop);
+	int commitVectorsAvatarAsCamera(float avatarPosition[], float avatarFront[],
+			float avatarTop[]);
 
 	/**
 	 * sets avatar AND camera vectors with the same values
@@ -630,46 +590,41 @@ public interface LinkAPILibrary extends Library {
 	 *
 	 * see the respective single vector setters for details
 	 *
-	 * @param fAvatarPosition	Position of the avatar and camera.
-	 * @param fAvatarFront	   Unit vector pointing out of the camera/avatar's
-	 *                           eyes.
-	 * @param fAvatarTop	     Unit vector pointing out of the top of the
-	 *                           avatar's head/camera's top.
+	 * @param avatarPosition	Position of the avatar and camera.
+	 * @param avatarFront	   Unit vector pointing out of the camera/avatar's eyes.
+	 * @param avatarTop	     Unit vector pointing out of the top of the avatar's head/camera's top.
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE setVectorsAvatarAsCamera(float[3], float[3], float[3])</code><br>
-	 * <i>native declaration : line 497</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE setVectorsAvatarAsCamera(const float[3], const float[3], const float[3])</code><br>
+	 * <i>native declaration : line 523</i>
 	 */
-	int setVectorsAvatarAsCamera(FloatBuffer fAvatarPosition,
-			FloatBuffer fAvatarFront, FloatBuffer fAvatarTop);
+	int setVectorsAvatarAsCamera(float avatarPosition[], float avatarFront[],
+			float avatarTop[]);
 
 	/**
 	 * The position of the avatar
 	 *
-	 * location of the avatar or avatar's head where it is located in the 3D
-	 * game world
+	 * location of the avatar or avatar's head where it is located in the 3D game world
 	 *
-	 * @return a 3D vector
+	 * @param destination the 3D vector represented by a float array
+	 *
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>float* getAvatarPosition()</code><br>
-	 * <i>native declaration : line 510</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE getAvatarPosition(float[3])</code><br>
+	 * <i>native declaration : line 538</i>
 	 */
-	FloatBuffer getAvatarPosition();
+	int getAvatarPosition(FloatBuffer destination);
 
 	/**
 	 * sets the position of the avatar
 	 *
-	 * location of the avatar or avatar's head where it is located in the 3D
-	 * game world
+	 * location of the avatar or avatar's head where it is located in the 3D game world
 	 *
 	 * Using the head's position is preferred. This in particular applies when
-	 * the head is not at the origin of the avatar model coordinate space. E.g.
-	 * if
+	 * the head is not at the origin of the avatar model coordinate space. E.g. if
 	 * the origin is at the feet of the model the sound will be perceived as
 	 * coming from the feet instead of the head.
 	 *
@@ -677,12 +632,11 @@ public interface LinkAPILibrary extends Library {
 	 * @param y the magnitude of the y basis vector
 	 * @param z the magnitude of the z basis vector
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE setAvatarPosition(float, float, float)</code><br>
-	 * <i>native declaration : line 528</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE setAvatarPosition(float, float, float)</code><br>
+	 * <i>native declaration : line 556</i>
 	 */
 	int setAvatarPosition(float x, float y, float z);
 
@@ -691,14 +645,15 @@ public interface LinkAPILibrary extends Library {
 	 *
 	 * indicates the direction the avatar or avatar's head is pointing at
 	 *
-	 * @return a 3D vector (look vector)
+	 * @param destination the 3D vector (look vector) represented by a float array
+	 *
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>float* getAvatarFront()</code><br>
-	 * <i>native declaration : line 538</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE getAvatarFront(float[3])</code><br>
+	 * <i>native declaration : line 568</i>
 	 */
-	FloatBuffer getAvatarFront();
+	int getAvatarFront(FloatBuffer destination);
 
 	/**
 	 * sets unit vector pointing out of the avatar's eyes
@@ -711,12 +666,11 @@ public interface LinkAPILibrary extends Library {
 	 * @param y the magnitude of the y basis vector
 	 * @param z the magnitude of the z basis vector
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE setAvatarFront(float, float, float)</code><br>
-	 * <i>native declaration : line 553</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE setAvatarFront(float, float, float)</code><br>
+	 * <i>native declaration : line 583</i>
 	 */
 	int setAvatarFront(float x, float y, float z);
 
@@ -726,14 +680,15 @@ public interface LinkAPILibrary extends Library {
 	 * indicates the direction that the top of the avatar or
 	 * avatar's head is pointing at
 	 *
-	 * @return a 3D vector (the avatar's up vector)
+	 * @param destination the 3D vector (the avatar's up vector) represented by a float array
+	 *
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>float* getAvatarTop()</code><br>
-	 * <i>native declaration : line 564</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE getAvatarTop(float[3])</code><br>
+	 * <i>native declaration : line 596</i>
 	 */
-	FloatBuffer getAvatarTop();
+	int getAvatarTop(FloatBuffer destination);
 
 	/**
 	 * sets unit vector pointing out of the top of the avatar's head
@@ -747,12 +702,11 @@ public interface LinkAPILibrary extends Library {
 	 * @param y the magnitude of the y basis vector
 	 * @param z the magnitude of the z basis vector
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE setAvatarTop(float, float, float)</code><br>
-	 * <i>native declaration : line 580</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE setAvatarTop(float, float, float)</code><br>
+	 * <i>native declaration : line 612</i>
 	 */
 	int setAvatarTop(float x, float y, float z);
 
@@ -761,14 +715,15 @@ public interface LinkAPILibrary extends Library {
 	 *
 	 * location of the camera where it is located in the 3D game world
 	 *
-	 * @return a 3D vector
+	 * @param destination the 3D vector represented by a float array
+	 *
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>float* getCameraPosition()</code><br>
-	 * <i>native declaration : line 590</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE getCameraPosition(float[3])</code><br>
+	 * <i>native declaration : line 624</i>
 	 */
-	FloatBuffer getCameraPosition();
+	int getCameraPosition(FloatBuffer destination);
 
 	/**
 	 * sets the position of the camera
@@ -779,12 +734,11 @@ public interface LinkAPILibrary extends Library {
 	 * @param y the magnitude of the y basis vector
 	 * @param z the magnitude of the z basis vector
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE setCameraPosition(float, float, float)</code><br>
-	 * <i>native declaration : line 603</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE setCameraPosition(float, float, float)</code><br>
+	 * <i>native declaration : line 637</i>
 	 */
 	int setCameraPosition(float x, float y, float z);
 
@@ -793,14 +747,15 @@ public interface LinkAPILibrary extends Library {
 	 *
 	 * indicates the direction the camera is pointing at
 	 *
-	 * @return a 3D vector (look vector)
+	 * @param destination the 3D vector (look vector) represented by a float array
+	 *
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>float* getCameraFront()</code><br>
-	 * <i>native declaration : line 613</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE getCameraFront(float[3])</code><br>
+	 * <i>native declaration : line 649</i>
 	 */
-	FloatBuffer getCameraFront();
+	int getCameraFront(FloatBuffer destination);
 
 	/**
 	 * sets unit vector pointing out of the front/lens of the camera
@@ -813,12 +768,11 @@ public interface LinkAPILibrary extends Library {
 	 * @param y the magnitude of the y basis vector
 	 * @param z the magnitude of the z basis vector
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE setCameraFront(float, float, float)</code><br>
-	 * <i>native declaration : line 628</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE setCameraFront(float, float, float)</code><br>
+	 * <i>native declaration : line 664</i>
 	 */
 	int setCameraFront(float x, float y, float z);
 
@@ -827,17 +781,18 @@ public interface LinkAPILibrary extends Library {
 	 *
 	 * indicates the direction that the top of the camera is pointing at
 	 *
-	 * @return a 3D vector (the camera's up vector)
+	 * @param destination the 3D vector (the camera's up vector) represented by a float array
+	 *
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>float* getCameraTop()</code><br>
-	 * <i>native declaration : line 638</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE getCameraTop(float[3])</code><br>
+	 * <i>native declaration : line 676</i>
 	 */
-	FloatBuffer getCameraTop();
+	int getCameraTop(FloatBuffer destination);
 
 	/**
-	 * Unit vector pointing out of the top of the camera
+	 * sets unit vector pointing out of the top of the camera
 	 *
 	 * indicates the direction that the top of the camera is pointing at
 	 *
@@ -847,131 +802,117 @@ public interface LinkAPILibrary extends Library {
 	 * @param y the magnitude of the y basis vector
 	 * @param z the magnitude of the z basis vector
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE setCameraTop(float, float, float)</code><br>
-	 * <i>native declaration : line 653</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE setCameraTop(float, float, float)</code><br>
+	 * <i>native declaration : line 691</i>
 	 */
 	int setCameraTop(float x, float y, float z);
 
 	/**
+	 * Original signature : <code>LINKAPI_ERROR_CODE getVersion(int*)</code><br>
+	 * <i>native declaration : line 694</i>
 	 */
-	/*
-	 * Original signature :
-	 * <code>int getUiVersion()</code><br>
-	 * <i>native declaration : line 656</i>
-	 */
-	int getUiVersion();
+	int getVersion(IntBuffer destination);
 
 	/**
+	 * Original signature : <code>LINKAPI_ERROR_CODE setVersion(int)</code><br>
+	 * <i>native declaration : line 697</i>
 	 */
-	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE setUiVersion(int)</code><br>
-	 * <i>native declaration : line 658</i>
-	 */
-	int setUiVersion(int version);
+	int setVersion(int version);
 
 	/**
+	 * Original signature : <code>LINKAPI_ERROR_CODE commitVersion(int)</code><br>
+	 * <i>native declaration : line 700</i>
 	 */
-	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE commitUiVersion(int)</code><br>
-	 * <i>native declaration : line 660</i>
-	 */
-	int commitUiVersion(int version);
+	int commitVersion(int version);
 
 	/**
-	 * tick counter which is used to tell if updates to the shared memory occur
+	 * tick counter which is used to tell if updates to the shared memory occurred
 	 *
 	 * If this number stays the same the rest of the shared memory is not read
 	 * by the link plugin and it will unlink after a certain timeout.
 	 *
-	 * @return the last tick number
+	 * @param destination the current tick number
+	 *
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>DWORD getUiTick()</code><br>
-	 * <i>native declaration : line 671</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE getTick(DWORD*)</code><br>
+	 * <i>native declaration : line 713</i>
 	 */
-	int getUiTick();
+	int getTick(IntBuffer destination);
 
 	/**
-	 * sets the tick counter which is used to tell if updates to the shared
-	 * memory occured
+	 * sets the tick counter which is used to tell if updates to the shared memory occurred
 	 *
 	 * If this number stays the same the rest of the shared memory is not read
 	 * by the link plugin and it will unlink after a certain timeout.
 	 *
 	 * If the plugin is already unlinked updating this value does not re-link,
-	 * for this to happen uiVersion needs to be updated too.
-	 * Use
-	 * <code>commitUiTick(...)</code> to clean-up the linked memory and
+	 * for this to happen version needs to be updated too.
+	 * Use {@link #commitTick(int) } to clean-up the linked memory and
 	 * enforce a re-link.
 	 *
 	 * @param tick the tick number to set
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE setUiTick(DWORD)</code><br>
-	 * <i>native declaration : line 688</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE setTick(DWORD)</code><br>
+	 * <i>native declaration : line 730</i>
 	 */
-	int setUiTick(int tick);
+	int setTick(int tick);
 
 	/**
 	 * set and commit the tick counter which is used to tell if updates to the
-	 * shared memory occured
+	 * shared memory occurred
 	 *
 	 * If this number stays the same the rest of the shared memory is not read
 	 * by the link plugin and it will unlink after a certain timeout.
 	 *
 	 * @param tick the tick number to set
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE commitUiTick(DWORD)</code><br>
-	 * <i>native declaration : line 700</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE commitTick(DWORD)</code><br>
+	 * <i>native declaration : line 743</i>
 	 */
-	int commitUiTick(int tick);
+	int commitTick(int tick);
 
 	/**
 	 * directly manipulate the entire linked memory at once
 	 *
-	 * IMPORTANT: Note that you should also update uiTick yourself, else a
-	 * timeout will occur and your data will not be read. Subsequently calling
-	 * the commit()-function once will not help when uiTick is always set to the
-	 * same value.
+	 * IMPORTANT: Note that you should also update tick yourself, else a timeout
+	 * will occur and your data will not be read. Subsequently calling the
+	 * commit()-function once will not help when tick is always set to the same
+	 * value.
 	 *
 	 * Notice: Parts of this does not need to be updated every single frame.
-	 * Please use the more directly appropriate commit...(...) functions
-	 * instead.
+	 * Please use the more directly appropriate commit...(...) functions instead.
 	 *
 	 * @param source data structure which is to be copied
 	 *
-	 * @return an error code {@link LINKAPI_ERROR_CODE}
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_ERROR_CODE setData(LINKAPI_LINKED_MEMORY*)</code><br>
-	 * <i>native declaration : line 718</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE setData(const LINKAPI_LINKED_MEMORY*)</code><br>
+	 * <i>native declaration : line 761</i>
 	 */
 	int setData(LinkAPILibrary.LINKAPI_LINKED_MEMORY source);
 
 	/**
 	 * the entire shared memory for direct access
 	 *
-	 * @return a pointer to the shared memory structure
+	 * @param destination a pointer to a copy target of the shared memory structure
+	 *
+	 * @return	an error code {@link LINKAPI_ERROR_CODE}
 	 */
 	/*
-	 * Original signature :
-	 * <code>LINKAPI_LINKED_MEMORY* getData()</code><br>
-	 * <i>native declaration : line 726</i>
+	 * Original signature : <code>LINKAPI_ERROR_CODE getData(LINKAPI_LINKED_MEMORY*)</code><br>
+	 * <i>native declaration : line 771</i>
 	 */
-	LinkAPILibrary.LINKAPI_LINKED_MEMORY getData();
+	int getData(LinkAPILibrary.LINKAPI_LINKED_MEMORY destination);
 }

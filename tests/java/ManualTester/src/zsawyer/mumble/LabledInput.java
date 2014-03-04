@@ -53,6 +53,10 @@ public class LabledInput extends javax.swing.JPanel {
 		return inputField.getText();
 	}
 
+	public void setValue(String value) {
+		inputField.setText(value);
+	}
+
 	public JLabel getLabel() {
 		return label;
 	}

@@ -34,6 +34,7 @@ import java.awt.Color;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.FloatBuffer;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.GroupLayout;
@@ -191,59 +192,59 @@ public class ManualTesterFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void initializeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_initializeActionPerformed
-		CharBuffer name = parseToCharBuffer(
+		char[] name = parseToCharArray(
 				LinkAPILibrary.LINKAPI_MAX_NAME_LENGTH, "name");
 
-		CharBuffer description = parseToCharBuffer(
+		char[] description = parseToCharArray(
 				LinkAPILibrary.LINKAPI_MAX_DESCRIPTION_LENGTH, "description");
 
-		int uiVersion;
+		int version;
 		try {
-			uiVersion = parseToInt("uiVersion");
+			version = parseToInt("version");
 		} catch (NumberFormatException e) {
 			return;
 		}
 
-		link.initialize(name, description, uiVersion);
+		link.initialize(name, description, version);
     }//GEN-LAST:event_initializeActionPerformed
 
     private void updateNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateNameActionPerformed
-		CharBuffer name = parseToCharBuffer(
+		char[] name = parseToCharArray(
 				LinkAPILibrary.LINKAPI_MAX_NAME_LENGTH, "name");
 		link.commitName(name);
     }//GEN-LAST:event_updateNameActionPerformed
 
     private void updateDescriptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateDescriptionActionPerformed
-		CharBuffer description = parseToCharBuffer(
+		char[] description = parseToCharArray(
 				LinkAPILibrary.LINKAPI_MAX_DESCRIPTION_LENGTH, "description");
 		link.commitDescription(description);
     }//GEN-LAST:event_updateDescriptionActionPerformed
 
     private void updateIdentityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateIdentityActionPerformed
-		CharBuffer identity = parseToCharBuffer(
+		char[] identity = parseToCharArray(
 				LinkAPILibrary.LINKAPI_MAX_IDENTITY_LENGTH, "identity");
 		link.commitIdentity(identity);
     }//GEN-LAST:event_updateIdentityActionPerformed
 
     private void updateContextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateContextActionPerformed
-		ByteBuffer context = parseToByteBuffer(
+		byte[] context = parseToByteArray(
 				LinkAPILibrary.LINKAPI_MAX_CONTEXT_LENGTH, "context");
-		int context_len = inputs.get("context").getValue().length();
-		link.commitContext(context, context_len);
+		int contextLength = inputs.get("context").getValue().length();
+		link.commitContext(context, contextLength);
     }//GEN-LAST:event_updateContextActionPerformed
 
     private void updateVectorsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateVectorsActionPerformed
 		try {
-			FloatBuffer fAvatarPosition = parseToFloatBuffer("fAvatarPosition");
-			FloatBuffer fAvatarFront = parseToFloatBuffer("fAvatarFront");
-			FloatBuffer fAvatarTop = parseToFloatBuffer("fAvatarTop");
+			float[] avatarPosition = parseToFloatArray("avatarPosition");
+			float[] avatarFront = parseToFloatArray("avatarFront");
+			float[] avatarTop = parseToFloatArray("avatarTop");
 
-			FloatBuffer fCameraPosition = parseToFloatBuffer("fCameraPosition");
-			FloatBuffer fCameraFront = parseToFloatBuffer("fCameraFront");
-			FloatBuffer fCameraTop = parseToFloatBuffer("fCameraTop");
+			float[] cameraPosition = parseToFloatArray("cameraPosition");
+			float[] cameraFront = parseToFloatArray("cameraFront");
+			float[] cameraTop = parseToFloatArray("cameraTop");
 
-			link.commitVectors(fAvatarPosition, fAvatarFront, fAvatarTop,
-					fCameraPosition, fCameraFront, fCameraTop);
+			link.commitVectors(avatarPosition, avatarFront, avatarTop,
+					cameraPosition, cameraFront, cameraTop);
 		} catch (NumberFormatException e) {
 			return;
 		}
@@ -251,12 +252,12 @@ public class ManualTesterFrame extends javax.swing.JFrame {
 
     private void updateVectorsByAvatarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateVectorsByAvatarActionPerformed
 		try {
-			FloatBuffer fAvatarPosition = parseToFloatBuffer("fAvatarPosition");
-			FloatBuffer fAvatarFront = parseToFloatBuffer("fAvatarFront");
-			FloatBuffer fAvatarTop = parseToFloatBuffer("fAvatarTop");
+			float[] avatarPosition = parseToFloatArray("avatarPosition");
+			float[] avatarFront = parseToFloatArray("avatarFront");
+			float[] avatarTop = parseToFloatArray("avatarTop");
 
-			link.commitVectorsAvatarAsCamera(fAvatarPosition, fAvatarFront,
-					fAvatarTop);
+			link.commitVectorsAvatarAsCamera(avatarPosition, avatarFront,
+					avatarTop);
 		} catch (NumberFormatException e) {
 			return;
 		}
@@ -269,7 +270,7 @@ public class ManualTesterFrame extends javax.swing.JFrame {
 				LinkAPILibrary.LINKAPI_MAX_IDENTITY_LENGTH, "identity").array();
 		lm.context = parseToByteBuffer(LinkAPILibrary.LINKAPI_MAX_CONTEXT_LENGTH,
 				"context").array();
-		lm.context_len = inputs.get("context").getValue().length();
+		lm.contextLength = inputs.get("context").getValue().length();
 
 		lm.name = parseToCharBuffer(LinkAPILibrary.LINKAPI_MAX_NAME_LENGTH,
 				"name").array();
@@ -278,31 +279,32 @@ public class ManualTesterFrame extends javax.swing.JFrame {
 				array();
 
 		try {
-			lm.uiTick = parseToInt("uiTick");
-			lm.uiVersion = parseToInt("uiVersion");
+			lm.tick = parseToInt("tick");
+			lm.version = parseToInt("version");
 
+			lm.avatarPosition = parseToFloatBuffer("avatarPosition").array();
+			lm.avatarFront = parseToFloatBuffer("avatarFront").array();
+			lm.avatarTop = parseToFloatBuffer("avatarTop").array();
 
-			lm.fAvatarPosition = parseToFloatBuffer("fAvatarPosition").array();
-			lm.fAvatarFront = parseToFloatBuffer("fAvatarFront").array();
-			lm.fAvatarTop = parseToFloatBuffer("fAvatarTop").array();
-
-			lm.fCameraPosition = parseToFloatBuffer("fCameraPosition").array();
-			lm.fCameraFront = parseToFloatBuffer("fCameraFront").array();
-			lm.fCameraTop = parseToFloatBuffer("fCameraTop").array();
+			lm.cameraPosition = parseToFloatBuffer("cameraPosition").array();
+			lm.cameraFront = parseToFloatBuffer("cameraFront").array();
+			lm.cameraTop = parseToFloatBuffer("cameraTop").array();
 		} catch (NumberFormatException e) {
 			return;
 		}
 
 		link.setData(lm);
+		
+		inputs.get("tick").setValue(String.valueOf(parseToInt("tick") + 1));
     }//GEN-LAST:event_updateDataActionPerformed
 
     private void updateIdentityAndContextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateIdentityAndContextActionPerformed
-		CharBuffer identity = parseToCharBuffer(
+		char[] identity = parseToCharArray(
 				LinkAPILibrary.LINKAPI_MAX_IDENTITY_LENGTH, "identity");
-		ByteBuffer context = parseToByteBuffer(
+		byte[] context = parseToByteArray(
 				LinkAPILibrary.LINKAPI_MAX_CONTEXT_LENGTH, "context");
-		int context_len = inputs.get("context").getValue().length();
-		link.commitIdentityAndContext(identity, context, context_len);
+		int contextLength = inputs.get("context").getValue().length();
+		link.commitIdentityAndContext(identity, context, contextLength);
     }//GEN-LAST:event_updateIdentityAndContextActionPerformed
 
 	/**
@@ -325,19 +327,19 @@ public class ManualTesterFrame extends javax.swing.JFrame {
 		} catch (ClassNotFoundException ex) {
 			java.util.logging.Logger.
 					getLogger(ManualTesterFrame.class.getName()).log(
-					java.util.logging.Level.SEVERE, null, ex);
+							java.util.logging.Level.SEVERE, null, ex);
 		} catch (InstantiationException ex) {
 			java.util.logging.Logger.
 					getLogger(ManualTesterFrame.class.getName()).log(
-					java.util.logging.Level.SEVERE, null, ex);
+							java.util.logging.Level.SEVERE, null, ex);
 		} catch (IllegalAccessException ex) {
 			java.util.logging.Logger.
 					getLogger(ManualTesterFrame.class.getName()).log(
-					java.util.logging.Level.SEVERE, null, ex);
+							java.util.logging.Level.SEVERE, null, ex);
 		} catch (javax.swing.UnsupportedLookAndFeelException ex) {
 			java.util.logging.Logger.
 					getLogger(ManualTesterFrame.class.getName()).log(
-					java.util.logging.Level.SEVERE, null, ex);
+							java.util.logging.Level.SEVERE, null, ex);
 		}
 		//</editor-fold>
 
@@ -361,21 +363,21 @@ public class ManualTesterFrame extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
 	private void initCustomComponents() {
-		this.inputs.put("uiVersion", new LabledInput("uiVersion", "2"));
-		this.inputs.put("uiTick", new LabledInput("uiTick", "ignored"));
+		this.inputs.put("version", new LabledInput("version", "2"));
+		this.inputs.put("tick", new LabledInput("tick", "ignored"));
 
-		this.inputs.put("fAvatarPosition", new LabledInput("fAvatarPosition",
+		this.inputs.put("avatarPosition", new LabledInput("avatarPosition",
 				"1.0 1.1 1.2"));
-		this.inputs.put("fAvatarFront", new LabledInput("fAvatarFront",
+		this.inputs.put("avatarFront", new LabledInput("avatarFront",
 				"2.0 2.1 2.2"));
-		this.inputs.put("fAvatarTop", new LabledInput("fAvatarTop",
+		this.inputs.put("avatarTop", new LabledInput("avatarTop",
 				"3.0 3.1 3.2"));
 
-		this.inputs.put("fCameraPosition", new LabledInput("fCameraPosition",
+		this.inputs.put("cameraPosition", new LabledInput("cameraPosition",
 				"4.0 4.1 4.2"));
-		this.inputs.put("fCameraFront", new LabledInput("fCameraFront",
+		this.inputs.put("cameraFront", new LabledInput("cameraFront",
 				"5.0 5.1 5.2"));
-		this.inputs.put("fCameraTop", new LabledInput("fCameraTop",
+		this.inputs.put("cameraTop", new LabledInput("cameraTop",
 				"6.0 6.1 6.2"));
 
 		this.inputs.put("name", new LabledInput("name", "ManualTester /w JNA"));
@@ -387,66 +389,65 @@ public class ManualTesterFrame extends javax.swing.JFrame {
 		this.inputs.put("context", new LabledInput("context",
 				"ManualTester_development"));
 
-
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(
 				getContentPane());
 		getContentPane().setLayout(layout);
 		layout.setHorizontalGroup(addAllInputs(layout.createParallelGroup(
 				javax.swing.GroupLayout.Alignment.LEADING)
 				.addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.
-				createSequentialGroup()
-				.addContainerGap()))
+						createSequentialGroup()
+						.addContainerGap()))
 				.addGroup(layout.createSequentialGroup()
-				.addGroup(layout.createParallelGroup(
-				javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup()
-				.addComponent(updateVectors)
-				.addPreferredGap(
-				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(updateVectorsByAvatar))
-				.addGroup(layout.createSequentialGroup()
-				.addComponent(updateIdentity)
-				.addPreferredGap(
-				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(updateContext)
-				.addPreferredGap(
-				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(updateIdentityAndContext))
-				.addGroup(layout.createSequentialGroup()
-				.addComponent(updateName)
-				.addPreferredGap(
-				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(updateDescription))
-				.addComponent(updateData)
-				.addComponent(initialize))
-				.addGap(0, 358, Short.MAX_VALUE)));
+						.addGroup(layout.createParallelGroup(
+										javax.swing.GroupLayout.Alignment.LEADING).
+								addGroup(layout.createSequentialGroup()
+										.addComponent(updateVectors)
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.RELATED).
+										addComponent(updateVectorsByAvatar))
+								.addGroup(layout.createSequentialGroup()
+										.addComponent(updateIdentity)
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.RELATED).
+										addComponent(updateContext)
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.RELATED).
+										addComponent(updateIdentityAndContext))
+								.addGroup(layout.createSequentialGroup()
+										.addComponent(updateName)
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.RELATED).
+										addComponent(updateDescription))
+								.addComponent(updateData)
+								.addComponent(initialize))
+						.addGap(0, 358, Short.MAX_VALUE)));
 
 		layout.setVerticalGroup(addAllInputs(
 				layout.createSequentialGroup())
 				.addGroup(layout.createSequentialGroup()
-				.addComponent(initialize)
-				.addPreferredGap(
-				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(layout.createParallelGroup(
-				javax.swing.GroupLayout.Alignment.BASELINE)
-				.addComponent(updateName)
-				.addComponent(updateDescription))
-				.addPreferredGap(
-				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(layout.createParallelGroup(
-				javax.swing.GroupLayout.Alignment.BASELINE)
-				.addComponent(updateIdentity)
-				.addComponent(updateContext)
-				.addComponent(updateIdentityAndContext))
-				.addPreferredGap(
-				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(layout.createParallelGroup(
-				javax.swing.GroupLayout.Alignment.BASELINE)
-				.addComponent(updateVectors)
-				.addComponent(updateVectorsByAvatar))
-				.addPreferredGap(
-				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(updateData)));
+						.addComponent(initialize)
+						.addPreferredGap(
+								javax.swing.LayoutStyle.ComponentPlacement.RELATED).
+						addGroup(layout.createParallelGroup(
+										javax.swing.GroupLayout.Alignment.BASELINE).
+								addComponent(updateName)
+								.addComponent(updateDescription))
+						.addPreferredGap(
+								javax.swing.LayoutStyle.ComponentPlacement.RELATED).
+						addGroup(layout.createParallelGroup(
+										javax.swing.GroupLayout.Alignment.BASELINE).
+								addComponent(updateIdentity)
+								.addComponent(updateContext)
+								.addComponent(updateIdentityAndContext))
+						.addPreferredGap(
+								javax.swing.LayoutStyle.ComponentPlacement.RELATED).
+						addGroup(layout.createParallelGroup(
+										javax.swing.GroupLayout.Alignment.BASELINE).
+								addComponent(updateVectors)
+								.addComponent(updateVectorsByAvatar))
+						.addPreferredGap(
+								javax.swing.LayoutStyle.ComponentPlacement.RELATED).
+						addComponent(updateData)));
 		pack();
 	}
 
@@ -459,6 +460,23 @@ public class ManualTesterFrame extends javax.swing.JFrame {
 		}
 
 		return baseGroup;
+	}
+
+	private float[] parseToFloatArray(String labelName) throws
+			NumberFormatException {
+		LabledInput input = inputs.get(labelName);
+		float[] allocate = new float[3];
+		try {
+			String[] split = input.getValue().split(" ");
+			allocate[0] = Float.valueOf(split[0]);
+			allocate[1] = (Float.valueOf(split[1]));
+			allocate[2] = (Float.valueOf(split[2]));
+		} catch (NumberFormatException e) {
+			JLabel label = input.getLabel();
+			label.setForeground(Color.red);
+			throw e;
+		}
+		return allocate;
 	}
 
 	private FloatBuffer parseToFloatBuffer(String labelName) throws
@@ -477,6 +495,16 @@ public class ManualTesterFrame extends javax.swing.JFrame {
 		}
 		allocate.rewind();
 		return allocate;
+	}
+
+	private char[] parseToCharArray(int capacity, String label) {
+		return Arrays.copyOf(inputs.get(label).getValue().toCharArray(),
+				capacity);
+	}
+
+	private byte[] parseToByteArray(int capacity, String label) {
+		return Arrays.copyOf(inputs.get(label).getValue().getBytes(),
+				capacity);
 	}
 
 	private CharBuffer parseToCharBuffer(int capacity, String label) {

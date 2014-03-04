@@ -195,14 +195,14 @@ public class ManualTesterFrame extends javax.swing.JFrame {
 		Pointer<Character> description = parseToPointerChar(
 				LinkAPILibrary.LINKAPI_MAX_DESCRIPTION_LENGTH, "description");
 
-		int uiVersion;
+		int version;
 		try {
-			uiVersion = parseToInt("uiVersion");
+			version = parseToInt("version");
 		} catch (NumberFormatException e) {
 			return;
 		}
 
-		LinkAPILibrary.initialize(name, description, uiVersion);
+		LinkAPILibrary.initialize(name, description, version);
     }//GEN-LAST:event_initializeActionPerformed
 
     private void updateNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateNameActionPerformed
@@ -226,25 +226,25 @@ public class ManualTesterFrame extends javax.swing.JFrame {
     private void updateContextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateContextActionPerformed
 		Pointer<Byte> context = parseToPointerByte(
 				LinkAPILibrary.LINKAPI_MAX_CONTEXT_LENGTH, "context");
-		int context_len = inputs.get("context").getValue().length();
-		LinkAPILibrary.commitContext(context, context_len);
+		int contextLength = inputs.get("context").getValue().length();
+		LinkAPILibrary.commitContext(context, contextLength);
     }//GEN-LAST:event_updateContextActionPerformed
 
     private void updateVectorsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateVectorsActionPerformed
 		try {
-			Pointer<Float> fAvatarPosition = parseToFloatBuffer(
-					"fAvatarPosition");
-			Pointer<Float> fAvatarFront = parseToFloatBuffer("fAvatarFront");
-			Pointer<Float> fAvatarTop = parseToFloatBuffer("fAvatarTop");
+			Pointer<Float> avatarPosition = parseToFloatBuffer(
+					"avatarPosition");
+			Pointer<Float> avatarFront = parseToFloatBuffer("avatarFront");
+			Pointer<Float> avatarTop = parseToFloatBuffer("avatarTop");
 
-			Pointer<Float> fCameraPosition = parseToFloatBuffer(
-					"fCameraPosition");
-			Pointer<Float> fCameraFront = parseToFloatBuffer("fCameraFront");
-			Pointer<Float> fCameraTop = parseToFloatBuffer("fCameraTop");
+			Pointer<Float> cameraPosition = parseToFloatBuffer(
+					"cameraPosition");
+			Pointer<Float> cameraFront = parseToFloatBuffer("cameraFront");
+			Pointer<Float> cameraTop = parseToFloatBuffer("cameraTop");
 
-			LinkAPILibrary.commitVectors(fAvatarPosition, fAvatarFront,
-					fAvatarTop,
-					fCameraPosition, fCameraFront, fCameraTop);
+			LinkAPILibrary.commitVectors(avatarPosition, avatarFront,
+					avatarTop,
+					cameraPosition, cameraFront, cameraTop);
 		} catch (NumberFormatException e) {
 			return;
 		}
@@ -252,14 +252,14 @@ public class ManualTesterFrame extends javax.swing.JFrame {
 
     private void updateVectorsByAvatarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateVectorsByAvatarActionPerformed
 		try {
-			Pointer<Float> fAvatarPosition = parseToFloatBuffer(
-					"fAvatarPosition");
-			Pointer<Float> fAvatarFront = parseToFloatBuffer("fAvatarFront");
-			Pointer<Float> fAvatarTop = parseToFloatBuffer("fAvatarTop");
+			Pointer<Float> avatarPosition = parseToFloatBuffer(
+					"avatarPosition");
+			Pointer<Float> avatarFront = parseToFloatBuffer("avatarFront");
+			Pointer<Float> avatarTop = parseToFloatBuffer("avatarTop");
 
-			LinkAPILibrary.commitVectorsAvatarAsCamera(fAvatarPosition,
-					fAvatarFront,
-					fAvatarTop);
+			LinkAPILibrary.commitVectorsAvatarAsCamera(avatarPosition,
+					avatarFront,
+					avatarTop);
 		} catch (NumberFormatException e) {
 			return;
 		}
@@ -267,41 +267,44 @@ public class ManualTesterFrame extends javax.swing.JFrame {
 
     private void updateDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateDataActionPerformed
 
+		// TOFIX: this does not seem to work, only places empty values it seems
+
 		LinkAPILibrary.LINKAPI_LINKED_MEMORY lm = new LinkAPILibrary.LINKAPI_LINKED_MEMORY();
 
 		parseToPointerChar(LinkAPILibrary.LINKAPI_MAX_IDENTITY_LENGTH,
 				"identity").setPointer(lm.identity());
 
-		parseToPointerByte(LinkAPILibrary.LINKAPI_MAX_IDENTITY_LENGTH,
+		parseToPointerByte(LinkAPILibrary.LINKAPI_MAX_CONTEXT_LENGTH,
 				"context").setPointer(lm.context());
 
-		lm.context_len(inputs.get("context").getValue().length());
+		lm.contextLength(inputs.get("context").getValue().length());
 
-		parseToPointerChar(LinkAPILibrary.LINKAPI_MAX_IDENTITY_LENGTH,
+		parseToPointerChar(LinkAPILibrary.LINKAPI_MAX_NAME_LENGTH,
 				"name").setPointer(lm.name());
 
-		parseToPointerChar(LinkAPILibrary.LINKAPI_MAX_IDENTITY_LENGTH,
+		parseToPointerChar(LinkAPILibrary.LINKAPI_MAX_DESCRIPTION_LENGTH,
 				"description").setPointer(lm.description());
 
 		try {
-			lm.uiTick(parseToInt("uiTick"));
-			lm.uiVersion(parseToInt("uiVersion"));
+			lm.tick(parseToInt("tick"));
+			lm.version(parseToInt("version"));
 
+			parseToFloatBuffer("avatarPosition").setPointer(lm.
+					avatarPosition());
+			parseToFloatBuffer("avatarFront").setPointer(lm.avatarFront());
+			parseToFloatBuffer("avatarTop").setPointer(lm.avatarTop());
 
-			parseToFloatBuffer("fAvatarPosition").setPointer(lm.
-					fAvatarPosition());
-			parseToFloatBuffer("fAvatarFront").setPointer(lm.fAvatarFront());
-			parseToFloatBuffer("fAvatarTop").setPointer(lm.fAvatarTop());
-
-			parseToFloatBuffer("fCameraPosition").setPointer(lm.
-					fCameraPosition());
-			parseToFloatBuffer("fCameraFront").setPointer(lm.fCameraFront());
-			parseToFloatBuffer("fCameraTop").setPointer(lm.fCameraTop());
+			parseToFloatBuffer("cameraPosition").setPointer(lm.
+					cameraPosition());
+			parseToFloatBuffer("cameraFront").setPointer(lm.cameraFront());
+			parseToFloatBuffer("cameraTop").setPointer(lm.cameraTop());
 		} catch (NumberFormatException e) {
 			return;
 		}
 
 		LinkAPILibrary.setData(Pointer.pointerTo(lm));
+
+		inputs.get("tick").setValue(String.valueOf(parseToInt("tick") + 1));
     }//GEN-LAST:event_updateDataActionPerformed
 
     private void updateIdentityAndContextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateIdentityAndContextActionPerformed
@@ -309,8 +312,9 @@ public class ManualTesterFrame extends javax.swing.JFrame {
 				LinkAPILibrary.LINKAPI_MAX_IDENTITY_LENGTH, "identity");
 		Pointer<Byte> context = parseToPointerByte(
 				LinkAPILibrary.LINKAPI_MAX_CONTEXT_LENGTH, "context");
-		int context_len = inputs.get("context").getValue().length();
-		LinkAPILibrary.commitIdentityAndContext(identity, context, context_len);
+		int contextLength = inputs.get("context").getValue().length();
+		LinkAPILibrary.
+				commitIdentityAndContext(identity, context, contextLength);
     }//GEN-LAST:event_updateIdentityAndContextActionPerformed
 
 	/**
@@ -333,19 +337,19 @@ public class ManualTesterFrame extends javax.swing.JFrame {
 		} catch (ClassNotFoundException ex) {
 			java.util.logging.Logger.
 					getLogger(ManualTesterFrame.class.getName()).log(
-					java.util.logging.Level.SEVERE, null, ex);
+							java.util.logging.Level.SEVERE, null, ex);
 		} catch (InstantiationException ex) {
 			java.util.logging.Logger.
 					getLogger(ManualTesterFrame.class.getName()).log(
-					java.util.logging.Level.SEVERE, null, ex);
+							java.util.logging.Level.SEVERE, null, ex);
 		} catch (IllegalAccessException ex) {
 			java.util.logging.Logger.
 					getLogger(ManualTesterFrame.class.getName()).log(
-					java.util.logging.Level.SEVERE, null, ex);
+							java.util.logging.Level.SEVERE, null, ex);
 		} catch (javax.swing.UnsupportedLookAndFeelException ex) {
 			java.util.logging.Logger.
 					getLogger(ManualTesterFrame.class.getName()).log(
-					java.util.logging.Level.SEVERE, null, ex);
+							java.util.logging.Level.SEVERE, null, ex);
 		}
 		//</editor-fold>
 
@@ -369,24 +373,25 @@ public class ManualTesterFrame extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
 	private void initCustomComponents() {
-		this.inputs.put("uiVersion", new LabledInput("uiVersion", "2"));
-		this.inputs.put("uiTick", new LabledInput("uiTick", "ignored"));
+		this.inputs.put("version", new LabledInput("version", "2"));
+		this.inputs.put("tick", new LabledInput("tick", "ignored"));
 
-		this.inputs.put("fAvatarPosition", new LabledInput("fAvatarPosition",
+		this.inputs.put("avatarPosition", new LabledInput("avatarPosition",
 				"1.0 1.1 1.2"));
-		this.inputs.put("fAvatarFront", new LabledInput("fAvatarFront",
+		this.inputs.put("avatarFront", new LabledInput("avatarFront",
 				"2.0 2.1 2.2"));
-		this.inputs.put("fAvatarTop", new LabledInput("fAvatarTop",
+		this.inputs.put("avatarTop", new LabledInput("avatarTop",
 				"3.0 3.1 3.2"));
 
-		this.inputs.put("fCameraPosition", new LabledInput("fCameraPosition",
+		this.inputs.put("cameraPosition", new LabledInput("cameraPosition",
 				"4.0 4.1 4.2"));
-		this.inputs.put("fCameraFront", new LabledInput("fCameraFront",
+		this.inputs.put("cameraFront", new LabledInput("cameraFront",
 				"5.0 5.1 5.2"));
-		this.inputs.put("fCameraTop", new LabledInput("fCameraTop",
+		this.inputs.put("cameraTop", new LabledInput("cameraTop",
 				"6.0 6.1 6.2"));
 
-		this.inputs.put("name", new LabledInput("name", "ManualTester w/ BridJ"));
+		this.inputs.
+				put("name", new LabledInput("name", "ManualTester w/ BridJ"));
 		this.inputs.put("description", new LabledInput("description",
 				"ManualTester tests the LinkAPI library"));
 
@@ -395,66 +400,65 @@ public class ManualTesterFrame extends javax.swing.JFrame {
 		this.inputs.put("context", new LabledInput("context",
 				"ManualTester_development"));
 
-
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(
 				getContentPane());
 		getContentPane().setLayout(layout);
 		layout.setHorizontalGroup(addAllInputs(layout.createParallelGroup(
 				javax.swing.GroupLayout.Alignment.LEADING)
 				.addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.
-				createSequentialGroup()
-				.addContainerGap()))
+						createSequentialGroup()
+						.addContainerGap()))
 				.addGroup(layout.createSequentialGroup()
-				.addGroup(layout.createParallelGroup(
-				javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup()
-				.addComponent(updateVectors)
-				.addPreferredGap(
-				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(updateVectorsByAvatar))
-				.addGroup(layout.createSequentialGroup()
-				.addComponent(updateIdentity)
-				.addPreferredGap(
-				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(updateContext)
-				.addPreferredGap(
-				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(updateIdentityAndContext))
-				.addGroup(layout.createSequentialGroup()
-				.addComponent(updateName)
-				.addPreferredGap(
-				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(updateDescription))
-				.addComponent(updateData)
-				.addComponent(initialize))
-				.addGap(0, 358, Short.MAX_VALUE)));
+						.addGroup(layout.createParallelGroup(
+										javax.swing.GroupLayout.Alignment.LEADING).
+								addGroup(layout.createSequentialGroup()
+										.addComponent(updateVectors)
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.RELATED).
+										addComponent(updateVectorsByAvatar))
+								.addGroup(layout.createSequentialGroup()
+										.addComponent(updateIdentity)
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.RELATED).
+										addComponent(updateContext)
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.RELATED).
+										addComponent(updateIdentityAndContext))
+								.addGroup(layout.createSequentialGroup()
+										.addComponent(updateName)
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.RELATED).
+										addComponent(updateDescription))
+								.addComponent(updateData)
+								.addComponent(initialize))
+						.addGap(0, 358, Short.MAX_VALUE)));
 
 		layout.setVerticalGroup(addAllInputs(
 				layout.createSequentialGroup())
 				.addGroup(layout.createSequentialGroup()
-				.addComponent(initialize)
-				.addPreferredGap(
-				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(layout.createParallelGroup(
-				javax.swing.GroupLayout.Alignment.BASELINE)
-				.addComponent(updateName)
-				.addComponent(updateDescription))
-				.addPreferredGap(
-				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(layout.createParallelGroup(
-				javax.swing.GroupLayout.Alignment.BASELINE)
-				.addComponent(updateIdentity)
-				.addComponent(updateContext)
-				.addComponent(updateIdentityAndContext))
-				.addPreferredGap(
-				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(layout.createParallelGroup(
-				javax.swing.GroupLayout.Alignment.BASELINE)
-				.addComponent(updateVectors)
-				.addComponent(updateVectorsByAvatar))
-				.addPreferredGap(
-				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(updateData)));
+						.addComponent(initialize)
+						.addPreferredGap(
+								javax.swing.LayoutStyle.ComponentPlacement.RELATED).
+						addGroup(layout.createParallelGroup(
+										javax.swing.GroupLayout.Alignment.BASELINE).
+								addComponent(updateName)
+								.addComponent(updateDescription))
+						.addPreferredGap(
+								javax.swing.LayoutStyle.ComponentPlacement.RELATED).
+						addGroup(layout.createParallelGroup(
+										javax.swing.GroupLayout.Alignment.BASELINE).
+								addComponent(updateIdentity)
+								.addComponent(updateContext)
+								.addComponent(updateIdentityAndContext))
+						.addPreferredGap(
+								javax.swing.LayoutStyle.ComponentPlacement.RELATED).
+						addGroup(layout.createParallelGroup(
+										javax.swing.GroupLayout.Alignment.BASELINE).
+								addComponent(updateVectors)
+								.addComponent(updateVectorsByAvatar))
+						.addPreferredGap(
+								javax.swing.LayoutStyle.ComponentPlacement.RELATED).
+						addComponent(updateData)));
 		pack();
 	}
 
@@ -472,8 +476,7 @@ public class ManualTesterFrame extends javax.swing.JFrame {
 	private Pointer<Float> parseToFloatBuffer(String labelName) throws
 			NumberFormatException {
 		LabledInput input = inputs.get(labelName);
-		Pointer<Float> pointer = Pointer.allocateFloats(
-				LinkAPILibrary.LINKAPI_VECTOR_LENGTH);
+		Pointer<Float> pointer = Pointer.allocateFloats(3);
 		try {
 			String[] split = input.getValue().split(" ");
 			for (int i = 0; i < split.length; i++) {
@@ -495,7 +498,7 @@ public class ManualTesterFrame extends javax.swing.JFrame {
 
 	private Pointer<Byte> parseToPointerByte(int capacity, String label) {
 		Pointer<Byte> pointer = Pointer.allocateBytes(capacity);
-		pointer.setArray(inputs.get(label).getValue().getBytes());
+		pointer.setBytes(inputs.get(label).getValue().getBytes());
 		return pointer;
 	}
 

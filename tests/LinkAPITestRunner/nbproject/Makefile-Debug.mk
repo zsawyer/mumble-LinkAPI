@@ -58,13 +58,13 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../../ide/netbeans/dist/Release_x64/Cygwin64_4.x-Windows/libLinkAPI.dll
+LDLIBSOPTIONS=-L../../ide/netbeans/dist/Debug_x64/Cygwin64_4.x-Windows -lLinkAPI
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/linkapitestrunner.exe
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/linkapitestrunner.exe: ../../ide/netbeans/dist/Release_x64/Cygwin64_4.x-Windows/libLinkAPI.dll
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/linkapitestrunner.exe: ../../ide/netbeans/dist/Debug_x64/Cygwin64_4.x-Windows/libLinkAPI.dll
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/linkapitestrunner.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
@@ -107,6 +107,8 @@ ${OBJECTDIR}/cutest-1.5/CuTest.o: cutest-1.5/CuTest.c
 
 # Subprojects
 .build-subprojects:
+	cd ../../ide/netbeans && ${MAKE}  -f Makefile CONF=Debug_x64
+	cd ../../ide/netbeans && ${MAKE}  -f Makefile CONF=Debug_x64
 	cd ../../ide/netbeans && ${MAKE}  -f Makefile CONF=Release_x64
 
 # Clean Targets
@@ -116,6 +118,8 @@ ${OBJECTDIR}/cutest-1.5/CuTest.o: cutest-1.5/CuTest.c
 
 # Subprojects
 .clean-subprojects:
+	cd ../../ide/netbeans && ${MAKE}  -f Makefile CONF=Debug_x64 clean
+	cd ../../ide/netbeans && ${MAKE}  -f Makefile CONF=Debug_x64 clean
 	cd ../../ide/netbeans && ${MAKE}  -f Makefile CONF=Release_x64 clean
 
 # Enable dependency checking

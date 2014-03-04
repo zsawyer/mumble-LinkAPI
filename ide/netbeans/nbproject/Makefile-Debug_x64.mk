@@ -52,19 +52,15 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=/cygdrive/C/cygwin/lib/gcc/x86_64-w64-mingw32/4.5.3/libstdc++.a /cygdrive/C/cygwin/lib/gcc/x86_64-w64-mingw32/4.5.3/libgcc.a
+LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${TESTDIR}/TestFiles/f1
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT}
 
-${TESTDIR}/TestFiles/f1: /cygdrive/C/cygwin/lib/gcc/x86_64-w64-mingw32/4.5.3/libstdc++.a
-
-${TESTDIR}/TestFiles/f1: /cygdrive/C/cygwin/lib/gcc/x86_64-w64-mingw32/4.5.3/libgcc.a
-
-${TESTDIR}/TestFiles/f1: ${OBJECTFILES}
-	${MKDIR} -p ${TESTDIR}/TestFiles
-	x86_64-w64-mingw32-g++ -o ${TESTDIR}/TestFiles/f1 ${OBJECTFILES} ${LDLIBSOPTIONS} -shared
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT}: ${OBJECTFILES}
+	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
+	g++ -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT} ${OBJECTFILES} ${LDLIBSOPTIONS} -shared
 
 ${OBJECTDIR}/_ext/1445274692/LinkAPI.o: ../../src/LinkAPI.c 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1445274692
@@ -77,7 +73,7 @@ ${OBJECTDIR}/_ext/1445274692/LinkAPI.o: ../../src/LinkAPI.c
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${TESTDIR}/TestFiles/f1
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libLinkAPI.${CND_DLIB_EXT}
 
 # Subprojects
 .clean-subprojects:
