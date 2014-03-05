@@ -12,3 +12,10 @@ Alternatively you can bake this library into your C-compatible code.
 For more information about the different data that can be committed see http://mumble.sourceforge.net/Link
 
 Please review the [LinkAPI.h](https://github.com/zsawyer/mumble-LinkAPI/blob/master/src/LinkAPI.h) for a set of exported functions which can be called.
+
+
+Changelog:
+----------
+
+1.0.0
+- basic release version
