@@ -34,7 +34,9 @@ import java.awt.Color;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.swing.GroupLayout;
 import javax.swing.JLabel;
@@ -268,36 +270,26 @@ public class ManualTesterFrame extends javax.swing.JFrame {
     private void updateDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateDataActionPerformed
 
 		// TOFIX: this does not seem to work, only places empty values it seems
-
 		LinkAPILibrary.LINKAPI_LINKED_MEMORY lm = new LinkAPILibrary.LINKAPI_LINKED_MEMORY();
 
-		parseToPointerChar(LinkAPILibrary.LINKAPI_MAX_IDENTITY_LENGTH,
-				"identity").setPointer(lm.identity());
-
-		parseToPointerByte(LinkAPILibrary.LINKAPI_MAX_CONTEXT_LENGTH,
-				"context").setPointer(lm.context());
-
+		lm.identity().setChars(inputs.get("identity").getValue().toCharArray());
+		lm.context().setBytes(inputs.get("context").getValue().getBytes());
 		lm.contextLength(inputs.get("context").getValue().length());
-
-		parseToPointerChar(LinkAPILibrary.LINKAPI_MAX_NAME_LENGTH,
-				"name").setPointer(lm.name());
-
-		parseToPointerChar(LinkAPILibrary.LINKAPI_MAX_DESCRIPTION_LENGTH,
-				"description").setPointer(lm.description());
+		lm.name().setChars(inputs.get("name").getValue().toCharArray());
+		lm.description().setChars(inputs.get("description").getValue().
+				toCharArray());
 
 		try {
 			lm.tick(parseToInt("tick"));
 			lm.version(parseToInt("version"));
 
-			parseToFloatBuffer("avatarPosition").setPointer(lm.
-					avatarPosition());
-			parseToFloatBuffer("avatarFront").setPointer(lm.avatarFront());
-			parseToFloatBuffer("avatarTop").setPointer(lm.avatarTop());
+			lm.avatarPosition().setFloats(parseToFloats("avatarPosition"));
+			lm.avatarFront().setFloats(parseToFloats("avatarFront"));
+			lm.avatarTop().setFloats(parseToFloats("avatarTop"));
 
-			parseToFloatBuffer("cameraPosition").setPointer(lm.
-					cameraPosition());
-			parseToFloatBuffer("cameraFront").setPointer(lm.cameraFront());
-			parseToFloatBuffer("cameraTop").setPointer(lm.cameraTop());
+			lm.cameraPosition().setFloats(parseToFloats("cameraPosition"));
+			lm.cameraFront().setFloats(parseToFloats("cameraFront"));
+			lm.cameraTop().setFloats(parseToFloats("cameraTop"));
 		} catch (NumberFormatException e) {
 			return;
 		}
@@ -475,19 +467,28 @@ public class ManualTesterFrame extends javax.swing.JFrame {
 
 	private Pointer<Float> parseToFloatBuffer(String labelName) throws
 			NumberFormatException {
-		LabledInput input = inputs.get(labelName);
 		Pointer<Float> pointer = Pointer.allocateFloats(3);
+
+		pointer.setFloats(parseToFloats(labelName));
+
+		return pointer;
+	}
+
+	private float[] parseToFloats(String labelName) throws
+			NumberFormatException {
+		LabledInput input = inputs.get(labelName);
+		float[] values = new float[3];
 		try {
 			String[] split = input.getValue().split(" ");
 			for (int i = 0; i < split.length; i++) {
 				String string = split[i];
-				pointer.set(i, Float.parseFloat(string));
+				values[i] = Float.parseFloat(string);
 			}
 		} catch (NumberFormatException | IndexOutOfBoundsException e) {
 			JLabel label = input.getLabel();
 			label.setForeground(Color.red);
 		}
-		return pointer;
+		return values;
 	}
 
 	private Pointer<Character> parseToPointerChar(int capacity, String label) {

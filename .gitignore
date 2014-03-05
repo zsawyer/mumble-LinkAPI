@@ -10,3 +10,4 @@
 /tests/java/ManualTester/ide/netbeans/libLinkAPI.dll
 /ide/netbeans/dist
 *.stackdump
+/tests/java/ManualTester/ide/netbeans/build
