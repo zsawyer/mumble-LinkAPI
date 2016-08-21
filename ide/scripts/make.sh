@@ -2,29 +2,29 @@
 
 # UNTESTED!!
 
-# 32 bit
 #rm -R build
 mkdir build
+rm build/*.so
 
+# 32 bit
 g++  -o build/libLinkAPI.so -shared -fPIC \
      -Wl,-soname,build/libLinkAPI.so  \
-     -lrt \
      -fvisibility=hidden \
      -fvisibility-inlines-hidden \
-     ../../src/LinkAPI.cpp \
-        -lstdc++
+     ../../src/LinkAPI.c \
+     -lrt \
+     -lstdc++
+
 
 # 64 bit
-
 g++  -o build/libLinkAPI64.so -m64 -shared -fPIC \
      -Wl,-soname,build/libLinkAPI64.so  \
-     -lrt \
      -fvisibility=hidden \
      -fvisibility-inlines-hidden \
-     ../../src/LinkAPI.cpp \
-       -lstdc++ \
-       -m64 \
-#       -I/usr/include/c++/4.4/i686-linux-gnu
+     ../../src/LinkAPI.c \
+     -lstdc++ \
+     -m64 \
+     -lrt
 
 
 # for inspection of the library exports       
